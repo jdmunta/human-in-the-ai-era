@@ -11,12 +11,10 @@
     "start": "node server.js"
   },
   "dependencies": {
-    "express": "^4.21.2"
-  },
-  "devDependencies": {
     "@astrojs/mdx": "^4.2.4",
     "@astrojs/sitemap": "^3.3.0",
-    "astro": "^5.7.5"
+    "astro": "^5.7.5",
+    "express": "^4.21.2"
   },
   "engines": {
     "node": ">=20"
