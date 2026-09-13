@@ -1,0 +1,24 @@
+{
+  "name": "human-in-the-ai-era",
+  "type": "module",
+  "version": "0.1.0",
+  "private": true,
+  "description": "How humans thrive when cognition is outsourced to machines.",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.21.2"
+  },
+  "devDependencies": {
+    "@astrojs/mdx": "^4.2.4",
+    "@astrojs/sitemap": "^3.3.0",
+    "astro": "^5.7.5"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

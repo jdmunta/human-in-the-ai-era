@@ -1,0 +1,254 @@
+---
+order: 4
+title: The Ironies of Automation
+kicker: Judgment
+tension: Automation removes the easy 95% and leaves humans accountable for the hard 5% — using skills that only the removed 95% could have built.
+summary: The central essay. Why judgment is the last thing to be automated and the first thing to atrophy, what the aviation record already taught us, and why verification is not cheaper than generation.
+reading: 13 min
+---
+
+import Lede from '../../components/Lede.astro';
+import Claim from '../../components/Claim.astro';
+import Counter from '../../components/Counter.astro';
+import Sidenote from '../../components/Sidenote.astro';
+import Practices from '../../components/Practices.astro';
+import Practice from '../../components/Practice.astro';
+import Ladder from '../../components/Ladder.astro';
+import Table from '../../components/Table.astro';
+
+<Lede>
+In 1983 the psychologist Lisanne Bainbridge published a six-page paper called
+"Ironies of Automation." It concerned industrial process control and it did not
+mention artificial intelligence, because there was none worth mentioning. It
+remains the single most important thing written about the situation we are now
+in, and almost nobody working on AI has read it.
+</Lede>
+
+Her argument has two moves. The first is that the designer of an automated
+system is a human being whose errors do not disappear — they are merely relocated
+from the operator to the design, where they are harder to see and arrive all at
+once. The second is the one that should keep people awake:
+
+> The designer, who tries to eliminate the operator, still leaves the operator to
+> do the tasks which the designer cannot think how to automate.
+>
+> <cite>Lisanne Bainbridge, 1983</cite>
+
+Automation takes the routine, tractable, frequent portion of the work. What
+remains for the human is by construction the *irregular, ambiguous and rare*
+portion — the hardest part of the job. And the human is expected to handle it
+having lost, through disuse, the fluency that only routine practice maintains.
+
+This is the ironies plural: we automate to reduce reliance on fallible humans,
+and in doing so we make the humans more fallible and their remaining
+responsibilities harder.
+
+## The aviation record is the closest thing we have to a controlled experiment
+
+Aviation automated cognition earlier and more thoroughly than any other field,
+in a domain where every failure is investigated in public and in detail. It is
+the closest thing to a natural experiment on what we are about to do everywhere.
+
+On 1 June 2009, Air France 447 was cruising over the Atlantic when its pitot
+tubes iced over. The airspeed readings became unreliable, the autopilot did what
+it is designed to do in the presence of bad data — it disconnected and handed
+control back — and three trained pilots had roughly four minutes to fly an
+aircraft that was, mechanically, entirely intact.
+
+They stalled it into the ocean. Two hundred and twenty-eight people died. The
+pilot flying held the nose up for most of the descent, a control input that is
+correct in almost every situation a modern airline pilot ever encounters and
+catastrophically wrong in this one. The investigators found no mechanical
+failure that would have prevented recovery. What they found was a crew that had
+accumulated thousands of hours of *supervising* an aircraft and very few recent
+hours of *flying* one, confronted with the rare case the automation could not
+handle.
+
+<Sidenote>
+American Airlines training captains coined the phrase "children of the magenta
+line" for pilots who follow the flight director's magenta guidance without
+building an independent mental model of the aircraft's state. It is now the
+standard shorthand for the whole failure mode.
+</Sidenote>
+
+The industry's response is instructive, because it is not what a naive reading
+would predict. Nobody proposed removing the automation — it had by then saved far
+more lives than it cost. The response was to mandate *manual handling practice*:
+periodic hand-flown approaches, upset recovery training, deliberate degradation
+of assistance in the simulator. The fix for over-reliance on automation was to
+make un-assisted competence a scheduled obligation.
+
+That is the template. It is also, currently, what essentially no knowledge
+organisation does.
+
+## Automation bias has two distinct shapes
+
+Two decades of human-factors research have separated the failure into two
+mechanisms, and they need different countermeasures.
+
+<Table>
+<thead>
+<tr><th>Failure</th><th>What it looks like</th><th>Why it happens</th><th>Countermeasure</th></tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Omission error</strong></td>
+<td>You miss a problem because the system did not flag it.</td>
+<td>The aid becomes the perceptual channel. Anything outside its attention is outside yours.</td>
+<td>Independent sampling: check things the tool was never asked about.</td>
+</tr>
+<tr>
+<td><strong>Commission error</strong></td>
+<td>You follow the system's recommendation against evidence in front of you.</td>
+<td>The output is fluent, confident and effortless; your own contrary reasoning is none of those.</td>
+<td>Form and record your own judgment <em>before</em> exposure to the output.</td>
+</tr>
+</tbody>
+</Table>
+
+Commission errors are the more disturbing of the two, because they persist among
+people who *know* the tool is fallible. Fluency is a confidence signal that
+operates below argument. A well-written wrong answer is more persuasive than a
+badly-written right one, and language models are optimised, quite directly, for
+being well-written.
+
+## The jagged frontier
+
+The most useful recent evidence is a 2023 field experiment run with several
+hundred Boston Consulting Group consultants. On tasks that fell *inside* the
+capability frontier of the model, consultants using it completed more work,
+faster, at higher quality — large effects, and the largest gains went to the
+lowest-performing consultants, which is a genuinely good news story about
+levelling.
+
+On a task deliberately designed to fall *outside* that frontier — one where the
+model's plausible answer was wrong — consultants using it were **substantially
+more likely to reach the wrong conclusion** than those working without it.
+
+<Sidenote>
+Dell'Acqua et al., "Navigating the Jagged Technological Frontier" (Harvard
+Business School working paper, 2023). The frontier is called jagged because it
+is not a smooth boundary of difficulty: tasks that look equally hard to a human
+fall on opposite sides of it, and there is no reliable way to tell from the
+outside which is which.
+</Sidenote>
+
+The frontier's jaggedness is the whole problem. If capability degraded smoothly
+with difficulty, we could calibrate. Instead, two tasks that appear equally hard
+to you sit on opposite sides of the line, and the model's confidence is
+approximately identical on both. The only thing that reliably locates the
+frontier is domain expertise — which is to say, the thing that is decaying.
+
+## Verification is not cheaper than generation
+
+There is a comfortable story in circulation: humans will stop producing and
+start supervising. We become editors, reviewers, quality control. It sounds like
+a promotion.
+
+In the domains that actually matter, it is not available, because of an
+asymmetry that gets very little attention. **To reliably evaluate work in a
+domain, you need approximately the expertise required to have produced it.** You
+can spot a wrong sum without being able to do the sum. You cannot spot a subtly
+wrong legal strategy, a plausible-but-flawed differential diagnosis, or an
+architecture that will fail under load in eighteen months, without the
+experience that would have let you generate the right one.
+
+This is the verification gap, and it makes the supervision story circular: it
+proposes that humans retain the expert judgment while removing the practice by
+which expert judgment is acquired.
+
+Which leads to the most serious structural problem of all.
+
+## The apprenticeship problem
+
+Expertise is not transmitted by explanation. Aristotle's word for what we are
+discussing is *phronesis* — practical wisdom, the capacity to perceive what a
+particular situation requires — and his claim was that it cannot be taught as
+rules, only developed through habituation in real situations with real
+consequences. Two and a half thousand years of professional training agree with
+him. Doctors do residencies. Lawyers do document review. Engineers fix other
+people's bugs. Nobody becomes senior by reading about being senior.
+
+The work that builds judgment is, precisely and without exception, the work that
+AI does best: the routine, high-volume, well-specified junior work. We are on
+course to automate the training pipeline for the expertise we have just
+established we cannot do without.
+
+<Claim label="The claim">
+<p>
+Judgment is the last capability to be automated and the first to atrophy, and
+those two facts are the same fact. It decays because the practice that sustains
+it is exactly what gets delegated first. Maintaining it is therefore not a
+matter of attitude or vigilance — it requires deliberately preserved,
+scheduled, un-assisted work, in the same way that physical fitness requires
+scheduled exertion in a world that no longer demands any.
+</p>
+</Claim>
+
+<Counter label="The strongest objection">
+<p>
+"This is the same argument made against writing in the <em>Phaedrus</em>, against
+printing, against the calculator, and against the search engine. Every time,
+the predicted cognitive collapse failed to arrive and the tool became
+invisible infrastructure. Doctors do not diagnose from memory and nobody
+mourns it. Pilots hand-fly less and aviation is the safest it has ever been —
+by a wide margin. The atrophy is real and the outcomes still improved. Maybe
+judgment simply moves up a level, as it always has."
+</p>
+</Counter>
+
+This is the best objection on the site and it is substantially correct. Aviation
+*is* dramatically safer. The right conclusion is not that automation is bad; it
+is that the safety came from a specific, expensive combination — automation
+*plus* mandated manual practice *plus* exhaustive public failure investigation
+*plus* enforced procedure. Aviation got the good outcome because it did the
+unpleasant work, after crashes, in public, under regulators.
+
+The distinction that matters is between **fungible skills** and **judgment
+skills**. Long division is fungible: the answer is verifiable without the
+skill, so losing it costs nothing. Clinical reasoning is not: the output cannot
+be checked without the capability. Where the skill is required to evaluate its
+own output, atrophy is not a neutral trade — and the calculator analogy does not
+reach it.
+
+## Where judgment sits on the ladder
+
+<Ladder
+  highlight={[4, 5]}
+  caption="Judgment work belongs on rungs four and five, with rung two reserved for cases where you can verify the output independently and cheaply."
+  notes={{
+    1: 'Acceptable only where errors are visible, cheap and self-correcting. Almost no consequential decision qualifies.',
+    2: 'Safe when verification is genuinely independent of the expertise being replaced. Rarer than it feels.',
+    4: 'The default for any decision you would have to defend. Reach your own position, then use the machine as your sharpest adversary.',
+    5: 'Reserved for the judgment reps that keep you competent — deliberately unaided work on problems you could have delegated.',
+  }}
+/>
+
+<Practices label="Practices">
+  <Practice n="1" title="Unaided first, always, on anything consequential">
+    Reach your own conclusion and write it down before you open the tool. This
+    single sequencing rule neutralises commission error, which is the dominant
+    failure mode. It costs minutes and it is the highest-return habit on this site.
+  </Practice>
+  <Practice n="2" title="Pre-register the prediction">
+    Before delegating, record what you expect the output to say and what would
+    make you reject it. If you cannot state a rejection criterion in advance,
+    you are not supervising — you are watching.
+  </Practice>
+  <Practice n="3" title="Schedule manual reps">
+    Borrow the aviation fix outright. Block time — weekly, non-negotiable — for
+    work you do unassisted that you could easily have delegated. Treat it as
+    training load, not as productivity.
+  </Practice>
+  <Practice n="4" title="Probe for the frontier deliberately">
+    Regularly give the tool problems where you already know the answer is subtle.
+    You are not testing the tool; you are building a map of where its confidence
+    and its competence come apart.
+  </Practice>
+  <Practice n="5" title="Defend the apprenticeship">
+    If you lead people: protect some junior work from automation on the explicit
+    grounds that it manufactures senior people. This is a real cost with a
+    delayed return, which is exactly why nobody will do it unless it is named
+    and defended out loud.
+  </Practice>
+</Practices>

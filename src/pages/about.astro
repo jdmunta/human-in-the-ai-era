@@ -1,0 +1,189 @@
+---
+import Base from '../layouts/Base.astro';
+
+const SOURCES = [
+  { g: 'Automation & judgment', items: [
+    'Bainbridge, L. (1983). “Ironies of Automation.” <em>Automatica</em> 19(6).',
+    'BEA France (2012). <em>Final Report on the accident to Airbus A330-203, flight AF447</em>.',
+    'Parasuraman, R. & Riley, V. (1997). “Humans and Automation: Use, Misuse, Disuse, Abuse.” <em>Human Factors</em> 39(2).',
+    'Skitka, L., Mosier, K. & Burdick, M. (1999). “Does automation bias decision-making?” <em>IJHCS</em> 51.',
+    'Dell’Acqua, F. et al. (2023). “Navigating the Jagged Technological Frontier.” Harvard Business School WP 24-013.',
+  ]},
+  { g: 'Responsibility', items: [
+    'Matthias, A. (2004). “The responsibility gap.” <em>Ethics and Information Technology</em> 6(3).',
+    'Elish, M. C. (2019). “Moral Crumple Zones.” <em>Engaging Science, Technology, and Society</em> 5.',
+  ]},
+  { g: 'Meaning & purpose', items: [
+    'Jahoda, M., Lazarsfeld, P. & Zeisel, H. (1933). <em>Marienthal: The Sociography of an Unemployed Community</em>.',
+    'Frankl, V. (1946). <em>Man’s Search for Meaning</em>.',
+    'Weber, M. (1905). <em>The Protestant Ethic and the Spirit of Capitalism</em>.',
+    'Keynes, J. M. (1930). “Economic Possibilities for our Grandchildren.”',
+    'Deci, E. & Ryan, R. — self-determination theory (autonomy, competence, relatedness).',
+  ]},
+  { g: 'Curiosity & learning', items: [
+    'Loewenstein, G. (1994). “The Psychology of Curiosity.” <em>Psychological Bulletin</em> 116(1).',
+    'Bjork, R. A. & Bjork, E. L. — desirable difficulties; spacing, interleaving, retrieval practice.',
+    'Roediger, H. & Karpicke, J. (2006). “Test-Enhanced Learning.” <em>Psychological Science</em> 17(3).',
+    'Bloom, B. (1984). “The 2 Sigma Problem.” <em>Educational Researcher</em> 13(6). <span class="caveat">Magnitude widely disputed; direction is not.</span>',
+    'Caplan, B. (2018). <em>The Case Against Education</em>.',
+  ]},
+  { g: 'Cognition & offloading', items: [
+    'Clark, A. & Chalmers, D. (1998). “The Extended Mind.” <em>Analysis</em> 58(1).',
+    'Sparrow, B., Liu, J. & Wegner, D. (2011). “Google Effects on Memory.” <em>Science</em> 333.',
+    'Risko, E. & Gilbert, S. (2016). “Cognitive Offloading.” <em>Trends in Cognitive Sciences</em> 20(9).',
+    'Plato, <em>Phaedrus</em> (the complaint against writing); Aristotle, <em>Nicomachean Ethics</em> (phronesis).',
+  ]},
+  { g: 'Work & economy', items: [
+    'Autor, D. (2015). “Why Are There Still So Many Jobs?” <em>Journal of Economic Perspectives</em> 29(3).',
+    'Acemoglu, D. & Restrepo, P. — the task framework; displacement vs. reinstatement effects.',
+    'Bessen, J. (2015). <em>Learning by Doing</em> — the ATM and bank teller case.',
+  ]},
+  { g: 'Civilization', items: [
+    'Sen, A. (1999). <em>Development as Freedom</em>; Nussbaum, M. (2011). <em>Creating Capabilities</em>.',
+    'Illich, I. (1973). <em>Tools for Conviviality</em>.',
+    'Kuznets, S. (1934). US Congress national income report — the original warning about GDP as a welfare measure.',
+  ]},
+];
+---
+
+<Base
+  title="About & method — Human in the AI Era"
+  description="How this site argues, what it relies on, what it is uncertain about, and the sources behind every claim."
+>
+  <div class="wrap">
+    <header class="ahead">
+      <p class="label">Colophon</p>
+      <h1>About &amp; method</h1>
+    </header>
+
+    <div class="body">
+      <h2>What this is</h2>
+      <p>
+        A working argument about how human beings live well when thinking,
+        reasoning and cognitive labour are increasingly performed by machines.
+        Eleven essays, a delegation framework, and a self-assessment. It is not
+        a news site and it is not futurism — it does not forecast capability, and
+        nothing in it depends on a particular timeline being right.
+      </p>
+
+      <h2>How it argues</h2>
+      <p>Every essay follows the same discipline:</p>
+      <ol class="method">
+        <li><strong>State a claim</strong> that could be false, in one paragraph, marked as such.</li>
+        <li><strong>Give the evidence</strong> it rests on, named, with its weaknesses stated where they exist.</li>
+        <li><strong>State the strongest objection</strong> as its best proponent would state it — not a convenient version.</li>
+        <li><strong>Answer it, or concede.</strong> Several pages concede. <a class="link" href="/topics/steelman">One entire page</a> is objections.</li>
+        <li><strong>End with practices</strong> that are specific enough to do on a Tuesday.</li>
+      </ol>
+
+      <h2>What it is uncertain about</h2>
+      <p>
+        Stated plainly, because a site arguing for calibration should be
+        calibrated. We do not know whether this technology differs in kind from
+        writing, printing and the calculator, or whether that belief is what
+        every generation holds about its own tools — the base rate for this
+        genre of alarm is poor, and we could be part of it. We do not know
+        whether AI companionship will bridge people toward human contact or
+        away from it. We do not know how much of the graduate wage premium is
+        signalling. Where the evidence is correlational or contested, the pages
+        say so rather than rounding up.
+      </p>
+
+      <h2>Design</h2>
+      <p>
+        The two-colour system is load-bearing rather than decorative. Teal marks
+        the machine end of every scale and sienna marks the human end; the
+        <a class="link" href="/ladder">Delegation Ladder</a> interpolates between
+        them, and the same axis runs through the audit results. Set in Fraunces,
+        Newsreader and IBM Plex Mono. Built with Astro, no client-side framework;
+        the only JavaScript on the site is the theme toggle, the reading
+        progress bar, and the audit's scoring — which runs locally and transmits
+        nothing.
+      </p>
+
+      <h2>Contributing</h2>
+      <p>
+        The source is on
+        <a class="link" href="https://github.com/jdmunta/human-in-the-ai-era" rel="noopener">GitHub</a>.
+        The most valuable contribution is a better objection: if you can break an
+        argument here, open an issue and it goes on the
+        <a class="link" href="/topics/steelman">steelman page</a> with attribution.
+        Corrections to sources are equally welcome.
+      </p>
+
+      <h2 id="sources">Sources</h2>
+      <p>
+        Everything the essays rely on, by area. Where a figure is famous but
+        contested, the caveat is noted here as well as in the text.
+      </p>
+
+      {
+        SOURCES.map((s) => (
+          <section class="srcgroup">
+            <p class="label">{s.g}</p>
+            <ul>
+              {s.items.map((i) => (
+                <li set:html={i} />
+              ))}
+            </ul>
+          </section>
+        ))
+      }
+    </div>
+  </div>
+</Base>
+
+<style>
+  .ahead { padding-block: clamp(3rem, 7vw, 5rem) 1.5rem; }
+  .ahead h1 { font-size: var(--t-h1); margin-top: 1rem; }
+  .body { max-width: var(--measure); padding-bottom: 5rem; }
+  .body h2 {
+    font-family: var(--display);
+    font-size: var(--t-h2);
+    margin-block: 2.8rem 0.9rem;
+    max-width: 22ch;
+  }
+  .body h2::before {
+    content: '';
+    display: block;
+    width: 2.4rem; height: 2px;
+    background: var(--human);
+    margin-bottom: 1.1rem;
+  }
+  .body > p { margin-bottom: 1.1em; }
+  .method { list-style: none; padding: 0; margin: 1.2rem 0 0; counter-reset: m; }
+  .method li {
+    counter-increment: m;
+    position: relative;
+    padding: 0.75rem 0 0.75rem 2.4rem;
+    border-bottom: 1px solid var(--rule);
+    color: var(--ink-soft);
+  }
+  .method li:first-child { border-top: 1px solid var(--rule); }
+  .method li strong { color: var(--ink); }
+  .method li::before {
+    content: counter(m, decimal-leading-zero);
+    position: absolute; left: 0; top: 1.05rem;
+    font-family: var(--mono);
+    font-size: var(--t-micro);
+    color: var(--human);
+  }
+  .srcgroup { margin-top: 2rem; }
+  .srcgroup .label { color: var(--human); display: block; margin-bottom: 0.8rem; }
+  .srcgroup ul { list-style: none; padding: 0; }
+  .srcgroup li {
+    padding: 0.6rem 0;
+    border-bottom: 1px solid var(--rule);
+    font-size: 0.92rem;
+    line-height: 1.55;
+    color: var(--ink-soft);
+  }
+  .srcgroup li:first-child { border-top: 1px solid var(--rule); }
+  .srcgroup :global(.caveat) {
+    display: block;
+    font-family: var(--mono);
+    font-size: var(--t-micro);
+    color: var(--machine);
+    margin-top: 0.3rem;
+  }
+</style>

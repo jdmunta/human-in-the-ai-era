@@ -1,0 +1,189 @@
+---
+order: 5
+title: You Cannot Delegate Accountability
+kicker: Responsibility
+tension: Machines can take the decision. They cannot take the answerability — so it lands on whoever is standing closest, whether or not they could have prevented anything.
+summary: The responsibility gap, the moral crumple zone, and why "human in the loop" is usually accountability theatre. A test for telling real oversight from the decorative kind.
+reading: 9 min
+---
+
+import Lede from '../../components/Lede.astro';
+import Claim from '../../components/Claim.astro';
+import Counter from '../../components/Counter.astro';
+import Sidenote from '../../components/Sidenote.astro';
+import Practices from '../../components/Practices.astro';
+import Practice from '../../components/Practice.astro';
+import Ladder from '../../components/Ladder.astro';
+import Table from '../../components/Table.astro';
+
+<Lede>
+Delegation moves two things that we habitually treat as one: the *doing* and the
+*answering for it*. Machines take the first eagerly and cannot take the second at
+all. A model has no interests to set back, nothing to lose, and no capacity to
+be sorry. So the answerability does not vanish when the work is delegated. It
+stays in the room, looking for a human to attach to.
+</Lede>
+
+## The responsibility gap
+
+The philosopher Andreas Matthias named the problem in 2004, before it was
+urgent. As systems become more autonomous and more adaptive, we approach a
+condition where *nobody* satisfies the traditional conditions for being held
+responsible. The manufacturer could not have predicted the specific behaviour,
+because the system learns. The operator could not have controlled it, because it
+acts faster than review allows and in ways the operator does not understand. The
+system itself is not a moral agent.
+
+Harm occurs. The conditions for fair attribution are met by no one. That is the
+gap.
+
+<Sidenote>
+Matthias, "The responsibility gap: Ascribing responsibility for the actions of
+learning automata" (2004). Written about industrial robots; it reads now like it
+was written last year.
+</Sidenote>
+
+Societies do not tolerate gaps like this for long. Blame is not a philosophical
+luxury; it is load-bearing social infrastructure. When there is no principled
+place to put it, it does not evaporate. It goes somewhere unprincipled.
+
+## The moral crumple zone
+
+Madeleine Clare Elish gave the phenomenon its name. In a car, a crumple zone is
+the region engineered to absorb the force of an impact, protecting what is
+behind it. In a highly automated system, the human operator frequently plays the
+same role: they absorb the moral and legal force of a failure they had no
+meaningful capacity to prevent, protecting the system, its designers and its
+deployers from scrutiny.
+
+The pattern is consistent. The operator is nominally in charge, structurally
+powerless, and blamed first.
+
+<Sidenote>
+Elish, "Moral Crumple Zones: Cautionary Tales in Human-Robot Interaction"
+(2019). The Three Mile Island and Air France 447 investigations are her
+recurring examples of the pattern being named and then repeated.
+</Sidenote>
+
+You can see it forming now in ordinary offices. A model generates a risk
+assessment, a hiring shortlist, a set of clinical recommendations, a piece of
+production code. A person clicks approve — one of forty they will click that
+afternoon, with no realistic capacity to reconstruct the reasoning behind any of
+them. When something goes wrong, that click is the fact everyone points to. It
+was a signature. It was never an oversight mechanism.
+
+<Claim label="The claim">
+<p>
+"Human in the loop" is not a safeguard. It is a <em>slot</em>, and the slot is
+satisfied by a person who can technically say no. Whether it protects anyone
+depends entirely on three things nobody usually checks: whether the human has
+the information to disagree, the time to disagree, and the standing to disagree
+without penalty. Absent any one of them you have not built oversight. You have
+built a crumple zone and installed a colleague in it.
+</p>
+</Claim>
+
+## The three-question test
+
+Before accepting a role in an automated decision — or designing one for someone
+else — run this. It takes a minute and it is the most practically useful thing
+on this page.
+
+<Table>
+<thead>
+<tr><th>Question</th><th>If the answer is no</th></tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Information.</strong> Can I reconstruct enough of why the system produced this to identify a specific reason it might be wrong?</td>
+<td>You are rubber-stamping. Your approval carries no epistemic content and should carry no liability.</td>
+</tr>
+<tr>
+<td><strong>Time.</strong> Given my actual volume, do I have the minutes each decision genuinely requires?</td>
+<td>The system is designed for throughput, not review. The review step is decorative and everyone above you knows it.</td>
+</tr>
+<tr>
+<td><strong>Standing.</strong> If I reject this, what happens to me? Have overrides here ever survived?</td>
+<td>You have responsibility without authority — the exact definition of a crumple zone.</td>
+</tr>
+</tbody>
+</Table>
+
+If any answer is no, the correct move is not to work harder at reviewing. It is
+to say so, in writing, to whoever owns the process. That sentence is often
+career-uncomfortable, which is precisely why it is the substantive act rather
+than the diligent clicking.
+
+## Many hands, and the softening of harm
+
+There is a second mechanism, older than automation and amplified by it. Harm
+mediated through a long chain of contributors is easier to cause, because each
+link can honestly say they only did a part. Add a machine to the chain and it
+absorbs the residual discomfort beautifully — it is the ideal recipient of blame
+precisely because it cannot be hurt by receiving it.
+
+"The model flagged it." "The system scored them out." "That's what the tool
+recommended." These are not explanations. They are the sound of a decision
+losing its author. Watch for the grammatical tell: when consequential sentences
+in your organisation start losing their subjects, responsibility has already
+diffused past the point where anyone can hold it.
+
+<Counter label="The strongest objection">
+<p>
+"Outcomes are what matter, not the tidiness of blame. If an automated system
+halves the error rate, insisting on a clearly accountable human is moral
+bookkeeping that costs real lives at the margin. We accept diffuse
+responsibility everywhere — in supply chains, in pharmaceuticals, in
+governments — and we manage it with institutions rather than with individual
+answerability. Demanding a nameable culprit is a psychological need, not a
+safety mechanism."
+</p>
+</Counter>
+
+The premise is right and the conclusion does not follow. Accountability is not
+primarily about post-hoc punishment; it is the mechanism that generates the
+*pre-hoc care* which produces the good outcomes in the first place. Systems that
+nobody will answer for are systems that nobody stress-tests. The correct target
+of the objection is *individual scapegoating*, and the fix is to place
+accountability where the power actually sits — with the people who chose to
+deploy the system, set its thresholds and staffed its review — rather than to
+abandon accountability altogether.
+
+## Where responsibility sits on the ladder
+
+Responsibility is the one dimension where the ladder inverts. On every other
+page, higher rungs mean more human involvement. Here, *the rung you operate on
+does not change your answerability at all* — and the mismatch is the danger.
+
+<Ladder
+  highlight={[2]}
+  caption="Rung two is where the crumple zones form: the machine holds the reasoning, the human holds the liability."
+  notes={{
+    1: 'Honest, if the deployer accepts the accountability explicitly. Ceding openly is safer than pretending to supervise.',
+    2: 'The danger zone. Approval rights without review capacity is the crumple-zone recipe. Most enterprise AI deployments live here.',
+    4: 'The only rung where signature and understanding reliably coincide.',
+  }}
+/>
+
+<Practices label="Practices">
+  <Practice n="1" title="Run the three-question test before you accept a review role">
+    Information, time, standing. Ask about all three before the deployment, not
+    after the incident. Nobody will volunteer the answers.
+  </Practice>
+  <Practice n="2" title="Distinguish 'reviewed' from 'approved' in writing">
+    If you did not have the capacity to review, record that you approved on the
+    basis of the system's output and note what you could not check. This is
+    unpopular and it is the single most protective habit available to a person in
+    the slot.
+  </Practice>
+  <Practice n="3" title="Keep the subject in the sentence">
+    Never write "the model decided." Write "I accepted the model's
+    recommendation." The grammar is not cosmetic; it is where responsibility
+    either persists or dissolves.
+  </Practice>
+  <Practice n="4" title="Ask who signs, and whether they can actually refuse">
+    For any AI system you deploy, name the accountable person and then verify
+    their refusal has teeth. If refusing is career-ending or throughput-breaking,
+    you do not have oversight — and you should say so before you need to.
+  </Practice>
+</Practices>

@@ -1,0 +1,20 @@
+---
+import Base from '../layouts/Base.astro';
+---
+<Base title="Not found — Human in the AI Era" description="That page does not exist.">
+  <div class="wrap nf">
+    <p class="label">404</p>
+    <h1>This page was not generated.</h1>
+    <p class="nf__p">
+      Which, on this site, is at least thematically appropriate. The
+      <a class="link" href="/topics">eleven essays</a> are all here, and so is
+      <a class="link" href="/ladder">the ladder</a>.
+    </p>
+  </div>
+</Base>
+
+<style>
+  .nf { padding-block: clamp(4rem, 14vw, 10rem); max-width: 40rem; }
+  .nf h1 { font-size: var(--t-h1); margin-block: 1rem 1.4rem; }
+  .nf__p { color: var(--ink-soft); font-size: 1.1rem; }
+</style>

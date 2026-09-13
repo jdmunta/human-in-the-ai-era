@@ -1,0 +1,256 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../layouts/Base.astro';
+
+const topics = (await getCollection('topics')).sort(
+  (a, b) => a.data.order - b.data.order
+);
+---
+
+<Base
+  title="Human in the AI Era — thriving when cognition is outsourced"
+  description="A working argument about meaning, purpose, curiosity, judgment and responsibility when thinking is delegated to machines. Eleven essays, a delegation framework, and a self-assessment."
+>
+  <section class="hero">
+    <div class="wrap">
+      <p class="label rise" style="animation-delay:.05s">
+        A working argument &nbsp;·&nbsp; Eleven essays &nbsp;·&nbsp; Updated 2026
+      </p>
+
+      <h1 class="hero__h rise" style="animation-delay:.14s">
+        Cognitive offloading is <span class="hero__em">ancient</span>.
+        Outsourcing <em class="hero__ital">judgment</em> about what is
+        worth thinking about is <span class="hero__new">new</span>.
+      </h1>
+
+      <div class="hero__body rise" style="animation-delay:.26s">
+        <p>
+          Writing, maps, calculators, search — we have handed cognition to tools
+          for three thousand years and mostly come out ahead. What is different
+          now is the <em>level</em> at which the handover happens. A calculator
+          answers a question you formulated. A model will formulate the
+          question, evaluate it, and return a conclusion.
+        </p>
+        <p>
+          This site is an argument about what that changes and what it does not.
+          It takes positions that could be wrong, cites what it relies on, and
+          keeps a page devoted to the strongest case against itself.
+        </p>
+        <p class="hero__cta">
+          <a class="link" href="#index">Read the eleven &darr;</a>
+          <span aria-hidden="true">&nbsp;&nbsp;/&nbsp;&nbsp;</span>
+          <a class="link" href="/audit">Take the audit</a>
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="axis">
+    <div class="wrap axis__inner">
+      <div class="axis__col">
+        <span class="label" style="color:var(--machine)">Machine</span>
+        <p>
+          Speed, recall, breadth, tirelessness, fluency, scale. Genuinely
+          superhuman and getting more so. Refusing it is not a strategy.
+        </p>
+      </div>
+      <div class="axis__bar" aria-hidden="true"></div>
+      <div class="axis__col">
+        <span class="label" style="color:var(--human)">Human</span>
+        <p>
+          Stakes, mortality, accountability, taste, being needed, and the
+          judgment of which considerations matter. Not a consolation prize — a
+          different category.
+        </p>
+      </div>
+    </div>
+    <div class="wrap">
+      <p class="axis__note">
+        Every essay ends by placing its subject on <a class="link" href="/ladder"
+          >the Delegation Ladder</a
+        > — five rungs from <em>cede entirely</em> to <em>reserve for yourself</em>.
+        Sienna and teal carry that axis across the whole site.
+      </p>
+    </div>
+  </section>
+
+  <section id="index" class="index">
+    <div class="wrap">
+      <div class="eyebrow"><span class="label">The Eleven</span></div>
+      <ol class="index__list">
+        {
+          topics.map((t, i) => (
+            <li class="entry">
+              <a href={`/topics/${t.id}`}>
+                <span class="entry__n">{String(t.data.order).padStart(2, '0')}</span>
+                <div class="entry__main">
+                  <span class="entry__kicker label">{t.data.kicker}</span>
+                  <h2 class="entry__title">{t.data.title}</h2>
+                  <p class="entry__tension">{t.data.tension}</p>
+                </div>
+                <span class="entry__meta label">{t.data.reading}</span>
+              </a>
+            </li>
+          ))
+        }
+      </ol>
+    </div>
+  </section>
+
+  <section class="pitch">
+    <div class="wrap pitch__inner">
+      <div>
+        <span class="label">Self-assessment</span>
+        <h2>Where are you actually standing?</h2>
+        <p>
+          Fifteen questions across judgment, curiosity, skill retention,
+          accountability and relationship. It returns a profile, not a score,
+          and it runs entirely in your browser — nothing is sent anywhere.
+        </p>
+        <p><a class="link" href="/audit">Take the Cognitive Autonomy Audit &rarr;</a></p>
+      </div>
+      <div>
+        <span class="label">Method</span>
+        <h2>How this site argues</h2>
+        <p>
+          Each essay states a claim, gives the evidence it rests on, then states
+          the strongest objection to itself and answers it or concedes. Sources
+          are named. Where the evidence is weak or contested, it says so.
+        </p>
+        <p><a class="link" href="/topics/steelman">Read the case against this site &rarr;</a></p>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .hero { padding-block: clamp(3.5rem, 9vw, 8rem) clamp(3rem, 6vw, 5rem); }
+  .hero__h {
+    font-size: var(--t-hero);
+    font-weight: 400;
+    font-variation-settings: 'SOFT' 8, 'WONK' 1;
+    letter-spacing: -0.035em;
+    line-height: 0.99;
+    margin-block: 1.6rem 2.6rem;
+    max-width: 17ch;
+    text-wrap: balance;
+  }
+  .hero__em { color: var(--machine); }
+  .hero__new { color: var(--human); }
+  .hero__ital {
+    font-style: italic;
+    font-variation-settings: 'SOFT' 40, 'WONK' 1;
+  }
+  .hero__body { max-width: 44ch; font-size: 1.06rem; }
+  .hero__body p { margin-bottom: 1rem; color: var(--ink-soft); }
+  .hero__body em { color: var(--ink); font-style: italic; }
+  .hero__cta {
+    margin-top: 1.8rem;
+    font-family: var(--mono);
+    font-size: var(--t-small);
+    letter-spacing: 0.04em;
+    color: var(--ink) !important;
+  }
+
+  /* Human / machine axis strip */
+  .axis {
+    border-block: 1px solid var(--rule);
+    padding-block: 2.6rem;
+    background: var(--paper-raised);
+  }
+  .axis__inner {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    gap: clamp(1.5rem, 4vw, 3.5rem);
+    align-items: center;
+  }
+  .axis__col p {
+    margin-top: 0.7rem;
+    font-size: 0.97rem;
+    line-height: 1.55;
+    color: var(--ink-soft);
+    max-width: 34ch;
+  }
+  .axis__bar {
+    width: clamp(2rem, 10vw, 9rem);
+    height: 3px;
+    background: linear-gradient(90deg, var(--machine), var(--human));
+  }
+  .axis__note {
+    margin-top: 2.2rem;
+    padding-top: 1.4rem;
+    border-top: 1px solid var(--rule);
+    font-size: 0.95rem;
+    color: var(--ink-soft);
+    max-width: 62ch;
+  }
+  @media (max-width: 760px) {
+    .axis__inner { grid-template-columns: 1fr; }
+    .axis__bar { width: 100%; }
+  }
+
+  /* Index */
+  .index { padding-block: clamp(3rem, 7vw, 5.5rem) 1rem; }
+  .index__list { list-style: none; margin: 0; padding: 0; }
+  .entry { border-bottom: 1px solid var(--rule); }
+  .entry:first-child { border-top: 1px solid var(--rule); }
+  .entry a {
+    display: grid;
+    grid-template-columns: 3.4rem 1fr auto;
+    gap: 0 1rem;
+    align-items: baseline;
+    padding: 1.7rem 0.6rem 1.7rem 0;
+    text-decoration: none;
+    transition: background 0.3s var(--ease), padding-left 0.3s var(--ease);
+  }
+  .entry a:hover {
+    background: var(--paper-raised);
+    padding-left: 0.8rem;
+  }
+  .entry__n {
+    font-family: var(--mono);
+    font-size: var(--t-micro);
+    color: var(--ink-faint);
+    letter-spacing: 0.08em;
+    font-variant-numeric: lining-nums;
+    transition: color 0.3s var(--ease);
+  }
+  .entry a:hover .entry__n { color: var(--human); }
+  .entry__kicker { display: block; margin-bottom: 0.45rem; }
+  .entry__title {
+    font-size: clamp(1.35rem, 1.1rem + 1.1vw, 2rem);
+    font-weight: 450;
+    margin-bottom: 0.5rem;
+    max-width: 26ch;
+    transition: color 0.3s var(--ease);
+  }
+  .entry a:hover .entry__title { color: var(--human); }
+  .entry__tension {
+    color: var(--ink-soft);
+    font-size: 1rem;
+    line-height: 1.5;
+    max-width: 60ch;
+  }
+  .entry__meta { white-space: nowrap; }
+  @media (max-width: 640px) {
+    .entry a { grid-template-columns: 2.4rem 1fr; }
+    .entry__meta { display: none; }
+  }
+
+  /* Closing pitch */
+  .pitch { padding-block: clamp(3.5rem, 7vw, 6rem); }
+  .pitch__inner {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(19rem, 1fr));
+    gap: clamp(2rem, 5vw, 4rem);
+    padding-top: 2.6rem;
+    border-top: 2px solid var(--ink);
+  }
+  .pitch h2 {
+    font-size: var(--t-h2);
+    margin-block: 0.8rem 0.8rem;
+    max-width: 18ch;
+  }
+  .pitch p { color: var(--ink-soft); margin-bottom: 0.9rem; max-width: 42ch; }
+  .pitch p:last-child { color: var(--ink); font-family: var(--mono); font-size: var(--t-small); }
+</style>

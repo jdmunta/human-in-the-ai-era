@@ -1,0 +1,8 @@
+---
+interface Props { label?: string }
+const { label = 'The strongest objection' } = Astro.props;
+---
+<aside class="counter">
+  <span class="label">{label}</span>
+  <slot />
+</aside>

@@ -1,0 +1,170 @@
+---
+import Base from '../layouts/Base.astro';
+import Ladder from '../components/Ladder.astro';
+import { getCollection } from 'astro:content';
+
+const topics = (await getCollection('topics')).sort(
+  (a, b) => a.data.order - b.data.order
+);
+
+const PLACEMENTS = [
+  { slug: 'meaning', rung: '5', why: 'A meaning you did not construct is not yours.' },
+  { slug: 'purpose', rung: '3 · 5', why: 'Choose the stake yourself; pursue it with every tool available.' },
+  { slug: 'curiosity', rung: '4', why: 'Guess first, then let the machine attack the guess.' },
+  { slug: 'judgment', rung: '4 · 5', why: 'Anything you would have to defend, you reach unaided first.' },
+  { slug: 'responsibility', rung: '2 ⚠', why: 'Rung two is where crumple zones form: liability without capacity.' },
+  { slug: 'cognitive-fitness', rung: '5', why: 'Scheduled unaided reps. Training load, not productivity.' },
+  { slug: 'education', rung: '4 · 5', why: 'Attempt, then adversarial critique. Reps through the hollowed middle.' },
+  { slug: 'relationships', rung: '5', why: 'Automate the gesture and you have voided the gesture.' },
+  { slug: 'work', rung: '2 · 3', why: 'Where the economic value is — and where your exposure is measured.' },
+  { slug: 'civilization', rung: '3 · 4', why: 'Machine-assisted analysis; human choice of what to value.' },
+];
+const byId = Object.fromEntries(topics.map((t) => [t.id, t.data]));
+---
+
+<Base
+  title="The Delegation Ladder — Human in the AI Era"
+  description="A five-rung rubric for deciding what to hand to a machine and what to keep: cede, approve, collaborate, critique, reserve."
+>
+  <div class="wrap">
+    <header class="lhead">
+      <p class="label">The framework</p>
+      <h1>The Delegation Ladder</h1>
+      <p class="lhead__sub">
+        Most advice about AI is binary — use it or don't. That framing is
+        useless, because the same person should be on different rungs for
+        different tasks in the same afternoon. This is the rubric the rest of
+        the site runs on.
+      </p>
+    </header>
+
+    <Ladder caption="Sienna and teal mark the axis: teal is machine-led, sienna is human-held. Every essay places its subject on these rungs." />
+
+    <div class="lbody">
+      <h2>How to choose a rung</h2>
+      <p>
+        Three questions, in order. They take under a minute and they resolve
+        most cases.
+      </p>
+
+      <ol class="rules">
+        <li>
+          <span class="rules__q">Can I verify the output independently and cheaply?</span>
+          <span class="rules__a">
+            If yes — arithmetic, a fact with a source, code with a test — rungs one
+            and two are fine. If verifying requires the very expertise the
+            machine replaced, you are in the
+            <a class="link" href="/topics/judgment">verification gap</a> and rungs
+            one and two are not available to you, however convenient they feel.
+          </span>
+        </li>
+        <li>
+          <span class="rules__q">Would I have to defend this?</span>
+          <span class="rules__a">
+            If your name goes on it, or a person is affected by it, rung four is
+            the floor. Form your own position, record it, <em>then</em> consult.
+            The sequencing is the whole safeguard — it neutralises commission
+            error, which is the dominant failure mode.
+          </span>
+        </li>
+        <li>
+          <span class="rules__q">Is this a skill I need to keep?</span>
+          <span class="rules__a">
+            Two tests: is it <strong>generative</strong> (does it build other
+            capacities), and is it required to <strong>evaluate its own
+            output</strong>? If both, budget rung-five reps on it deliberately.
+            If neither, delegate it without guilt — most skills are in this
+            category and pretending otherwise is just puritanism.
+          </span>
+        </li>
+      </ol>
+
+      <h2>The inversion on rung two</h2>
+      <p>
+        Rung two looks like the safe middle and is the most dangerous place on
+        the ladder. It is where you hold approval rights without review
+        capacity: the machine holds the reasoning, you hold the liability. Most
+        enterprise AI deployment lives here, and it is
+        <a class="link" href="/topics/responsibility">the crumple-zone recipe</a>.
+        Rung two is only honest when the three-question test passes — you have the
+        information to disagree, the time to disagree, and the standing to
+        disagree without penalty.
+      </p>
+
+      <h2>Where each topic lands</h2>
+      <div class="tablewrap">
+        <table>
+          <thead>
+            <tr><th>Topic</th><th>Rung</th><th>Why</th></tr>
+          </thead>
+          <tbody>
+            {
+              PLACEMENTS.map((p) => (
+                <tr>
+                  <td>
+                    <a class="link" href={`/topics/${p.slug}`}>
+                      {byId[p.slug]?.kicker ?? p.slug}
+                    </a>
+                  </td>
+                  <td style="white-space:nowrap; font-family:var(--mono); font-size:0.86rem">{p.rung}</td>
+                  <td>{p.why}</td>
+                </tr>
+              ))
+            }
+          </tbody>
+        </table>
+      </div>
+
+      <h2>What the ladder is not</h2>
+      <p>
+        It is not a moral ranking. Rung five is not virtuous and rung one is not
+        a failure — a great deal of what you do should be on rung one, and the
+        productivity of rung three is real and large. The ladder exists to make
+        the choice <em>explicit</em>, because the default is drift: everything
+        slides down toward rung one, one convenient decision at a time, and
+        nobody ever decides to let their judgment go.
+      </p>
+    </div>
+  </div>
+</Base>
+
+<style>
+  .lhead { padding-block: clamp(3rem, 7vw, 5rem) 1rem; max-width: 46rem; }
+  .lhead h1 { font-size: var(--t-h1); margin-block: 1rem 1.2rem; }
+  .lhead__sub { color: var(--ink-soft); max-width: 54ch; }
+  .lbody { max-width: var(--measure); padding-bottom: 5rem; }
+  .lbody h2 {
+    font-family: var(--display);
+    font-size: var(--t-h2);
+    margin-block: 3rem 0.9rem;
+    max-width: 22ch;
+  }
+  .lbody h2::before {
+    content: '';
+    display: block;
+    width: 2.4rem;
+    height: 2px;
+    background: var(--human);
+    margin-bottom: 1.1rem;
+  }
+  .lbody p { margin-bottom: 1.1em; }
+  .rules { list-style: none; padding: 0; margin: 1.6rem 0 0; counter-reset: r; }
+  .rules li {
+    counter-increment: r;
+    padding: 1.4rem 0 1.4rem 2.6rem;
+    border-bottom: 1px solid var(--rule);
+    position: relative;
+  }
+  .rules li:first-child { border-top: 1px solid var(--rule); }
+  .rules li::before {
+    content: counter(r, decimal-leading-zero);
+    position: absolute;
+    left: 0; top: 1.75rem;
+    font-family: var(--mono);
+    font-size: var(--t-micro);
+    color: var(--human);
+  }
+  .rules__q { display: block; font-weight: 620; margin-bottom: 0.45rem; }
+  .rules__a { display: block; color: var(--ink-soft); line-height: 1.6; }
+  .tablewrap { overflow-x: auto; margin-block: 1.6rem; }
+</style>

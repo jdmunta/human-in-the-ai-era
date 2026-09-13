@@ -1,0 +1,8 @@
+---
+interface Props { label?: string }
+const { label = 'The claim' } = Astro.props;
+---
+<aside class="claim">
+  <span class="label">{label}</span>
+  <slot />
+</aside>

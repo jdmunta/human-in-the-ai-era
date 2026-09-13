@@ -1,0 +1,104 @@
+---
+import { getCollection, render } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+
+export async function getStaticPaths() {
+  const topics = (await getCollection('topics')).sort(
+    (a, b) => a.data.order - b.data.order
+  );
+  return topics.map((entry, i) => ({
+    params: { slug: entry.id },
+    props: {
+      entry,
+      prev: topics[i - 1] ?? null,
+      next: topics[i + 1] ?? null,
+    },
+  }));
+}
+
+const { entry, prev, next } = Astro.props;
+const { Content } = await render(entry);
+const n = String(entry.data.order).padStart(2, '0');
+---
+
+<Base title={`${entry.data.title} — Human in the AI Era`} description={entry.data.summary} progress>
+  <article>
+    <header class="thead">
+      <div class="wrap">
+        <p class="thead__crumb">
+          <span class="label">{n}</span>
+          <span class="label thead__kicker">{entry.data.kicker}</span>
+          <span class="label">{entry.data.reading} read</span>
+        </p>
+        <h1>{entry.data.title}</h1>
+        <p class="thead__tension">{entry.data.tension}</p>
+      </div>
+    </header>
+
+    <div class="wrap">
+      <div class="prose">
+        <Content />
+
+        <nav class="pagenav" aria-label="Adjacent topics">
+          {
+            prev ? (
+              <a href={`/topics/${prev.id}`} class="is-prev">
+                <span class="label">&larr; Previous · {String(prev.data.order).padStart(2, '0')}</span>
+                <span class="pagenav__t">{prev.data.title}</span>
+              </a>
+            ) : (
+              <a href="/topics" class="is-prev">
+                <span class="label">&larr; All topics</span>
+                <span class="pagenav__t">Contents</span>
+              </a>
+            )
+          }
+          {
+            next ? (
+              <a href={`/topics/${next.id}`} class="is-next">
+                <span class="label">Next · {String(next.data.order).padStart(2, '0')} &rarr;</span>
+                <span class="pagenav__t">{next.data.title}</span>
+              </a>
+            ) : (
+              <a href="/audit" class="is-next">
+                <span class="label">Finish &rarr;</span>
+                <span class="pagenav__t">Take the audit</span>
+              </a>
+            )
+          }
+        </nav>
+      </div>
+    </div>
+  </article>
+</Base>
+
+<style>
+  .thead {
+    padding-block: clamp(2.6rem, 6vw, 4.5rem) clamp(2rem, 4vw, 3rem);
+    border-bottom: 1px solid var(--rule);
+    margin-bottom: clamp(2.2rem, 5vw, 3.5rem);
+  }
+  .thead__crumb {
+    display: flex;
+    gap: 1.1rem;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-bottom: 1.4rem;
+  }
+  .thead__kicker { color: var(--human); }
+  .thead h1 {
+    font-size: var(--t-h1);
+    font-weight: 420;
+    font-variation-settings: 'SOFT' 10, 'WONK' 1;
+    letter-spacing: -0.03em;
+    max-width: 19ch;
+  }
+  .thead__tension {
+    margin-top: 1.4rem;
+    max-width: 58ch;
+    color: var(--ink-soft);
+    font-size: 1.1rem;
+    line-height: 1.5;
+    font-style: italic;
+  }
+</style>

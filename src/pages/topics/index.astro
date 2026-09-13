@@ -1,0 +1,89 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+
+const topics = (await getCollection('topics')).sort(
+  (a, b) => a.data.order - b.data.order
+);
+---
+
+<Base
+  title="All topics — Human in the AI Era"
+  description="Eleven essays on meaning, purpose, curiosity, judgment, responsibility, cognitive fitness, education, relationships, work and civilization in the age of machine cognition."
+>
+  <div class="wrap">
+    <header class="phead">
+      <p class="label">Contents</p>
+      <h1>Eleven arguments, in the order they build.</h1>
+      <p class="phead__sub">
+        The first six concern the individual. The next three concern how you
+        learn, relate and earn. The tenth is collective. The eleventh tries to
+        take the other ten apart.
+      </p>
+    </header>
+
+    <ol class="list">
+      {
+        topics.map((t) => (
+          <li class="row">
+            <a href={`/topics/${t.id}`}>
+              <span class="row__n">{String(t.data.order).padStart(2, '0')}</span>
+              <div>
+                <span class="label row__k">{t.data.kicker}</span>
+                <h2>{t.data.title}</h2>
+                <p class="row__s">{t.data.summary}</p>
+              </div>
+              <span class="label row__t">{t.data.reading}</span>
+            </a>
+          </li>
+        ))
+      }
+    </ol>
+  </div>
+</Base>
+
+<style>
+  .phead { padding-block: clamp(3rem, 7vw, 5.5rem) 2.5rem; max-width: 46rem; }
+  .phead h1 {
+    font-size: var(--t-h1);
+    margin-block: 1rem 1.2rem;
+    max-width: 18ch;
+  }
+  .phead__sub { color: var(--ink-soft); max-width: 52ch; }
+
+  .list { list-style: none; margin: 0 0 5rem; padding: 0; }
+  .row { border-bottom: 1px solid var(--rule); }
+  .row:first-child { border-top: 1px solid var(--rule); }
+  .row a {
+    display: grid;
+    grid-template-columns: 3.4rem 1fr auto;
+    gap: 0 1rem;
+    align-items: baseline;
+    padding: 1.6rem 0.6rem 1.6rem 0;
+    text-decoration: none;
+    transition: background 0.3s var(--ease), padding-left 0.3s var(--ease);
+  }
+  .row a:hover { background: var(--paper-raised); padding-left: 0.8rem; }
+  .row__n {
+    font-family: var(--mono);
+    font-size: var(--t-micro);
+    color: var(--ink-faint);
+    letter-spacing: 0.08em;
+    font-variant-numeric: lining-nums;
+  }
+  .row a:hover .row__n { color: var(--human); }
+  .row__k { display: block; margin-bottom: 0.4rem; }
+  .row h2 {
+    font-size: 1.42rem;
+    font-weight: 480;
+    margin-bottom: 0.45rem;
+    transition: color 0.3s var(--ease);
+  }
+  .row a:hover h2 { color: var(--human); }
+  .row__s { color: var(--ink-soft); font-size: 0.98rem; line-height: 1.55; max-width: 64ch; }
+  .row__t { white-space: nowrap; }
+  @media (max-width: 640px) {
+    .row a { grid-template-columns: 2.4rem 1fr; }
+    .row__t { display: none; }
+  }
+</style>

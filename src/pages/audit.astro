@@ -1,0 +1,434 @@
+---
+import Base from '../layouts/Base.astro';
+
+const SCALE = [
+  'Strongly disagree',
+  'Disagree',
+  'Mixed',
+  'Agree',
+  'Strongly agree',
+];
+
+const DIMENSIONS = [
+  {
+    key: 'judgment',
+    name: 'Judgment',
+    topic: '/topics/judgment',
+    blurb:
+      'Whether you still form and defend your own conclusions on things that matter.',
+    questions: [
+      { t: 'Before asking a model about something consequential, I write down my own answer first.', r: false },
+      { t: 'I have accepted an AI-generated conclusion that I could not have independently verified.', r: true },
+      { t: 'In the last month I overruled a confident AI output and turned out to be right.', r: false },
+    ],
+    bands: [
+      'Your conclusions are largely arriving from outside you. The commission-error risk here is high, and it is invisible from the inside — fluent wrong answers do not feel wrong. Start with the ninety-second rule.',
+      'You are supervising some of the time and rubber-stamping the rest, which is the ordinary condition. The sequencing fix costs minutes: form your position before you see the output, on anything you would have to defend.',
+      'You are holding the line. The thing to protect from here is the practice that sustains it — judgment decays quietly through disuse, not through any decision you would notice making.',
+    ],
+  },
+  {
+    key: 'curiosity',
+    name: 'Curiosity',
+    topic: '/topics/curiosity',
+    blurb:
+      'Whether information gaps stay open long enough to become real questions.',
+    questions: [
+      { t: 'I look things up the instant I wonder about them, without guessing first.', r: true },
+      { t: 'I let questions sit unresolved for days because I want to work them out.', r: false },
+      { t: 'I ask what serious people disagree about, not just what the answer is.', r: false },
+    ],
+    bands: [
+      'The anaesthetic mode. Gaps are closing before they can mature into questions, so nothing is compounding into depth. Guess first — it is one habit and it flips the whole dynamic.',
+      'You get the amplifier sometimes and the anaesthetic the rest of the time. The variable is almost entirely whether you commit to a guess before you ask.',
+      'You are using it as an amplifier. This is the configuration where the tools genuinely make people formidable rather than merely well-informed.',
+    ],
+  },
+  {
+    key: 'retention',
+    name: 'Skill retention',
+    topic: '/topics/cognitive-fitness',
+    blurb:
+      'Whether the capacities that let you evaluate output are being maintained.',
+    questions: [
+      { t: 'I write the first draft of important things myself.', r: false },
+      { t: 'There is a skill I used to have that I would now struggle to perform unaided.', r: true },
+      { t: 'I regularly do work unassisted that I could easily have delegated.', r: false },
+    ],
+    bands: [
+      'Detraining. This is the slowest-moving and most expensive item on the audit, because the bill arrives at the exact moment you need the capability and cannot borrow it back.',
+      'Maintaining unevenly. Identify which of your skills are load-bearing for evaluating your own work — those are the ones that need scheduled reps.',
+      'Training rather than spending. Rare, and it is the position that compounds.',
+    ],
+  },
+  {
+    key: 'accountability',
+    name: 'Accountability',
+    topic: '/topics/responsibility',
+    blurb:
+      'Whether your name on a decision means anything you could defend.',
+    questions: [
+      { t: 'I approve AI-influenced outputs faster than I could meaningfully review them.', r: true },
+      { t: 'If I rejected the system’s recommendation, there would be no penalty for me.', r: false },
+      { t: 'I could explain, to someone affected by a decision I signed, why it was made.', r: false },
+    ],
+    bands: [
+      'You are in a crumple zone. You hold the liability and not the capacity to exercise it. The move is not to review harder — it is to say so in writing to whoever owns the process.',
+      'Partial oversight. Run the three-question test — information, time, standing — on your single highest-stakes approval and see which one fails.',
+      'Your signature carries content. Protect the conditions that make that true; they erode through volume long before anyone decides to remove them.',
+    ],
+  },
+  {
+    key: 'presence',
+    name: 'Presence',
+    topic: '/topics/relationships',
+    blurb:
+      'Whether you are depended upon, and whether your gestures still cost you anything.',
+    questions: [
+      { t: 'There is someone whose week would be materially worse if I disappeared.', r: false },
+      { t: 'I have used AI to generate a personal message to someone I care about.', r: true },
+      { t: 'I spend time in person with people when a call would have done.', r: false },
+    ],
+    bands: [
+      'The appetite nobody talks about — being needed — is going unfed. This tends to be read as a scheduling problem and is almost never one.',
+      'Present, but the costly signals are thinning. Cost is what the gesture was made of; efficiency here removes the thing you were trying to send.',
+      'Embedded and depended upon. This is the most robust position on the audit and the least discussed.',
+    ],
+  },
+];
+---
+
+<Base
+  title="Cognitive Autonomy Audit — Human in the AI Era"
+  description="Fifteen behavioural questions across judgment, curiosity, skill retention, accountability and presence. Returns a profile, not a score. Runs entirely in your browser."
+>
+  <div class="wrap">
+    <header class="ahead">
+      <p class="label">Self-assessment · 15 questions · ~4 minutes</p>
+      <h1>The Cognitive Autonomy Audit</h1>
+      <p class="ahead__sub">
+        Not a quiz about attitudes. Fifteen statements about what you actually
+        do, across the five dimensions this site argues are load-bearing. It
+        returns a shape rather than a score — your lowest dimension is your
+        exposure, and it is usually not the one you would have guessed.
+      </p>
+      <p class="ahead__privacy label">
+        Runs entirely in your browser. Nothing is transmitted, stored or logged.
+      </p>
+    </header>
+
+    <form id="audit">
+      {
+        DIMENSIONS.map((d, di) => (
+          <fieldset class="dim">
+            <legend>
+              <span class="label dim__key">{d.name}</span>
+              <span class="dim__blurb">{d.blurb}</span>
+            </legend>
+            {d.questions.map((q, qi) => (
+              <div class="q">
+                <p class="q__t">
+                  <span class="q__n">{di * 3 + qi + 1}</span>
+                  {q.t}
+                </p>
+                <div class="scale" role="radiogroup" aria-label={q.t}>
+                  {SCALE.map((s, si) => (
+                    <label class="opt">
+                      <input
+                        type="radio"
+                        name={`${d.key}-${qi}`}
+                        value={si}
+                        data-reverse={q.r ? '1' : '0'}
+                      />
+                      <span class="opt__dot" aria-hidden="true" />
+                      <span class="opt__l">{s}</span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </fieldset>
+        ))
+      }
+
+      <div class="submit">
+        <button type="submit" class="btn">See my profile</button>
+        <p class="label" id="count">0 of 15 answered</p>
+      </div>
+    </form>
+
+    <section id="results" hidden aria-live="polite">
+      <div class="eyebrow"><span class="label">Your profile</span></div>
+      <p class="rsum" id="rsum"></p>
+      <div id="rbars"></div>
+      <div class="submit">
+        <button type="button" class="btn btn--ghost" id="again">Start over</button>
+      </div>
+    </section>
+  </div>
+</Base>
+
+<script is:inline define:vars={{ DIMENSIONS }}>
+  (function () {
+    var form = document.getElementById('audit');
+    var results = document.getElementById('results');
+    var bars = document.getElementById('rbars');
+    var sum = document.getElementById('rsum');
+    var count = document.getElementById('count');
+    if (!form) return;
+
+    function answered() {
+      return form.querySelectorAll('input[type=radio]:checked').length;
+    }
+    function updateCount() {
+      var n = answered();
+      count.textContent = n + ' of 15 answered';
+      count.style.color = n === 15 ? 'var(--human)' : '';
+    }
+    form.addEventListener('change', updateCount);
+
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      if (answered() < 15) {
+        var first = null;
+        DIMENSIONS.forEach(function (d) {
+          d.questions.forEach(function (_q, qi) {
+            var name = d.key + '-' + qi;
+            if (!form.querySelector('input[name="' + name + '"]:checked') && !first) {
+              first = form.querySelector('input[name="' + name + '"]');
+            }
+          });
+        });
+        if (first) {
+          first.closest('.q').scrollIntoView({ block: 'center' });
+          first.closest('.q').classList.add('is-missing');
+          setTimeout(function () {
+            first.closest('.q').classList.remove('is-missing');
+          }, 2000);
+        }
+        return;
+      }
+
+      var scored = DIMENSIONS.map(function (d) {
+        var total = 0;
+        d.questions.forEach(function (q, qi) {
+          var el = form.querySelector('input[name="' + d.key + '-' + qi + '"]:checked');
+          var v = parseInt(el.value, 10);
+          total += q.r ? 4 - v : v;
+        });
+        // 0–12 → band 0 (0–4), 1 (5–8), 2 (9–12)
+        var band = total <= 4 ? 0 : total <= 8 ? 1 : 2;
+        return { d: d, total: total, band: band, pct: Math.round((total / 12) * 100) };
+      });
+
+      var weakest = scored.reduce(function (a, b) { return b.total < a.total ? b : a; });
+      var strongest = scored.reduce(function (a, b) { return b.total > a.total ? b : a; });
+      var overall = scored.reduce(function (a, b) { return a + b.total; }, 0);
+
+      var headline;
+      if (overall <= 20) {
+        headline =
+          'You have handed over more than you probably realise. That is the ordinary result and not a moral failing — every interface you use is built to produce it. The useful move is to pick one dimension, not five.';
+      } else if (overall <= 40) {
+        headline =
+          'A mixed picture, which is the honest place most people are. The pattern matters more than the total: what you are holding is being held deliberately, and what you are losing is being lost by default.';
+      } else {
+        headline =
+          'You are holding most of this. The risk at this end is not collapse but slow drift — these positions are maintained by practice, and practice is the thing that quietly stops.';
+      }
+
+      sum.textContent =
+        headline +
+        ' Your strongest dimension is ' + strongest.d.name.toLowerCase() +
+        '; your exposure is ' + weakest.d.name.toLowerCase() + '.';
+
+      bars.innerHTML = scored
+        .map(function (s) {
+          return (
+            '<div class="rbar' + (s.d.key === weakest.d.key ? ' is-weak' : '') + '">' +
+            '<div class="rbar__head">' +
+            '<span class="label">' + s.d.name + '</span>' +
+            '<span class="label rbar__score">' + s.total + ' / 12</span>' +
+            '</div>' +
+            '<div class="rbar__track"><div class="rbar__fill" style="width:' + s.pct + '%"></div></div>' +
+            '<p class="rbar__read">' + s.d.bands[s.band] + '</p>' +
+            '<p class="rbar__link"><a class="link" href="' + s.d.topic + '">Read ' + s.d.name.toLowerCase() + ' &rarr;</a></p>' +
+            '</div>'
+          );
+        })
+        .join('');
+
+      results.hidden = false;
+      form.hidden = true;
+      results.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+
+    document.getElementById('again').addEventListener('click', function () {
+      form.reset();
+      form.hidden = false;
+      results.hidden = true;
+      updateCount();
+      form.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  })();
+</script>
+
+<style>
+  .ahead { padding-block: clamp(3rem, 7vw, 5rem) 2.5rem; max-width: 46rem; }
+  .ahead h1 { font-size: var(--t-h1); margin-block: 1rem 1.2rem; max-width: 16ch; }
+  .ahead__sub { color: var(--ink-soft); max-width: 54ch; }
+  .ahead__privacy {
+    margin-top: 1.6rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--rule);
+    color: var(--machine);
+  }
+
+  .dim {
+    border: 0;
+    border-top: 2px solid var(--ink);
+    padding: 0;
+    margin: 0 0 2.5rem;
+  }
+  .dim legend { padding: 1.4rem 0 0.4rem; display: block; width: 100%; }
+  .dim__key { color: var(--human); display: block; margin-bottom: 0.4rem; }
+  .dim__blurb { color: var(--ink-soft); font-size: 0.97rem; max-width: 46ch; display: block; }
+
+  .q {
+    padding: 1.5rem 0;
+    border-bottom: 1px solid var(--rule);
+    transition: background 0.3s var(--ease);
+  }
+  .q.is-missing { background: var(--human-wash); }
+  .q__t { max-width: 58ch; margin-bottom: 1rem; display: flex; gap: 0.85rem; }
+  .q__n {
+    font-family: var(--mono);
+    font-size: var(--t-micro);
+    color: var(--ink-faint);
+    padding-top: 0.42em;
+    flex: none;
+    font-variant-numeric: lining-nums;
+  }
+
+  .scale {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 0.35rem;
+    max-width: 40rem;
+    margin-left: 1.7rem;
+  }
+  .opt {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    padding: 0.5rem 0.2rem;
+    border-radius: 3px;
+    transition: background 0.2s var(--ease);
+  }
+  .opt:hover { background: var(--paper-raised); }
+  .opt input { position: absolute; opacity: 0; width: 0; height: 0; }
+  .opt__dot {
+    width: 1.05rem;
+    height: 1.05rem;
+    border: 1.5px solid var(--rule-strong);
+    border-radius: 50%;
+    transition: all 0.2s var(--ease);
+    flex: none;
+  }
+  .opt:hover .opt__dot { border-color: var(--human); }
+  .opt input:checked + .opt__dot {
+    background: var(--human);
+    border-color: var(--human);
+    box-shadow: inset 0 0 0 3px var(--paper);
+  }
+  .opt input:focus-visible + .opt__dot { outline: 2px solid var(--human); outline-offset: 3px; }
+  .opt__l {
+    font-family: var(--mono);
+    font-size: 0.61rem;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    text-align: center;
+    line-height: 1.3;
+  }
+  .opt input:checked ~ .opt__l { color: var(--ink); }
+  @media (max-width: 620px) {
+    .scale { margin-left: 0; gap: 0.15rem; }
+    .opt__l { font-size: 0.53rem; }
+  }
+
+  .submit {
+    display: flex;
+    align-items: center;
+    gap: 1.4rem;
+    flex-wrap: wrap;
+    padding-block: 2rem 5rem;
+  }
+  .btn {
+    font-family: var(--mono);
+    font-size: var(--t-small);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    background: var(--ink);
+    color: var(--paper);
+    border: 1px solid var(--ink);
+    padding: 0.9rem 1.8rem;
+    cursor: pointer;
+    transition: background 0.25s var(--ease), color 0.25s var(--ease);
+  }
+  .btn:hover { background: var(--human); border-color: var(--human); color: #fff; }
+  .btn--ghost { background: transparent; color: var(--ink); }
+
+  .rsum {
+    font-size: 1.16rem;
+    line-height: 1.5;
+    max-width: 58ch;
+    margin-bottom: 2.6rem;
+  }
+  /* Result rows are injected via innerHTML after build, so they never carry
+     Astro's scoped data attribute. These rules must be global to reach them. */
+  :global(.rbar) {
+    padding: 1.6rem 0;
+    border-bottom: 1px solid var(--rule);
+  }
+  :global(.rbar:first-child) { border-top: 1px solid var(--rule); }
+  :global(.rbar__head) {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 1rem;
+    margin-bottom: 0.7rem;
+  }
+  :global(.rbar__score) { color: var(--ink-faint); }
+  :global(.rbar__track) {
+    height: 4px;
+    background: var(--paper-sunk);
+    margin-bottom: 1rem;
+  }
+  :global(.rbar__fill) {
+    height: 100%;
+    background: linear-gradient(90deg, var(--machine), var(--human));
+    transition: width 0.9s var(--ease);
+  }
+  :global(.rbar__read) { max-width: 62ch; color: var(--ink-soft); line-height: 1.55; }
+  :global(.rbar__link) {
+    margin-top: 0.7rem;
+    font-family: var(--mono);
+    font-size: var(--t-small);
+  }
+  :global(.rbar.is-weak .rbar__head .label:first-child) { color: var(--human); }
+  :global(.rbar.is-weak::after) {
+    content: 'Your exposure';
+    display: inline-block;
+    font-family: var(--mono);
+    font-size: var(--t-micro);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--human);
+    border: 1px solid var(--human);
+    padding: 0.2rem 0.5rem;
+    margin-top: 0.9rem;
+  }
+</style>
