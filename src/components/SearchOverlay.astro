@@ -37,6 +37,8 @@
     if (!ovl) return;
 
     var data = null, loading = null, sel = -1, rows = [];
+    var lastFocused = null;
+    var shell = document.querySelector('.shell');
 
     function load() {
       if (data) return Promise.resolve(data);
@@ -50,15 +52,21 @@
     }
 
     function open() {
+      lastFocused = document.activeElement;
       ovl.hidden = false;
       document.body.style.overflow = 'hidden';
+      // Hide the page behind from assistive tech and from tabbing.
+      if (shell) shell.inert = true;
       load().then(function () { if (input.value) run(); });
       setTimeout(function () { input.focus(); input.select(); }, 20);
     }
     function close() {
       ovl.hidden = true;
       document.body.style.overflow = '';
+      if (shell) shell.inert = false;
       sel = -1;
+      // Return focus where it came from, per dialog conventions.
+      if (lastFocused && lastFocused.focus) lastFocused.focus();
     }
 
     function esc(s) {
@@ -171,6 +179,13 @@
       var typing = /^(INPUT|TEXTAREA|SELECT)$/.test(document.activeElement.tagName);
       if (!ovl.hidden) {
         if (e.key === 'Escape') { e.preventDefault(); close(); }
+        else if (e.key === 'Tab') {
+          var focusables = ovl.querySelectorAll('input, button, a[href]');
+          if (!focusables.length) return;
+          var first = focusables[0], last = focusables[focusables.length - 1];
+          if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+          else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+        }
         else if (e.key === 'ArrowDown') { e.preventDefault(); sel = Math.min(sel + 1, rows.length - 1); paint(); }
         else if (e.key === 'ArrowUp') { e.preventDefault(); sel = Math.max(sel - 1, 0); paint(); }
         else if (e.key === 'Enter' && rows[sel]) { e.preventDefault(); rows[sel].click(); }

@@ -4,6 +4,46 @@
    Semantic colour axis: sienna = human, teal = machine.
    ============================================================ */
 
+/* ---------- 0. Fonts (self-hosted) ----------
+   Served from this origin rather than Google. Browsers partition the HTTP
+   cache by site, so a third-party CDN buys no cross-site reuse any more —
+   it only adds DNS, TLS and a render-blocking stylesheet on the critical path. */
+@font-face {
+  font-family: 'Fraunces';
+  src: url('/fonts/fraunces-var.woff2') format('woff2-variations');
+  font-weight: 300 700;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Newsreader';
+  src: url('/fonts/newsreader-var.woff2') format('woff2-variations');
+  font-weight: 300 600;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Newsreader';
+  src: url('/fonts/newsreader-var-italic.woff2') format('woff2-variations');
+  font-weight: 300 500;
+  font-style: italic;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'IBM Plex Mono';
+  src: url('/fonts/plexmono-400.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'IBM Plex Mono';
+  src: url('/fonts/plexmono-500.woff2') format('woff2');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
 /* ---------- 1. Tokens ---------- */
 :root {
   /* Paper & ink (light is the default, this is a reading site) */

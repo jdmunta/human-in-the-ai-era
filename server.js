@@ -19,6 +19,12 @@ app.use(
   })
 );
 
+// Fonts never change at these paths; treat them like hashed assets.
+app.use(
+  '/fonts',
+  express.static(path.join(dist, 'fonts'), { immutable: true, maxAge: '1y' })
+);
+
 // Everything else (HTML, sitemap, favicon) must revalidate so content
 // updates are visible immediately after a deploy.
 app.use(

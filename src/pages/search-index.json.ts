@@ -39,6 +39,8 @@ export async function GET() {
   const pages = [
     { slug: 'ladder', title: 'The Delegation Ladder', kicker: 'Framework',
       summary: 'Five rungs from cede to reserve, and how to choose one.', path: '/ladder' },
+    { slug: 'map', title: 'The argument map', kicker: 'Reference',
+      summary: 'How the thirteen essays depend on each other: which claim is load-bearing for which.', path: '/map' },
     { slug: 'read', title: 'The whole argument', kicker: 'Reference',
       summary: 'All thirteen essays on a single page, for reading offline, printing or saving as a PDF.', path: '/read' },
     { slug: 'you', title: 'Where you stand', kicker: 'Tool',

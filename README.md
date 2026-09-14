@@ -40,6 +40,7 @@ in it depends on a particular timeline being right.
 |---|---|
 | `/playbook` | All 58 practices from the essays in one filterable list — by cadence (in the moment / scheduled / review / standing / structural) and by topic. Tick off what you've adopted; kept in `localStorage`. |
 | `/reflect` | 64 questions turned on the reader, one set per essay, answered privately in `localStorage` with a copy-as-markdown export. Each essay also closes with its own set inline. |
+| `/map` | The argument's dependency structure — which claim is load-bearing for which, hand-authored in `src/data/map.ts` and rendered as inline SVG with a text equivalent below it. |
 | `/read` | Every essay on one page, for reading offline, printing or saving as a PDF. |
 | `/you` | Where you stand — essays read, practices adopted, reflections answered and your last audit, assembled from `localStorage` alone. |
 | `/judging` | The Judgment Checklist — 23 questions staged from framing to accountability, filtered by a reversible/silent 2×2 that sets how much scrutiny the decision warrants. |
@@ -75,7 +76,8 @@ whole page is objections.
 - Custom CSS design system (`src/styles/global.css`). Two-colour semantic axis:
   **teal = machine, sienna = human**; the Delegation Ladder interpolates between
   them
-- Type: Fraunces (display), Newsreader (body), IBM Plex Mono (labels)
+- Type: Fraunces (display), Newsreader (body), IBM Plex Mono (labels) — self-hosted
+  woff2 in `public/fonts`, so the site makes no third-party requests at all
 - Served by a ~40-line Express static server (`server.js`) so Railway gets a
   proper `PORT` binding, hashed-asset caching and a `/healthz` endpoint
 - Total client JavaScript: theme toggle, reading-progress bar, audit scoring

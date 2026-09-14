@@ -50,15 +50,14 @@ const nPractices = PRACTICES.filter((p) => p.inPlaybook).length;
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={new URL(`/og/${ogSlug}.png`, Astro.site)} />
     <link rel="sitemap" href="/sitemap-index.xml" />
+    <link rel="manifest" href="/site.webmanifest" />
     <link rel="alternate" type="application/rss+xml" title="Human in the AI Era" href="/rss.xml" />
     {jsonLd && <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />}
 
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT,WONK@9..144,300..700,0..100,0..1&family=Newsreader:ital,opsz,wght@0,6..72,300..600;1,6..72,300..500&family=IBM+Plex+Mono:wght@400;500&display=swap"
-    />
+    <link rel="preload" as="font" type="font/woff2" href="/fonts/newsreader-var.woff2" crossorigin />
+    <link rel="preload" as="font" type="font/woff2" href="/fonts/fraunces-var.woff2" crossorigin />
+    <meta name="theme-color" content="#f2eee4" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#100f0c" media="(prefers-color-scheme: dark)" />
 
     <link
       rel="icon"
@@ -135,6 +134,7 @@ const nPractices = PRACTICES.filter((p) => p.inPlaybook).length;
             <p class="label" style="margin-bottom:0.9rem">Read</p>
             <ul>
               <li><a href="/topics">All topics</a></li>
+              <li><a href="/map">The argument map</a></li>
               <li><a href="/read">The whole argument, one page</a></li>
               <li><a href="/playbook">The Playbook &mdash; {nPractices} practices</a></li>
               <li><a href="/judging">The Judgment Checklist</a></li>

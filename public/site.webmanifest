@@ -1,0 +1,10 @@
+{
+  "name": "Human in the AI Era",
+  "short_name": "Human",
+  "description": "How humans thrive when cognition is outsourced to machines.",
+  "start_url": "/",
+  "display": "browser",
+  "background_color": "#f2eee4",
+  "theme_color": "#f2eee4",
+  "icons": []
+}

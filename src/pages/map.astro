@@ -1,0 +1,275 @@
+---
+import Base from '../layouts/Base.astro';
+import { NODES, EDGES, TRACKS } from '../data/map';
+import { getCollection } from 'astro:content';
+
+const topics = await getCollection('topics');
+const meta = Object.fromEntries(topics.map((t) => [t.id, t.data]));
+
+const W = 132, H = 46;
+const pos = Object.fromEntries(NODES.map((n) => [n.slug, n]));
+
+/** Route an edge from the right edge of one box to the left edge of the next,
+ *  or vertically when the boxes sit in the same column. */
+function edgePath(from: string, to: string) {
+  const a = pos[from], b = pos[to];
+  const sameCol = Math.abs(a.x - b.x) < 4;
+  if (sameCol) {
+    const x = a.x + W / 2;
+    const y1 = a.y < b.y ? a.y + H : a.y;
+    const y2 = a.y < b.y ? b.y : b.y + H;
+    return `M ${x} ${y1} L ${x} ${y2}`;
+  }
+  const left = a.x < b.x ? a : b;
+  const right = a.x < b.x ? b : a;
+  const x1 = left.x + W, y1 = left.y + H / 2;
+  const x2 = right.x, y2 = right.y + H / 2;
+  const dx = Math.max(30, (x2 - x1) * 0.55);
+  return `M ${x1} ${y1} C ${x1 + dx} ${y1}, ${x2 - dx} ${y2}, ${x2} ${y2}`;
+}
+
+/** Place the label in the gap between the two boxes, never over them. */
+function midpoint(from: string, to: string) {
+  const a = pos[from], b = pos[to];
+  if (Math.abs(a.x - b.x) < 4) {
+    return { x: a.x + W / 2, y: (Math.max(a.y, b.y) + Math.min(a.y, b.y) + H) / 2 + 3 };
+  }
+  const left = a.x < b.x ? a : b;
+  const right = a.x < b.x ? b : a;
+  return {
+    x: (left.x + W + right.x) / 2,
+    y: (left.y + right.y) / 2 + H / 2 - 7,
+  };
+}
+---
+
+<Base
+  title="The argument map — Human in the AI Era"
+  description="How the thirteen essays depend on each other: which claim is load-bearing for which, and the specific idea that carries the weight on each link."
+  ogSlug="map"
+>
+  <div class="wrap">
+    <header class="mhead">
+      <p class="label">Structure</p>
+      <h1>How the argument holds together.</h1>
+      <p class="mhead__sub">
+        The essays are numbered in reading order, but they do not depend on each
+        other in that order. An arrow here means <em>this claim is load-bearing
+        for that one</em>, and each is labelled with the specific idea doing the
+        carrying. Hover a box to isolate what it rests on and what rests on it.
+      </p>
+      <ul class="tracks">
+        {
+          TRACKS.map((t) => (
+            <li class={`track track--${t.id}`}>
+              <span class="track__dot" aria-hidden="true" />
+              <span><strong>{t.name}</strong> {t.gloss}</span>
+            </li>
+          ))
+        }
+      </ul>
+    </header>
+
+    <figure class="mapwrap">
+      <svg viewBox="0 0 960 620" role="img" aria-labelledby="maptitle" class="map">
+        <title id="maptitle">Dependency map of the thirteen essays</title>
+        <defs>
+          <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5"
+                  markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M 0 0 L 10 5 L 0 10 z" class="arrowhead" />
+          </marker>
+        </defs>
+
+        <g class="edges">
+          {
+            EDGES.map((e) => (
+              <g class:list={['edge', { 'is-dashed': e.dashed }]} data-from={e.from} data-to={e.to}>
+                <path d={edgePath(e.from, e.to)} marker-end="url(#arrow)" />
+                <text x={midpoint(e.from, e.to).x} y={midpoint(e.from, e.to).y}>{e.label}</text>
+              </g>
+            ))
+          }
+        </g>
+
+        <g class="nodes">
+          {
+            NODES.map((n) => (
+              <a href={`/topics/${n.slug}`} class={`node node--${n.track}`} data-slug={n.slug}>
+                <rect x={n.x} y={n.y} width={W} height={H} rx="1" />
+                <text class="node__n" x={n.x + 10} y={n.y + 17}>
+                  {String(n.n).padStart(2, '0')}
+                </text>
+                <text class="node__l" x={n.x + 10} y={n.y + 32}>{n.label}</text>
+              </a>
+            ))
+          }
+        </g>
+      </svg>
+      <figcaption>
+        Reading it: everything on the left of the hinge maintains judgment;
+        everything on the right is what fails when it goes. The lower track runs
+        independently — meaning does not depend on the machine argument at all,
+        which is the point of putting it first.
+      </figcaption>
+    </figure>
+
+    <section class="mlist">
+      <div class="eyebrow"><span class="label">The same thing in words</span></div>
+      <ol>
+        {
+          EDGES.filter((e) => !e.dashed).map((e) => (
+            <li>
+              <a href={`/topics/${e.from}`}>{meta[e.from]?.kicker ?? e.from}</a>
+              <span class="mlist__via">{e.label}</span>
+              <a href={`/topics/${e.to}`}>{meta[e.to]?.kicker ?? e.to}</a>
+            </li>
+          ))
+        }
+      </ol>
+    </section>
+  </div>
+</Base>
+
+<script is:inline>
+  (function () {
+    var svg = document.querySelector('.map');
+    if (!svg) return;
+    var nodes = [].slice.call(svg.querySelectorAll('.node'));
+    var edges = [].slice.call(svg.querySelectorAll('.edge'));
+
+    function focusOn(slug) {
+      svg.classList.add('is-focused');
+      edges.forEach(function (e) {
+        var on = e.dataset.from === slug || e.dataset.to === slug;
+        e.classList.toggle('is-lit', on);
+      });
+      nodes.forEach(function (n) {
+        var s = n.dataset.slug;
+        var linked = edges.some(function (e) {
+          return (e.dataset.from === slug && e.dataset.to === s) ||
+                 (e.dataset.to === slug && e.dataset.from === s);
+        });
+        n.classList.toggle('is-lit', s === slug || linked);
+      });
+    }
+    function clearFocus() {
+      svg.classList.remove('is-focused');
+      edges.concat(nodes).forEach(function (el) { el.classList.remove('is-lit'); });
+    }
+
+    nodes.forEach(function (n) {
+      n.addEventListener('mouseenter', function () { focusOn(n.dataset.slug); });
+      n.addEventListener('focus', function () { focusOn(n.dataset.slug); });
+      n.addEventListener('mouseleave', clearFocus);
+      n.addEventListener('blur', clearFocus);
+    });
+  })();
+</script>
+
+<style>
+  .mhead { padding-block: clamp(3rem, 7vw, 5rem) 1.5rem; max-width: 46rem; }
+  .mhead h1 { font-size: var(--t-h1); margin-block: 1rem 1.2rem; max-width: 16ch; }
+  .mhead__sub { color: var(--ink-soft); max-width: 56ch; }
+  .mhead__sub em { color: var(--ink); }
+
+  .tracks { list-style: none; margin: 1.8rem 0 0; padding: 0; display: grid; gap: 0.5rem; }
+  .track { display: flex; gap: 0.7rem; align-items: baseline; font-size: 0.92rem; color: var(--ink-soft); }
+  .track strong { color: var(--ink); font-weight: 600; }
+  .track__dot { width: 0.6rem; height: 0.6rem; flex: none; border-radius: 50%; }
+  .track--mechanism .track__dot { background: var(--machine); }
+  .track--human .track__dot { background: var(--human); }
+  .track--collective .track__dot { background: color-mix(in oklab, var(--human) 50%, var(--machine)); }
+  .track--meta .track__dot { background: var(--ink-faint); }
+
+  .mapwrap { margin: 2.5rem 0 3rem; overflow-x: auto; }
+  .map { width: 100%; min-width: 46rem; height: auto; display: block; }
+
+  .node rect {
+    fill: var(--paper-raised);
+    stroke: var(--rule-strong);
+    stroke-width: 1;
+    transition: fill 0.2s var(--ease), stroke 0.2s var(--ease);
+  }
+  .node__n {
+    font-family: var(--mono);
+    font-size: 9px;
+    letter-spacing: 0.1em;
+    fill: var(--ink-faint);
+  }
+  .node__l {
+    font-family: var(--display);
+    font-size: 13px;
+    font-weight: 570;
+    fill: var(--ink);
+  }
+  .node--mechanism rect { stroke: color-mix(in srgb, var(--machine) 55%, var(--rule-strong)); }
+  .node--human rect { stroke: color-mix(in srgb, var(--human) 55%, var(--rule-strong)); }
+  .node--meta rect { stroke-dasharray: 3 3; }
+  .node:hover rect, .node:focus rect { fill: var(--paper-sunk); stroke: var(--human); }
+  .node:focus { outline: none; }
+  .node:focus rect { stroke-width: 2; }
+
+  .edge path {
+    fill: none;
+    stroke: var(--rule-strong);
+    stroke-width: 1.2;
+    transition: stroke 0.2s var(--ease), stroke-width 0.2s var(--ease);
+  }
+  .edge.is-dashed path { stroke-dasharray: 4 4; }
+  .edge text {
+    font-family: var(--mono);
+    font-size: 8.5px;
+    paint-order: stroke;
+    stroke: var(--paper);
+    stroke-width: 3.5px;
+    stroke-linejoin: round;
+    letter-spacing: 0.04em;
+    fill: var(--ink-faint);
+    text-anchor: middle;
+    transition: fill 0.2s var(--ease);
+  }
+  .arrowhead { fill: var(--rule-strong); }
+
+  /* Hover isolation */
+  .map.is-focused .node:not(.is-lit) { opacity: 0.28; }
+  .map.is-focused .edge:not(.is-lit) { opacity: 0.12; }
+  .edge.is-lit path { stroke: var(--human); stroke-width: 1.8; }
+  .edge.is-lit text { fill: var(--human); }
+
+  figcaption {
+    font-family: var(--mono);
+    font-size: var(--t-small);
+    line-height: 1.6;
+    color: var(--ink-faint);
+    max-width: 62ch;
+    margin-top: 1rem;
+  }
+
+  /* The list is the accessible, small-screen equivalent of the diagram. */
+  .mlist { padding-bottom: 5rem; }
+  .mlist ol { list-style: none; margin: 0; padding: 0; }
+  .mlist li {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    gap: 0.9rem;
+    align-items: baseline;
+    padding: 0.7rem 0;
+    border-bottom: 1px solid var(--rule);
+  }
+  .mlist li:first-child { border-top: 1px solid var(--rule); }
+  .mlist a { text-decoration: none; font-size: 0.98rem; }
+  .mlist a:first-child { text-align: right; }
+  .mlist a:hover { color: var(--human); }
+  .mlist__via {
+    font-family: var(--mono);
+    font-size: var(--t-micro);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--human);
+    white-space: nowrap;
+  }
+  @media (max-width: 640px) {
+    .mlist li { grid-template-columns: 1fr; gap: 0.2rem; }
+    .mlist a:first-child { text-align: left; }
+  }
+</style>
