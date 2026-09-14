@@ -37,6 +37,7 @@ in it depends on a particular timeline being right.
 | Page | What it is |
 |---|---|
 | `/playbook` | All 47 practices from the essays in one filterable list — by cadence (in the moment / scheduled / review / standing / structural) and by topic. Tick off what you've adopted; kept in `localStorage`. |
+| `/reflect` | 54 questions turned on the reader, one set per essay, answered privately in `localStorage` with a copy-as-markdown export. Each essay also closes with its own set inline. |
 | `/judging` | The Judgment Checklist — 23 questions staged from framing to accountability, filtered by a reversible/silent 2×2 that sets how much scrutiny the decision warrants. |
 | `/ladder` | The Delegation Ladder — the five-rung rubric every essay applies to its subject, plus a three-question rule for choosing a rung. |
 | `/audit` | Cognitive Autonomy Audit: 15 behavioural questions across five dimensions, half reverse-scored. Retakes show per-dimension drift against your last run. |
@@ -117,7 +118,8 @@ the MDX, because `/playbook` renders them too. An essay pulls its own with
 `rung`, which is what the playbook filters on.
 
 **Glossary** terms live in `src/data/glossary.ts`, **reading paths** in
-`src/data/paths.ts`, and the **judgment questions** in `src/data/judging.ts`
+`src/data/paths.ts`, the **judgment questions** in `src/data/judging.ts`, and the **reflection
+questions** in `src/data/reflections.ts`
 (each tagged with the minimum scrutiny level at which it applies).
 
 ## Deployment

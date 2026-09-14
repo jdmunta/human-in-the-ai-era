@@ -1,0 +1,231 @@
+---
+import Base from '../layouts/Base.astro';
+import { REFLECTIONS, REFLECTION_TOTAL } from '../data/reflections';
+import { getCollection } from 'astro:content';
+
+const topics = (await getCollection('topics')).sort((a, b) => a.data.order - b.data.order);
+const meta = Object.fromEntries(topics.map((t) => [t.id, t.data]));
+const grouped = topics
+  .map((t) => ({ topic: t.id, data: t.data, items: REFLECTIONS.filter((r) => r.topic === t.id) }))
+  .filter((g) => g.items.length);
+---
+
+<Base
+  title="Reflect — Human in the AI Era"
+  description="Fifty-four questions to turn on yourself, one set per essay. Answer them privately in your browser; nothing is transmitted."
+  ogSlug="reflect"
+>
+  <div class="wrap">
+    <header class="rhead">
+      <p class="label">Private · {REFLECTION_TOTAL} questions</p>
+      <h1>Questions to turn on yourself.</h1>
+      <p class="rhead__sub">
+        The essays argue, and the <a class="link" href="/playbook">playbook</a> tells
+        you what to do. Neither asks you anything. These do — one set per essay,
+        and the useful ones are the ones that are slightly unpleasant to sit with.
+      </p>
+      <p class="rhead__priv label">
+        Anything you write stays in this browser. No account, no server, no
+        transmission — check the network tab if you like.
+      </p>
+      <div class="rbar">
+        <span class="label" id="answered">0 of {REFLECTION_TOTAL} answered</span>
+        <button class="linkbtn" id="copy" type="button">Copy all as text</button>
+        <button class="linkbtn" id="wipe" type="button">Erase everything</button>
+      </div>
+    </header>
+
+    {
+      grouped.map((g, gi) => (
+        <section class="rgroup" id={g.topic}>
+          <header>
+            <span class="label rgroup__n">{String(g.data.order).padStart(2, '0')}</span>
+            <div>
+              <h2>{g.data.kicker}</h2>
+              <p class="rgroup__t">
+                <a class="link" href={`/topics/${g.topic}`}>{g.data.title} &rarr;</a>
+              </p>
+            </div>
+          </header>
+          {g.items.map((r) => (
+            <div class="rq">
+              <p class="rq__q">{r.q}</p>
+              <textarea
+                class="rq__a"
+                rows="2"
+                data-id={`${r.topic}-${r.n}`}
+                placeholder="…"
+                aria-label={r.q}
+              />
+            </div>
+          ))}
+        </section>
+      ))
+    }
+
+    <p class="rfoot">
+      Worth returning to. The point of writing an answer down is that in six
+      months you can find out whether it is still true — which is the same trick
+      the <a class="link" href="/audit">audit</a> plays with its retake.
+    </p>
+  </div>
+</Base>
+
+<script is:inline>
+  (function () {
+    var KEY = 'reflect-notes';
+    var boxes = [].slice.call(document.querySelectorAll('.rq__a'));
+    var counter = document.getElementById('answered');
+    if (!boxes.length) return;
+
+    var notes = {};
+    try { notes = JSON.parse(localStorage.getItem(KEY) || '{}'); } catch (e) {}
+
+    function persist() {
+      try { localStorage.setItem(KEY, JSON.stringify(notes)); } catch (e) {}
+    }
+    function grow(el) {
+      el.style.height = 'auto';
+      el.style.height = Math.max(el.scrollHeight, 44) + 'px';
+    }
+    function tally() {
+      var n = Object.keys(notes).filter(function (k) { return (notes[k] || '').trim(); }).length;
+      counter.textContent = n + ' of ' + boxes.length + ' answered';
+      counter.style.color = n ? 'var(--human)' : '';
+    }
+
+    boxes.forEach(function (b) {
+      var id = b.dataset.id;
+      if (notes[id]) { b.value = notes[id]; }
+      grow(b);
+      b.closest('.rq').classList.toggle('is-done', !!(notes[id] || '').trim());
+      b.addEventListener('input', function () {
+        notes[id] = b.value;
+        if (!b.value.trim()) delete notes[id];
+        b.closest('.rq').classList.toggle('is-done', !!b.value.trim());
+        grow(b);
+        persist();
+        tally();
+      });
+    });
+
+    document.getElementById('copy').addEventListener('click', function (e) {
+      var out = [];
+      document.querySelectorAll('.rgroup').forEach(function (g) {
+        var lines = [];
+        g.querySelectorAll('.rq').forEach(function (q) {
+          var a = q.querySelector('.rq__a').value.trim();
+          if (a) lines.push('Q: ' + q.querySelector('.rq__q').textContent.trim() + '\nA: ' + a);
+        });
+        if (lines.length) {
+          out.push('## ' + g.querySelector('h2').textContent.trim() + '\n\n' + lines.join('\n\n'));
+        }
+      });
+      var text = out.length ? out.join('\n\n') : '(nothing answered yet)';
+      navigator.clipboard.writeText(text).then(function () {
+        var b = e.target; var old = b.textContent;
+        b.textContent = 'Copied';
+        setTimeout(function () { b.textContent = old; }, 1600);
+      });
+    });
+
+    document.getElementById('wipe').addEventListener('click', function () {
+      notes = {};
+      persist();
+      boxes.forEach(function (b) {
+        b.value = '';
+        grow(b);
+        b.closest('.rq').classList.remove('is-done');
+      });
+      tally();
+    });
+
+    tally();
+  })();
+</script>
+
+<style>
+  .rhead { padding-block: clamp(3rem, 7vw, 5rem) 1.5rem; max-width: 46rem; }
+  .rhead h1 { font-size: var(--t-h1); margin-block: 1rem 1.2rem; max-width: 15ch; }
+  .rhead__sub { color: var(--ink-soft); max-width: 54ch; }
+  .rhead__priv {
+    margin-top: 1.4rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--rule);
+    color: var(--machine);
+    max-width: 54ch;
+    line-height: 1.9;
+  }
+  .rbar {
+    display: flex;
+    gap: 1.4rem;
+    align-items: baseline;
+    flex-wrap: wrap;
+    margin-top: 1.2rem;
+  }
+  .linkbtn {
+    background: none; border: 0; padding: 0;
+    font-family: var(--mono); font-size: var(--t-micro);
+    letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--ink-faint); cursor: pointer;
+    text-decoration: underline; text-underline-offset: 3px;
+  }
+  .linkbtn:hover { color: var(--human); }
+
+  .rgroup { margin-bottom: 2.8rem; scroll-margin-top: 5rem; }
+  .rgroup > header {
+    display: grid;
+    grid-template-columns: 2.6rem 1fr;
+    gap: 0.8rem;
+    align-items: baseline;
+    border-top: 2px solid var(--ink);
+    padding-top: 1.1rem;
+    margin-bottom: 0.6rem;
+  }
+  .rgroup h2 {
+    font-family: var(--mono);
+    font-size: var(--t-micro);
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--human);
+    font-weight: 500;
+  }
+  .rgroup__t { margin-top: 0.35rem; font-family: var(--display); font-size: 1.14rem; }
+  .rgroup__t a { background-image: none; }
+
+  .rq { padding: 1.1rem 0; border-bottom: 1px solid var(--rule); }
+  .rq__q {
+    font-family: var(--display);
+    font-size: 1.1rem;
+    font-weight: 430;
+    line-height: 1.4;
+    max-width: 56ch;
+    margin-bottom: 0.6rem;
+    transition: color 0.2s var(--ease);
+  }
+  .rq.is-done .rq__q { color: var(--ink-soft); }
+  .rq__a {
+    width: 100%;
+    max-width: 60ch;
+    background: var(--paper-raised);
+    border: 1px solid var(--rule);
+    border-left: 2px solid var(--rule-strong);
+    color: var(--ink);
+    font-family: var(--body);
+    font-size: 1rem;
+    line-height: 1.55;
+    padding: 0.6rem 0.75rem;
+    resize: none;
+    overflow: hidden;
+    transition: border-color 0.2s var(--ease);
+  }
+  .rq__a:focus { outline: none; border-left-color: var(--human); border-color: var(--rule-strong); }
+  .rq.is-done .rq__a { border-left-color: var(--human); }
+  .rq__a::placeholder { color: var(--ink-faint); }
+
+  .rfoot {
+    padding-block: 1rem 5rem;
+    color: var(--ink-soft);
+    max-width: 56ch;
+  }
+</style>
