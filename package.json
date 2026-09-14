@@ -14,8 +14,10 @@
     "@astrojs/mdx": "^4.2.4",
     "@astrojs/rss": "^4.0.19",
     "@astrojs/sitemap": "^3.3.0",
+    "@resvg/resvg-js": "^2.6.2",
     "astro": "^5.7.5",
-    "express": "^4.21.2"
+    "express": "^4.21.2",
+    "satori": "^0.33.4"
   },
   "engines": {
     "node": ">=20"

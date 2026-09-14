@@ -2,6 +2,7 @@
 import { getCollection, render } from 'astro:content';
 import Base from '../../layouts/Base.astro';
 import Contents from '../../components/Contents.astro';
+import Concepts from '../../components/Concepts.astro';
 
 export async function getStaticPaths() {
   const topics = (await getCollection('topics')).sort(
@@ -22,7 +23,22 @@ const { Content, headings } = await render(entry);
 const n = String(entry.data.order).padStart(2, '0');
 ---
 
-<Base title={`${entry.data.title} — Human in the AI Era`} description={entry.data.summary} progress>
+<Base
+  title={`${entry.data.title} — Human in the AI Era`}
+  description={entry.data.summary}
+  ogSlug={entry.id}
+  jsonLd={{
+    '@context': 'https://schema.org',
+    '@type': 'Article',
+    headline: entry.data.title,
+    description: entry.data.summary,
+    articleSection: entry.data.kicker,
+    isPartOf: { '@type': 'Blog', name: 'Human in the AI Era' },
+    image: new URL(`/og/${entry.id}.png`, Astro.site).href,
+    url: new URL(`/topics/${entry.id}/`, Astro.site).href,
+  }}
+  progress
+>
   <article>
     <header class="thead">
       <div class="wrap">
@@ -40,6 +56,8 @@ const n = String(entry.data.order).padStart(2, '0');
       <div class="prose">
         <Contents headings={headings} />
         <Content />
+
+        <Concepts body={entry.body ?? ''} topic={entry.id} />
 
         <nav class="pagenav" aria-label="Adjacent topics">
           {

@@ -262,7 +262,7 @@ const topics = (await getCollection('topics')).sort(
   .pitch { padding-block: clamp(3.5rem, 7vw, 6rem); }
   .pitch__inner {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(19rem, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(min(19rem, 100%), 1fr));
     gap: clamp(2rem, 5vw, 4rem);
     padding-top: 2.6rem;
     border-top: 2px solid var(--ink);

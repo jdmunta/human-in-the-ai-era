@@ -106,7 +106,6 @@ body {
   text-rendering: optimizeLegibility;
   min-height: 100vh;
   position: relative;
-  overflow-x: hidden;
 }
 
 /* Paper grain. Sits above the background, below everything else. */
@@ -236,8 +235,26 @@ a.link:hover { color: var(--human); background-size: 100% 0.42em; }
 }
 .masthead__nav a:hover,
 .masthead__nav a[aria-current='page'] { color: var(--human); }
-@media (max-width: 640px) {
+.masthead__logo-rest { margin-left: 0.5rem; }
+
+/* The header is the tightest row on the site. Shed the optional links first,
+   then the wordmark's tail, then let it wrap rather than overflow. */
+@media (max-width: 880px) {
   .masthead__nav a.is-optional { display: none; }
+}
+@media (max-width: 640px) {
+  .masthead__inner { gap: 0.9rem; }
+  .masthead__nav { gap: 0.7rem; }
+  .masthead__logo em,
+  .masthead__logo-rest { display: none; }
+}
+@media (max-width: 400px) {
+  .masthead__inner {
+    flex-wrap: wrap;
+    padding-block: 0.5rem;
+    row-gap: 0.5rem;
+  }
+  .masthead__nav { width: 100%; justify-content: space-between; }
 }
 
 .themetoggle {
@@ -518,7 +535,7 @@ th:last-child, td:last-child { padding-right: 0; }
 }
 .colophon__grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(13rem, 100%), 1fr));
   gap: 2rem;
   align-items: start;
 }
@@ -530,7 +547,7 @@ th:last-child, td:last-child { padding-right: 0; }
 .pagenav {
   grid-column: full;
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(15rem, 100%), 1fr));
   gap: 1px;
   background: var(--rule);
   border-block: 1px solid var(--rule);
@@ -601,4 +618,49 @@ th:last-child, td:last-child { padding-right: 0; }
   /* Expose link targets in print. */
   .prose a[href^="/"]::after { content: " (" attr(href) ")"; font-size: 8.5pt; color: #666; }
   .thead { border-bottom: 1px solid #000; }
+}
+
+/* Skip link — visible only when focused. */
+.skiplink {
+  position: absolute;
+  left: 0.6rem;
+  top: -4rem;
+  z-index: 300;
+  background: var(--ink);
+  color: var(--paper);
+  font-family: var(--mono);
+  font-size: var(--t-small);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  text-decoration: none;
+  padding: 0.7rem 1.1rem;
+  transition: top 0.2s var(--ease);
+}
+.skiplink:focus { top: 0.6rem; }
+main:focus { outline: none; }
+
+/* Section anchors, revealed on hover. */
+.prose > h2 { position: relative; }
+.prose > h2 > .anchor {
+  position: absolute;
+  left: -1.5rem;
+  top: 0.12em;
+  font-family: var(--mono);
+  font-size: 0.8rem;
+  color: var(--human);
+  opacity: 0;
+  text-decoration: none;
+  transition: opacity 0.2s var(--ease);
+}
+.prose > h2:hover > .anchor,
+.prose > h2 > .anchor:focus { opacity: 1; }
+@media (max-width: 900px) { .prose > h2 > .anchor { display: none; } }
+
+
+/* Anchor targets must clear the sticky masthead (~3.6rem) when jumped to. */
+.prose > h2[id],
+.practice[id],
+.term[id],
+.term__letter[id] {
+  scroll-margin-top: 5rem;
 }

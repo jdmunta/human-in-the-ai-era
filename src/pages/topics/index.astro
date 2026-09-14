@@ -1,6 +1,7 @@
 ---
 import { getCollection } from 'astro:content';
 import Base from '../../layouts/Base.astro';
+import Paths from '../../components/Paths.astro';
 
 const topics = (await getCollection('topics')).sort(
   (a, b) => a.data.order - b.data.order
@@ -22,6 +23,9 @@ const topics = (await getCollection('topics')).sort(
       </p>
     </header>
 
+    <Paths />
+
+    <div class="eyebrow" style="margin-top:3.5rem"><span class="label">All eleven, in order</span></div>
     <ol class="list">
       {
         topics.map((t) => (

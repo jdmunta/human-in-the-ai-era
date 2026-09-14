@@ -7,8 +7,12 @@ interface Props {
   title: string;
   description: string;
   progress?: boolean;
+  /** Slug of the pre-rendered share card in /og. Falls back to the site card. */
+  ogSlug?: string;
+  /** Structured data for this page, serialised into a JSON-LD script. */
+  jsonLd?: Record<string, unknown>;
 }
-const { title, description, progress = false } = Astro.props;
+const { title, description, progress = false, ogSlug = 'default', jsonLd } = Astro.props;
 const path = Astro.url.pathname.replace(/\/$/, '') || '/';
 const nav = [
   { href: '/topics', label: 'Topics' },
@@ -32,9 +36,18 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
     <meta property="og:description" content={description} />
     <meta property="og:type" content="website" />
     <meta property="og:url" content={canonical} />
+    <meta property="og:site_name" content="Human in the AI Era" />
+    <meta property="og:image" content={new URL(`/og/${ogSlug}.png`, Astro.site)} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={title} />
     <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={new URL(`/og/${ogSlug}.png`, Astro.site)} />
     <link rel="sitemap" href="/sitemap-index.xml" />
     <link rel="alternate" type="application/rss+xml" title="Human in the AI Era" href="/rss.xml" />
+    {jsonLd && <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />}
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -62,13 +75,14 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
   </head>
 
   <body>
+    <a class="skiplink" href="#main">Skip to content</a>
     {progress && <div class="progress" id="progress"></div>}
 
     <div class="shell">
       <header class="masthead">
         <div class="wrap masthead__inner">
           <a class="masthead__logo" href="/">
-            Human <em>·</em> in the AI Era
+            Human <em>·</em><span class="masthead__logo-rest">in the AI Era</span>
           </a>
           <nav class="masthead__nav" aria-label="Primary">
             {
@@ -98,7 +112,7 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
         </div>
       </header>
 
-      <main id="main">
+      <main id="main" tabindex="-1">
         <slot />
       </main>
 
@@ -165,6 +179,17 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
             try { localStorage.setItem('theme', next); } catch (e) {}
           });
         }
+
+        // Give every section heading a hover-revealed permalink.
+        var heads = document.querySelectorAll('.prose > h2[id]');
+        Array.prototype.forEach.call(heads, function (h) {
+          var a = document.createElement('a');
+          a.className = 'anchor';
+          a.href = '#' + h.id;
+          a.setAttribute('aria-label', 'Link to this section');
+          a.textContent = '#';
+          h.insertBefore(a, h.firstChild);
+        });
 
         var bar = document.getElementById('progress');
         if (bar) {

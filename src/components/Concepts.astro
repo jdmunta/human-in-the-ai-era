@@ -1,0 +1,74 @@
+---
+import { GLOSSARY } from '../data/glossary';
+
+interface Props { body: string; topic: string }
+const { body, topic } = Astro.props;
+
+const hay = body.toLowerCase();
+const anchor = (s: string) => s.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+
+// A term belongs here if the essay develops it, or actually mentions it.
+const found = GLOSSARY.filter((t) => {
+  if (t.topic === topic) return true;
+  const names = [t.term, t.aka].filter(Boolean) as string[];
+  return names.some((n) => hay.includes(n.toLowerCase()));
+}).sort((a, b) => {
+  if (a.topic === topic && b.topic !== topic) return -1;
+  if (b.topic === topic && a.topic !== topic) return 1;
+  return a.term.localeCompare(b.term);
+});
+---
+
+{
+  found.length > 0 && (
+    <aside class="concepts">
+      <span class="label">Concepts on this page</span>
+      <ul>
+        {found.map((t) => (
+          <li>
+            <a href={`/glossary#${anchor(t.term)}`} title={t.def}>
+              {t.term}
+              {t.topic === topic && <span class="concepts__home" aria-label="defined here">•</span>}
+            </a>
+          </li>
+        ))}
+      </ul>
+      <p class="concepts__note">
+        Defined in the <a class="link" href="/glossary">glossary</a>. A dot marks
+        the ones this essay develops.
+      </p>
+    </aside>
+  )
+}
+
+<style>
+  .concepts {
+    grid-column: main;
+    border-top: 2px solid var(--ink);
+    padding-top: 1.3rem;
+    margin-top: 3.5rem;
+  }
+  .concepts > .label { display: block; margin-bottom: 1rem; color: var(--ink); }
+  ul { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 0.4rem; }
+  li a {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-family: var(--mono);
+    font-size: var(--t-micro);
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    text-decoration: none;
+    color: var(--ink-soft);
+    border: 1px solid var(--rule-strong);
+    padding: 0.35rem 0.6rem;
+    transition: all 0.2s var(--ease);
+  }
+  li a:hover { border-color: var(--human); color: var(--human); }
+  .concepts__home { color: var(--human); font-size: 1.1em; line-height: 0; }
+  .concepts__note {
+    margin-top: 1rem;
+    font-size: 0.9rem;
+    color: var(--ink-faint);
+  }
+</style>

@@ -46,6 +46,15 @@ Site-wide search is on `/` or `⌘K` — a ~90KB index built at compile time fro
 the MDX, fetched lazily on first open, with phrase-match ranking. No search
 service, no runtime dependency.
 
+`/topics` opens with **reading paths** — curated routes through the essays
+("if you have twenty minutes", "if you are choosing a degree", "if you lead
+people", "if you think this is overblown"), defined in `src/data/paths.ts`.
+
+**Share cards** are generated at build time by `satori` + `resvg-js` into
+`/og/<slug>.png` — one per essay plus the tool pages, rendered in the site's own
+palette and typefaces from the TTFs in `src/assets/fonts/`. Pages opt in with
+`<Base ogSlug="…">`.
+
 ## How the essays argue
 
 Every page follows the same discipline: state a claim that could be false, give
