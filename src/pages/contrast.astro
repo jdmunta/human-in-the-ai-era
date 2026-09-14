@@ -1,0 +1,374 @@
+---
+import Base from '../layouts/Base.astro';
+import { AXES, WEIGHT_VALUE, FRONTIER } from '../data/contrast';
+
+// --- diagram 1 geometry ---
+const ROW = 27, TOP = 46, MAXBAR = 205, CX = 360, GAP = 108;
+const d1h = TOP + AXES.length * ROW + 20;
+
+// --- diagram 2 geometry ---
+const F_W = 640, F_H = 210, F_X = 56, F_Y = 34;
+const n = FRONTIER.human.length;
+const fx = (i: number) => F_X + (i / (n - 1)) * F_W;
+const fy = (v: number) => F_Y + (1 - v / 100) * F_H;
+const line = (arr: number[]) => arr.map((v, i) => `${i ? 'L' : 'M'} ${fx(i).toFixed(1)} ${fy(v).toFixed(1)}`).join(' ');
+// regions where the machine drops below its own advertised confidence
+const danger = FRONTIER.machine
+  .map((v, i) => ({ v, i }))
+  .filter((p) => p.v < FRONTIER.confidence - 25);
+---
+
+<Base
+  title="Human and machine, side by side — Human in the AI Era"
+  description="Five diagrams on where humans and machines actually differ: the two categories, the jagged frontier, error profiles, the verification gap, and where accountability can attach."
+  ogSlug="contrast"
+>
+  <div class="wrap">
+    <header class="chead">
+      <p class="label">Five diagrams</p>
+      <h1>Human and machine, side by side.</h1>
+      <p class="chead__sub">
+        Most comparisons of this kind are scoreboards, which is the wrong shape
+        for the question — the interesting differences are not about who is
+        better at a shared task but about which properties each side has at all.
+        Teal is machine throughout the site; sienna is human.
+      </p>
+    </header>
+
+    <!-- 1 ─────────────────────────────────────────── -->
+    <figure class="fig">
+      <figcaption class="fig__cap">
+        <span class="label">01 — Not one scale</span>
+        <h2>Two different categories, drawn as one axis to show why that is misleading.</h2>
+        <p>
+          The top rows are contests the machine wins, several of them absurdly.
+          The bottom four are not contests at all: they are properties a machine
+          does not possess, so the bar is not a margin of victory but a
+          statement about kind. A scoreboard cannot represent that difference,
+          which is exactly why scoreboards mislead here.
+        </p>
+      </figcaption>
+
+      <div class="fig__svg">
+        <svg viewBox={`0 0 720 ${d1h}`} role="img" aria-labelledby="d1t">
+          <title id="d1t">Attributes favouring machine or human, with categorical differences marked</title>
+          <text class="hdr hdr--m" x={CX - GAP} y="20" text-anchor="end">Machine</text>
+          <text class="hdr hdr--h" x={CX + GAP} y="20" text-anchor="start">Human</text>
+          <line class="axis" x1={CX} y1="30" x2={CX} y2={d1h - 16} />
+
+          {
+            AXES.map((a, i) => {
+              const y = TOP + i * ROW;
+              const w = WEIGHT_VALUE[a.weight] * MAXBAR;
+              const isM = a.side === 'machine';
+              const x = isM ? CX - GAP - w : CX + GAP;
+              return (
+                <g class:list={['row', `row--${a.side}`, { 'is-cat': a.weight === 'categorical' }]}>
+                  <rect class="bar" x={x} y={y - 9} width={w} height="13" rx="1" />
+                  <text class="attr" x={CX} y={y} text-anchor="middle">{a.attr}</text>
+                  {a.weight === 'categorical' && (
+                    <text class="cat" x={isM ? x - 6 : x + w + 6} y={y} text-anchor={isM ? 'end' : 'start'}>
+                      kind
+                    </text>
+                  )}
+                </g>
+              );
+            })
+          }
+        </svg>
+      </div>
+
+      <details class="fig__data">
+        <summary><span class="label">The same thing as a list</span></summary>
+        <dl>
+          {AXES.map((a) => (
+            <>
+              <dt class={`dt--${a.side}`}>{a.attr} <span>{a.side}, {a.weight}</span></dt>
+              <dd>{a.note}</dd>
+            </>
+          ))}
+        </dl>
+      </details>
+    </figure>
+
+    <!-- 2 ─────────────────────────────────────────── -->
+    <figure class="fig">
+      <figcaption class="fig__cap">
+        <span class="label">02 — The jagged frontier</span>
+        <h2>Human competence declines smoothly with difficulty. Machine competence does not.</h2>
+        <p>
+          Order tasks by how hard they look to a person and human capability
+          falls away in a curve you can reason about. Machine capability falls
+          off a cliff and climbs back, repeatedly, at boundaries that correspond
+          to nothing you can see from outside. The flat dashed line is the part
+          that does the damage: <em>confidence stays constant across the
+          drops</em>. Shaded bands are where a fluent answer is most likely to be
+          wrong.
+        </p>
+      </figcaption>
+
+      <div class="fig__svg">
+        <svg viewBox="0 0 720 306" role="img" aria-labelledby="d2t">
+          <title id="d2t">Human capability as a smooth curve against jagged machine capability</title>
+          {
+            danger.map((p) => (
+              <rect class="danger" x={fx(p.i) - 22} y={F_Y} width="44" height={F_H} />
+            ))
+          }
+          <line class="axis" x1={F_X} y1={F_Y + F_H} x2={F_X + F_W} y2={F_Y + F_H} />
+          <line class="axis" x1={F_X} y1={F_Y} x2={F_X} y2={F_Y + F_H} />
+
+          <line class="conf" x1={F_X} y1={fy(FRONTIER.confidence)} x2={F_X + F_W} y2={fy(FRONTIER.confidence)} />
+          <text class="conflabel" x={F_X + F_W} y={fy(FRONTIER.confidence) - 7} text-anchor="end">
+            stated confidence — flat
+          </text>
+
+          <path class="ln ln--machine" d={line(FRONTIER.machine)} />
+          <path class="ln ln--human" d={line(FRONTIER.human)} />
+
+          <text class="axl" x={F_X} y={F_Y + F_H + 22}>easy</text>
+          <text class="axl" x={F_X + F_W} y={F_Y + F_H + 22} text-anchor="end">hard (as it looks to you)</text>
+          <text class="axl axl--y" x={F_X - 10} y={F_Y + 6} text-anchor="end">high</text>
+          <text class="axl axl--y" x={F_X - 10} y={F_Y + F_H} text-anchor="end">low</text>
+
+          <g class="key">
+            <line class="ln ln--human" x1={F_X} y1="290" x2={F_X + 26} y2="290" />
+            <text class="axl" x={F_X + 34} y="294">human capability</text>
+            <line class="ln ln--machine" x1={F_X + 190} y1="290" x2={F_X + 216} y2="290" />
+            <text class="axl" x={F_X + 224} y="294">machine capability</text>
+          </g>
+        </svg>
+      </div>
+    </figure>
+
+    <!-- 3 ─────────────────────────────────────────── -->
+    <figure class="fig">
+      <figcaption class="fig__cap">
+        <span class="label">03 — How each one fails</span>
+        <h2>Human error is noisy and independent. Machine error is quiet and correlated.</h2>
+        <p>
+          Ten people doing the same task badly miss in ten different directions,
+          so the mistakes disagree with each other and someone notices. One
+          model doing the same task badly misses in the <em>same</em> direction
+          every time, at every site, simultaneously. Tight grouping looks like
+          reliability and is the more dangerous pattern: nothing disagrees, so
+          nothing surfaces.
+        </p>
+      </figcaption>
+
+      <div class="fig__svg">
+        <svg viewBox="0 0 720 250" role="img" aria-labelledby="d3t">
+          <title id="d3t">Scattered human errors around the target versus clustered machine errors offset from it</title>
+          {
+            [
+              { cx: 180, label: 'Ten humans', side: 'human',
+                pts: [[-46,-30],[38,-52],[-62,34],[24,44],[58,12],[-18,-58],[-36,58],[66,-28],[8,-14],[-8,66]] },
+              { cx: 540, label: 'One model, ten times', side: 'machine',
+                pts: [[48,-40],[54,-34],[44,-46],[58,-42],[50,-31],[46,-38],[56,-45],[52,-36],[45,-42],[55,-39]] },
+            ].map((panel) => (
+              <g>
+                {[74, 50, 26].map((r) => (
+                  <circle class="ring" cx={panel.cx} cy="112" r={r} />
+                ))}
+                <circle class="bull" cx={panel.cx} cy="112" r="3.5" />
+                {panel.pts.map(([dx, dy]) => (
+                  <circle class:list={['shot', `shot--${panel.side}`]} cx={panel.cx + dx} cy={112 + dy} r="4.5" />
+                ))}
+                <text class="paneltitle" x={panel.cx} y="222" text-anchor="middle">{panel.label}</text>
+              </g>
+            ))
+          }
+          <text class="note" x="180" y="240" text-anchor="middle">wrong in every direction — they disagree</text>
+          <text class="note" x="540" y="240" text-anchor="middle">wrong in one direction — nothing disagrees</text>
+        </svg>
+      </div>
+    </figure>
+
+    <!-- 4 ─────────────────────────────────────────── -->
+    <figure class="fig">
+      <figcaption class="fig__cap">
+        <span class="label">04 — The verification gap</span>
+        <h2>The cost of producing an answer is collapsing. The cost of checking one is not.</h2>
+        <p>
+          "Humans will supervise rather than produce" assumes both lines fall
+          together. They do not. Checking a subtly wrong legal strategy or a
+          plausible differential diagnosis still takes roughly the expertise
+          that producing it would have taken — and that expertise is acquired by
+          producing. The shaded wedge is the supervision problem, and it widens.
+        </p>
+      </figcaption>
+
+      <div class="fig__svg">
+        <svg viewBox="0 0 720 280" role="img" aria-labelledby="d4t">
+          <title id="d4t">Generation cost falling steeply while verification cost stays flat</title>
+          <path class="wedge" d="M 70 62 C 260 66, 420 68, 650 70 L 650 218 C 380 196, 200 120, 70 66 Z" />
+          <line class="axis" x1="70" y1="230" x2="650" y2="230" />
+          <line class="axis" x1="70" y1="40" x2="70" y2="230" />
+
+          <path class="ln ln--human" d="M 70 62 C 260 66, 420 68, 650 70" />
+          <text class="inline inline--human" x="650" y="58" text-anchor="end">cost to verify — flat</text>
+
+          <path class="ln ln--machine" d="M 70 66 C 200 120, 380 196, 650 218" />
+          <text class="inline inline--machine" x="650" y="238" text-anchor="end">cost to generate — collapsing</text>
+
+          <text class="axl" x="70" y="252">then</text>
+          <text class="axl" x="650" y="252" text-anchor="end">now</text>
+          <text class="wedgelabel" x="470" y="132" text-anchor="middle">the supervision problem</text>
+        </svg>
+      </div>
+    </figure>
+
+    <!-- 5 ─────────────────────────────────────────── -->
+    <figure class="fig">
+      <figcaption class="fig__cap">
+        <span class="label">05 — Where answerability can attach</span>
+        <h2>Every link in the chain can act. Only two can be asked to explain.</h2>
+        <p>
+          Data, model and output all shape the decision and none of them can be
+          held to it — they have no interests to set back and nothing to lose.
+          Answerability can only attach to the two human links, and it attaches
+          to the approver <em>whether or not</em> they had the information, the
+          time or the standing to exercise it. That mismatch is the crumple zone.
+        </p>
+      </figcaption>
+
+      <div class="fig__svg">
+        <svg viewBox="0 0 720 200" role="img" aria-labelledby="d5t">
+          <title id="d5t">A decision chain showing that only the human links can hold accountability</title>
+          {
+            [
+              { x: 22,  label: 'Data',      kind: 'machine' },
+              { x: 162, label: 'Model',     kind: 'machine' },
+              { x: 302, label: 'Output',    kind: 'machine' },
+              { x: 442, label: 'Approver',  kind: 'human' },
+              { x: 582, label: 'Deployer',  kind: 'human' },
+            ].map((b, i, arr) => (
+              <g>
+                <rect class:list={['chain', `chain--${b.kind}`]} x={b.x} y="56" width="116" height="46" rx="1" />
+                <text class="chainlabel" x={b.x + 58} y="84" text-anchor="middle">{b.label}</text>
+                {i < arr.length - 1 && (
+                  <path class="chainarrow" d={`M ${b.x + 116} 79 L ${b.x + 138} 79`} marker-end="url(#carrow)" />
+                )}
+                <text class:list={['can', b.kind === 'human' ? 'can--yes' : 'can--no']}
+                      x={b.x + 58} y="128" text-anchor="middle">
+                  {b.kind === 'human' ? 'can answer' : 'cannot answer'}
+                </text>
+              </g>
+            ))
+          }
+          <defs>
+            <marker id="carrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+              <path d="M 0 0 L 10 5 L 0 10 z" class="arrowhead" />
+            </marker>
+          </defs>
+          <path class="brace" d="M 442 150 L 442 158 L 698 158 L 698 150" />
+          <text class="note" x="570" y="176" text-anchor="middle">liability lands here, with or without the capacity</text>
+        </svg>
+      </div>
+    </figure>
+
+    <p class="cfoot">
+      Diagrams 02 and 04 come from <a class="link" href="/topics/judgment">judgment</a>,
+      03 from the same argument applied at scale, and 05 from
+      <a class="link" href="/topics/responsibility">responsibility</a>. The
+      values in 01 are judgments, not measurements — the shape of the claim is
+      the point, not the lengths.
+    </p>
+  </div>
+</Base>
+
+<style>
+  .chead { padding-block: clamp(3rem, 7vw, 5rem) 1rem; max-width: 46rem; }
+  .chead h1 { font-size: var(--t-h1); margin-block: 1rem 1.2rem; max-width: 16ch; }
+  .chead__sub { color: var(--ink-soft); max-width: 56ch; }
+
+  .fig { margin: 0 0 4.5rem; padding-top: 2.2rem; border-top: 1px solid var(--rule); }
+  .fig__cap { max-width: 58ch; margin-bottom: 1.8rem; }
+  .fig__cap .label { display: block; color: var(--human); margin-bottom: 0.7rem; }
+  .fig__cap h2 {
+    font-family: var(--display);
+    font-size: var(--t-h3);
+    font-weight: 570;
+    line-height: 1.3;
+    margin-bottom: 0.7rem;
+    max-width: 40ch;
+  }
+  .fig__cap p { color: var(--ink-soft); line-height: 1.6; }
+  .fig__cap em { color: var(--ink); font-style: italic; }
+  .fig__svg { overflow-x: auto; }
+  .fig__svg svg { width: 100%; min-width: 34rem; height: auto; display: block; }
+
+  /* shared svg vocabulary */
+  .axis { stroke: var(--rule-strong); stroke-width: 1; }
+  .axl, .note, .conflabel, .inline, .paneltitle, .chainlabel, .can, .cat, .hdr, .attr, .wedgelabel {
+    font-family: var(--mono);
+  }
+  .axl { font-size: 9px; fill: var(--ink-faint); letter-spacing: 0.06em; }
+  .note { font-size: 8.5px; fill: var(--ink-faint); letter-spacing: 0.04em; }
+
+  /* 01 */
+  .hdr { font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase; }
+  .hdr--m { fill: var(--machine); }
+  .hdr--h { fill: var(--human); }
+  .attr { font-size: 10.5px; fill: var(--ink); letter-spacing: 0.02em; }
+  .cat { font-size: 8px; fill: var(--ink-faint); letter-spacing: 0.1em; text-transform: uppercase; }
+  .bar { opacity: 0.32; }
+  .row--machine .bar { fill: var(--machine); }
+  .row--human .bar { fill: var(--human); }
+  .row.is-cat .bar { opacity: 0.68; }
+
+  /* 02 */
+  .ln { fill: none; stroke-width: 2; }
+  .ln--human { stroke: var(--human); }
+  .ln--machine { stroke: var(--machine); }
+  .conf { stroke: var(--machine); stroke-width: 1; stroke-dasharray: 4 4; opacity: 0.8; }
+  .conflabel { font-size: 8.5px; fill: var(--machine); letter-spacing: 0.05em; }
+  .danger { fill: var(--human); opacity: 0.09; }
+
+  /* 03 */
+  .ring { fill: none; stroke: var(--rule); stroke-width: 1; }
+  .bull { fill: var(--ink-faint); }
+  .shot--human { fill: var(--human); opacity: 0.75; }
+  .shot--machine { fill: var(--machine); opacity: 0.75; }
+  .paneltitle { font-size: 10px; fill: var(--ink); letter-spacing: 0.1em; text-transform: uppercase; }
+
+  /* 04 */
+  .wedge { fill: var(--human); opacity: 0.08; }
+  .wedgelabel { font-size: 9.5px; fill: var(--ink-soft); letter-spacing: 0.12em; text-transform: uppercase; }
+  .inline { font-size: 9px; letter-spacing: 0.05em; }
+  .inline--human { fill: var(--human); }
+  .inline--machine { fill: var(--machine); }
+
+  /* 05 */
+  .chain { fill: var(--paper-raised); stroke-width: 1; }
+  .chain--machine { stroke: var(--machine); }
+  .chain--human { stroke: var(--human); }
+  .chainlabel { font-size: 11px; fill: var(--ink); letter-spacing: 0.04em; }
+  .chainarrow { stroke: var(--rule-strong); stroke-width: 1.2; fill: none; }
+  .arrowhead { fill: var(--rule-strong); }
+  .can { font-size: 8px; letter-spacing: 0.1em; text-transform: uppercase; }
+  .can--yes { fill: var(--human); }
+  .can--no { fill: var(--ink-faint); }
+  .brace { fill: none; stroke: var(--human); stroke-width: 1; opacity: 0.6; }
+
+  /* data fallback */
+  .fig__data { margin-top: 1.4rem; border-top: 1px solid var(--rule); }
+  .fig__data summary { padding: 0.8rem 0; cursor: pointer; list-style: none; }
+  .fig__data summary::-webkit-details-marker { display: none; }
+  .fig__data summary:hover .label { color: var(--human); }
+  .fig__data dl { margin: 0 0 1rem; display: grid; grid-template-columns: minmax(0, 16rem) 1fr; gap: 0.3rem 1.2rem; }
+  .fig__data dt { font-weight: 600; font-size: 0.94rem; }
+  .fig__data dt span {
+    display: block; font-family: var(--mono); font-size: var(--t-micro);
+    letter-spacing: 0.08em; text-transform: uppercase; font-weight: 400;
+  }
+  .dt--machine span { color: var(--machine); }
+  .dt--human span { color: var(--human); }
+  .fig__data dd { margin: 0; color: var(--ink-soft); font-size: 0.94rem; line-height: 1.5; }
+  @media (max-width: 640px) {
+    .fig__data dl { grid-template-columns: 1fr; gap: 0.2rem; }
+    .fig__data dd { margin-bottom: 0.7rem; }
+  }
+
+  .cfoot { color: var(--ink-soft); max-width: 58ch; padding-bottom: 5rem; }
+</style>

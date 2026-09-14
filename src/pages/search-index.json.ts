@@ -39,6 +39,8 @@ export async function GET() {
   const pages = [
     { slug: 'ladder', title: 'The Delegation Ladder', kicker: 'Framework',
       summary: 'Five rungs from cede to reserve, and how to choose one.', path: '/ladder' },
+    { slug: 'contrast', title: 'Human and machine, side by side', kicker: 'Diagrams',
+      summary: 'Five diagrams: the two categories, the jagged frontier, error profiles, the verification gap, and where accountability can attach.', path: '/contrast' },
     { slug: 'map', title: 'The argument map', kicker: 'Reference',
       summary: 'How the thirteen essays depend on each other: which claim is load-bearing for which.', path: '/map' },
     { slug: 'read', title: 'The whole argument', kicker: 'Reference',

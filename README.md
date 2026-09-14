@@ -40,6 +40,7 @@ in it depends on a particular timeline being right.
 |---|---|
 | `/playbook` | All 58 practices from the essays in one filterable list — by cadence (in the moment / scheduled / review / standing / structural) and by topic. Tick off what you've adopted; kept in `localStorage`. |
 | `/reflect` | 64 questions turned on the reader, one set per essay, answered privately in `localStorage` with a copy-as-markdown export. Each essay also closes with its own set inline. |
+| `/contrast` | Five diagrams setting human against machine: the two categories, the jagged frontier, error profiles, the verification gap, and where accountability can attach. Inline SVG, theme-aware, with text equivalents. |
 | `/map` | The argument's dependency structure — which claim is load-bearing for which, hand-authored in `src/data/map.ts` and rendered as inline SVG with a text equivalent below it. |
 | `/read` | Every essay on one page, for reading offline, printing or saving as a PDF. |
 | `/you` | Where you stand — essays read, practices adopted, reflections answered and your last audit, assembled from `localStorage` alone. |
