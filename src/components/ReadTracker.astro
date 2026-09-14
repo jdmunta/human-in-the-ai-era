@@ -1,0 +1,35 @@
+---
+interface Props { slug: string }
+const { slug } = Astro.props;
+---
+<script is:inline define:vars={{ slug }}>
+  (function () {
+    var KEY = 'essays-read';
+    var marked = false;
+
+    function markRead() {
+      if (marked) return;
+      marked = true;
+      try {
+        var all = JSON.parse(localStorage.getItem(KEY) || '{}');
+        // Keep the first read date; a re-read shouldn't reset the record.
+        if (!all[slug]) {
+          all[slug] = Date.now();
+          localStorage.setItem(KEY, JSON.stringify(all));
+        }
+      } catch (e) {}
+    }
+
+    // Read = got most of the way down, or stayed long enough to have been reading.
+    function onScroll() {
+      var h = document.documentElement;
+      var max = h.scrollHeight - h.clientHeight;
+      if (max <= 0 || h.scrollTop / max > 0.7) {
+        markRead();
+        document.removeEventListener('scroll', onScroll);
+      }
+    }
+    document.addEventListener('scroll', onScroll, { passive: true });
+    setTimeout(markRead, 90000);
+  })();
+</script>

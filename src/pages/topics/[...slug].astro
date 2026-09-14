@@ -3,6 +3,7 @@ import { getCollection, render } from 'astro:content';
 import Base from '../../layouts/Base.astro';
 import Contents from '../../components/Contents.astro';
 import Concepts from '../../components/Concepts.astro';
+import ReadTracker from '../../components/ReadTracker.astro';
 
 export async function getStaticPaths() {
   const topics = (await getCollection('topics')).sort(
@@ -39,6 +40,8 @@ const n = String(entry.data.order).padStart(2, '0');
   }}
   progress
 >
+  <ReadTracker slug={entry.id} />
+
   <article>
     <header class="thead">
       <div class="wrap">

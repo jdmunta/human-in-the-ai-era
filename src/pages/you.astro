@@ -1,0 +1,291 @@
+---
+import Base from '../layouts/Base.astro';
+import { getCollection } from 'astro:content';
+import { PRACTICES } from '../data/practices';
+import { REFLECTION_TOTAL } from '../data/reflections';
+
+const topics = (await getCollection('topics')).sort((a, b) => a.data.order - b.data.order);
+const essays = topics.map((t) => ({
+  slug: t.id, order: t.data.order, kicker: t.data.kicker,
+  title: t.data.title, reading: t.data.reading,
+}));
+const practiceTotal = PRACTICES.filter((p) => p.inPlaybook).length;
+const DIMS = [
+  { key: 'judgment', name: 'Judgment' },
+  { key: 'curiosity', name: 'Curiosity' },
+  { key: 'retention', name: 'Skill retention' },
+  { key: 'accountability', name: 'Accountability' },
+  { key: 'presence', name: 'Presence' },
+];
+---
+
+<Base
+  title="Where you stand — Human in the AI Era"
+  description="Everything this site knows about you, which is only what your own browser has stored: essays read, practices adopted, reflections answered, and your last audit."
+  ogSlug="you"
+>
+  <div class="wrap">
+    <header class="yhead">
+      <p class="label">Local only</p>
+      <h1>Where you stand.</h1>
+      <p class="yhead__sub">
+        This page is assembled entirely from your own browser. There is no
+        account and no server — if you opened the site somewhere else, that
+        version of you is a different person as far as this page is concerned.
+        That is a limitation, and it is the correct trade.
+      </p>
+      <p class="yhead__none label" id="empty-note" hidden>
+        Nothing stored yet. Read an essay, take the audit, or answer a question.
+      </p>
+    </header>
+
+    <div class="cards">
+      <section class="card">
+        <header>
+          <span class="label">Reading</span>
+          <span class="card__big" id="read-count">–</span>
+        </header>
+        <div class="meter"><div class="meter__fill" id="read-bar"></div></div>
+        <ol class="essays" id="essay-list">
+          {
+            essays.map((e) => (
+              <li data-slug={e.slug}>
+                <a href={`/topics/${e.slug}`}>
+                  <span class="essays__tick" aria-hidden="true" />
+                  <span class="essays__n label">{String(e.order).padStart(2, '0')}</span>
+                  <span class="essays__t">{e.title}</span>
+                  <span class="essays__m label">{e.reading}</span>
+                </a>
+              </li>
+            ))
+          }
+        </ol>
+      </section>
+
+      <div class="stack">
+        <section class="card">
+          <header>
+            <span class="label">Last audit</span>
+            <span class="card__big" id="audit-when">–</span>
+          </header>
+          <div id="audit-body">
+            <p class="card__empty">
+              Not taken yet. <a class="link" href="/audit">Fifteen questions &rarr;</a>
+            </p>
+          </div>
+          {
+            DIMS.map((d) => (
+              <div class="dim" data-dim={d.key} hidden>
+                <div class="dim__head">
+                  <span class="label">{d.name}</span>
+                  <span class="label dim__score">–</span>
+                </div>
+                <div class="meter"><div class="meter__fill"></div></div>
+              </div>
+            ))
+          }
+        </section>
+
+        <section class="card">
+          <header>
+            <span class="label">Playbook</span>
+            <span class="card__big" id="pb-count">–</span>
+          </header>
+          <div class="meter"><div class="meter__fill" id="pb-bar"></div></div>
+          <p class="card__note" id="pb-note">
+            <a class="link" href="/playbook">{practiceTotal} practices &rarr;</a>
+          </p>
+        </section>
+
+        <section class="card">
+          <header>
+            <span class="label">Reflections</span>
+            <span class="card__big" id="rf-count">–</span>
+          </header>
+          <div class="meter"><div class="meter__fill" id="rf-bar"></div></div>
+          <p class="card__note">
+            <a class="link" href="/reflect">{REFLECTION_TOTAL} questions &rarr;</a>
+          </p>
+        </section>
+      </div>
+    </div>
+
+    <aside class="wipe">
+      <div>
+        <span class="label">Your data</span>
+        <p>
+          Four keys in <code>localStorage</code>, nothing else: essays read, your
+          last audit scores, which practices you ticked, and your reflection
+          notes. Clearing site data in your browser removes all of it, or:
+        </p>
+      </div>
+      <button class="btn btn--ghost" id="wipe-all" type="button">Erase everything</button>
+    </aside>
+  </div>
+</Base>
+
+<script is:inline define:vars={{ essays, practiceTotal, REFLECTION_TOTAL, DIMS }}>
+  (function () {
+    var get = function (k, d) {
+      try { return JSON.parse(localStorage.getItem(k) || d); } catch (e) { return JSON.parse(d); }
+    };
+    var read = get('essays-read', '{}');
+    var audit = get('audit-last-run', 'null');
+    var pb = get('playbook-adopted', '[]');
+    var rf = get('reflect-notes', '{}');
+
+    var anything =
+      Object.keys(read).length || audit || pb.length || Object.keys(rf).length;
+    document.getElementById('empty-note').hidden = !!anything;
+
+    function pct(n, d) { return d ? Math.round((n / d) * 100) : 0; }
+    function setBar(el, p) { if (el) el.style.width = p + '%'; }
+
+    // Reading
+    var nRead = essays.filter(function (e) { return read[e.slug]; }).length;
+    document.getElementById('read-count').textContent = nRead + ' / ' + essays.length;
+    setBar(document.getElementById('read-bar'), pct(nRead, essays.length));
+    Array.prototype.forEach.call(document.querySelectorAll('#essay-list li'), function (li) {
+      if (read[li.dataset.slug]) li.classList.add('is-read');
+    });
+
+    // Playbook
+    document.getElementById('pb-count').textContent = pb.length + ' / ' + practiceTotal;
+    setBar(document.getElementById('pb-bar'), pct(pb.length, practiceTotal));
+
+    // Reflections
+    var nRf = Object.keys(rf).filter(function (k) { return (rf[k] || '').trim(); }).length;
+    document.getElementById('rf-count').textContent = nRf + ' / ' + REFLECTION_TOTAL;
+    setBar(document.getElementById('rf-bar'), pct(nRf, REFLECTION_TOTAL));
+
+    // Audit
+    if (audit && audit.scores) {
+      var days = Math.max(0, Math.round((Date.now() - audit.at) / 86400000));
+      document.getElementById('audit-when').textContent =
+        days === 0 ? 'today' : days === 1 ? '1 day ago' : days + ' days ago';
+      document.getElementById('audit-body').innerHTML = '';
+      var lowest = null;
+      DIMS.forEach(function (d) {
+        var v = audit.scores[d.key];
+        if (typeof v !== 'number') return;
+        if (!lowest || v < lowest.v) lowest = { v: v, name: d.name };
+        var row = document.querySelector('[data-dim="' + d.key + '"]');
+        row.hidden = false;
+        row.querySelector('.dim__score').textContent = v + ' / 12';
+        setBar(row.querySelector('.meter__fill'), pct(v, 12));
+      });
+      if (lowest) {
+        var p = document.createElement('p');
+        p.className = 'card__note';
+        p.innerHTML = 'Weakest: <strong>' + lowest.name + '</strong>. ' +
+          '<a class="link" href="/audit">Retake to see drift &rarr;</a>';
+        document.getElementById('audit-body').appendChild(p);
+      }
+    }
+
+    document.getElementById('wipe-all').addEventListener('click', function () {
+      ['essays-read', 'audit-last-run', 'playbook-adopted', 'reflect-notes'].forEach(function (k) {
+        try { localStorage.removeItem(k); } catch (e) {}
+      });
+      location.reload();
+    });
+  })();
+</script>
+
+<style>
+  .yhead { padding-block: clamp(3rem, 7vw, 5rem) 2rem; max-width: 46rem; }
+  .yhead h1 { font-size: var(--t-h1); margin-block: 1rem 1.2rem; }
+  .yhead__sub { color: var(--ink-soft); max-width: 54ch; }
+  .yhead__none {
+    margin-top: 1.3rem; padding-top: 1rem;
+    border-top: 1px solid var(--rule); color: var(--human);
+  }
+
+  .cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(20rem, 100%), 1fr));
+    gap: 1.4rem;
+    align-items: start;
+    margin-bottom: 3rem;
+  }
+  .stack { display: grid; gap: 1.4rem; }
+  .card {
+    border: 1px solid var(--rule);
+    border-top: 2px solid var(--ink);
+    padding: 1.3rem 1.3rem 1.5rem;
+  }
+  .card > header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 1rem;
+    margin-bottom: 0.9rem;
+  }
+  .card__big {
+    font-family: var(--display);
+    font-size: 1.35rem;
+    font-weight: 560;
+    font-variant-numeric: lining-nums;
+  }
+  .card__empty { color: var(--ink-soft); font-size: 0.95rem; }
+  .card__note { margin-top: 0.8rem; font-size: 0.93rem; color: var(--ink-soft); }
+
+  .meter { height: 4px; background: var(--paper-sunk); }
+  .meter__fill {
+    height: 100%; width: 0;
+    background: linear-gradient(90deg, var(--machine), var(--human));
+    transition: width 0.8s var(--ease);
+  }
+
+  .essays { list-style: none; margin: 1.2rem 0 0; padding: 0; }
+  .essays li { border-bottom: 1px solid var(--rule); }
+  .essays li:last-child { border-bottom: 0; }
+  .essays a {
+    display: grid;
+    grid-template-columns: 1rem 1.9rem 1fr auto;
+    gap: 0.55rem;
+    align-items: baseline;
+    padding: 0.55rem 0;
+    text-decoration: none;
+    transition: color 0.2s var(--ease);
+  }
+  .essays a:hover .essays__t { color: var(--human); }
+  .essays__tick {
+    width: 0.62rem; height: 0.62rem;
+    border: 1.5px solid var(--rule-strong);
+    border-radius: 50%;
+    align-self: center;
+  }
+  .is-read .essays__tick { background: var(--human); border-color: var(--human); }
+  .essays__t { font-size: 0.97rem; line-height: 1.35; }
+  .is-read .essays__t { color: var(--ink-soft); }
+  .essays__m { white-space: nowrap; }
+
+  .dim { margin-bottom: 0.85rem; }
+  .dim[hidden] { display: none; }
+  .dim__head { display: flex; justify-content: space-between; margin-bottom: 0.35rem; }
+  .dim__score { color: var(--ink-faint); }
+
+  .wipe {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1.6rem;
+    flex-wrap: wrap;
+    border-top: 1px solid var(--rule);
+    padding-block: 1.6rem;
+    margin-bottom: 5rem;
+  }
+  .wipe .label { display: block; margin-bottom: 0.6rem; }
+  .wipe p { color: var(--ink-soft); font-size: 0.94rem; max-width: 52ch; line-height: 1.55; }
+  .btn {
+    font-family: var(--mono); font-size: var(--t-small);
+    letter-spacing: 0.1em; text-transform: uppercase;
+    background: var(--ink); color: var(--paper);
+    border: 1px solid var(--ink); padding: 0.8rem 1.5rem;
+    cursor: pointer; flex: none;
+    transition: background 0.25s var(--ease), color 0.25s var(--ease);
+  }
+  .btn--ghost { background: transparent; color: var(--ink); }
+  .btn:hover { background: var(--human); border-color: var(--human); color: #fff; }
+</style>

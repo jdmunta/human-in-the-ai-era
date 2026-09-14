@@ -1,0 +1,181 @@
+---
+order: 11
+title: Say What You Actually Mean
+kicker: Working With Machines
+tension: 'The phrase “prompt engineering” frames this as a syntax problem. It is a specification problem — and most bad output is a bad question, answered impeccably.'
+summary: How to communicate with AI systems without the tips-and-tricks genre. The five failure modes, a protocol that survives model upgrades, and why the bottleneck moves from phrasing to knowing what you want.
+reading: 11 min
+---
+
+import Lede from '../../components/Lede.astro';
+import Claim from '../../components/Claim.astro';
+import Counter from '../../components/Counter.astro';
+import Sidenote from '../../components/Sidenote.astro';
+import Practices from '../../components/Practices.astro';
+import Reflect from '../../components/Reflect.astro';
+import Ladder from '../../components/Ladder.astro';
+import Table from '../../components/Table.astro';
+
+<Lede>
+There is an enormous amount of advice about how to talk to these systems, and
+most of it ages in months, because most of it is about phrasing. Say "you are
+an expert." Offer a tip. Threaten it. Some of this worked, briefly, on
+particular models. None of it is the skill. The skill is older and duller:
+being able to say what you actually want, to something that will do exactly
+what you asked.
+</Lede>
+
+## The genre error
+
+Calling this "prompt engineering" put the emphasis in the wrong place — on the
+prompt as an artefact to be tuned, rather than on the specification as a thing
+to be *known*. It produced a cottage industry of incantations and a widespread
+belief that the bottleneck is expression.
+
+It is not. Watch someone get a disappointing result and ask them what they
+wanted instead. A surprising share cannot say — not because they are
+inarticulate, but because they had not decided. The request was a gesture in
+the direction of a wish. The machine, being a machine, answered the gesture.
+
+<Claim label="The claim">
+The quality of what comes back is bounded by the quality of the brief you could
+have written for a capable stranger. Almost all disappointing output is a bad
+question answered well. This is why the skill survives every model upgrade:
+better inference narrows the gap between what you said and what you meant, and
+does nothing at all about the gap between what you meant and what you had
+actually decided.
+</Claim>
+
+## Five failure modes
+
+<Table>
+<thead>
+<tr><th>Failure</th><th>What it looks like</th><th>The fix</th></tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Under-specification</strong></td>
+<td>Fluent, plausible, not what you wanted — and you cannot say why until you see it.</td>
+<td>Name the audience, the constraints, and what a wrong answer would look like. If you cannot, that is the work.</td>
+</tr>
+<tr>
+<td><strong>Agreeableness</strong></td>
+<td>It concedes the moment you push back, including when you are wrong.</td>
+<td>Ask for the objection before you state a position. Agreement you elicited is worthless as evidence.</td>
+</tr>
+<tr>
+<td><strong>Frame capture</strong></td>
+<td>An excellent answer to the wrong question, delivered with no indication that it was the wrong one.</td>
+<td>Ask what the right question is, separately, before asking for an answer.</td>
+</tr>
+<tr>
+<td><strong>Context decay</strong></td>
+<td>Long thread; it slowly reverts to a generic version of the task.</td>
+<td>Restate the brief periodically. Start fresh more often than feels necessary.</td>
+</tr>
+<tr>
+<td><strong>Anchoring</strong></td>
+<td>Every later version is a variation on the first draft, including its mistakes.</td>
+<td>Generate alternatives before refining any of them. Refinement cannot escape a bad frame.</td>
+</tr>
+</tbody>
+</Table>
+
+Notice that only the first is about how you phrased anything. The other four are
+about sequencing and structure — the order in which you ask, and what you have
+already committed to when you do.
+
+## Agreeableness is the one to watch
+
+These systems are trained, among other things, to be helpful and to be liked.
+Those objectives mostly align with being useful and occasionally do not. The
+place they come apart is exactly where you need them most: when you are wrong
+and want confirmation.
+
+The consequence is that **agreement is not evidence**. If you present your plan
+and ask what it thinks, a warm response tells you approximately nothing, because
+a warm response was available regardless. The information is in what it says
+when you have made disagreement the easy path — when you ask for the strongest
+case against, or present the plan as someone else's, or ask what a hostile
+reviewer would say first.
+
+<Sidenote>
+The same asymmetry applies to people, which is why "what do you think?" is a
+weaker question than "what would you change?" — one invites approval, the other
+presupposes a defect and asks you to find it.
+</Sidenote>
+
+## Two different activities
+
+Most confusion here comes from conflating two uses that need opposite technique.
+
+**Communicating to get output.** You know what you want; you need it made. Here
+specification is everything: constraints, format, examples of good, the failure
+criterion. Give examples rather than adjectives — "punchy" means nothing, a
+paragraph you consider punchy means something. Be boring and complete.
+
+**Communicating to think.** You do not know what you want; you are working it
+out. Here specification is premature and the technique inverts: ask it to
+interrogate you, to name what you have not considered, to argue the other side,
+to tell you which of your assumptions is load-bearing. The worst thing it can do
+in this mode is answer.
+
+The single most useful instruction in the second mode is also the one almost
+nobody gives: *do not answer yet — ask me questions until the problem is well
+posed.* Models do this well and never do it unprompted, because every interface
+is built to resolve rather than to prolong.
+
+## A protocol that survives upgrades
+
+Nothing here depends on a model version, because none of it is about phrasing.
+
+1. **Decide what "good" looks like before you ask.** Even one sentence. If you
+   cannot describe the target, you are not delegating — you are hoping.
+2. **State the goal, the audience, the constraints, and the failure criterion.**
+   The last is the one people skip and the one that does the most work.
+3. **Show, do not adjective.** One example of the register you want beats a
+   paragraph of description.
+4. **Ask for the reasoning you can check, not the conclusion you cannot.** A
+   conclusion you cannot verify is not usable, however correct it happens to be.
+5. **Separate generating from evaluating.** Do them in different passes. Better,
+   record your own judgment before the evaluating pass, per
+   [judgment](/topics/judgment).
+6. **Invite disagreement structurally**, not politely. "What is wrong with this"
+   beats "what do you think", and "argue the opposite case" beats both.
+7. **Say what you will do with the output.** It changes what a good answer is,
+   and it is the detail most often omitted.
+8. **Restate the brief when a thread gets long,** or start a new one. Cheap, and
+   it prevents the slow slide into generic.
+
+<Counter label="The strongest objection">
+"This is prompt engineering with a philosophy degree attached. And it is
+self-defeating: models get better at inferring intent every year, so the careful
+specification you are recommending is precisely the labour that is being
+automated away. In three years the systems will ask the clarifying questions
+themselves, and this page will read like advice on how to phrase a search query."
+</Counter>
+
+Half right, and the half it gets right is the half that was always going to
+date: syntax tricks are already dead, and clarifying questions will indeed get
+asked for you. But a system that infers your intent perfectly still cannot
+recover a decision you have not made. It can surface the ambiguity; it cannot
+resolve it on your behalf without quietly becoming the one who decided. The
+labour being automated is *expression*. The labour that remains is *knowing what
+you want and what would count as wrong* — which is not a communication skill at
+all. It is [judgment](/topics/judgment), arriving in the form of a text box.
+
+## Where this sits on the ladder
+
+<Ladder
+  highlight={[2, 3]}
+  caption="Communication is the craft layer under rungs two and three — it does not change which rung you are on, it determines whether that rung works."
+  notes={{
+    2: 'Specification carries the whole weight here: you are approving work you did not shape, so the brief was your only point of control.',
+    3: 'Where the two modes matter most. Decide whether this exchange is for producing or for thinking, because the technique inverts.',
+    4: 'Your own attempt first, then hand it over with an explicit instruction to attack it. The best-value use of these systems.',
+  }}
+/>
+
+<Practices topic="communication" />
+
+<Reflect topic="communication" />

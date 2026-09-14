@@ -80,6 +80,13 @@ const RAW: Record<string, string[]> = {
     'What are you doing collectively, with people you did not choose?',
     'Does the tool you rely on most expand what you can do alone, or deepen a dependence you cannot audit?',
   ],
+  communication: [
+    'When something comes back wrong, can you say what you actually wanted — or only that this is not it?',
+    'When did you last ask a machine to argue against you, rather than for you?',
+    'Are your exchanges mostly for producing, or for thinking? Does your technique reflect which?',
+    'What have you accepted recently because it was agreeable rather than because it was right?',
+    'How much of what you call a tool problem is actually an undecided question of your own?',
+  ],
   steelman: [
     'Which objection did you find most comfortable — and what does that preference tell you?',
     'What would actually change your mind about the argument on this site?',

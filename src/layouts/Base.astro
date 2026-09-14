@@ -1,5 +1,7 @@
 ---
 import '../styles/global.css';
+import { PRACTICES } from '../data/practices';
+import { REFLECTION_TOTAL } from '../data/reflections';
 import SearchButton from '../components/SearchButton.astro';
 import SearchOverlay from '../components/SearchOverlay.astro';
 
@@ -19,9 +21,11 @@ const nav = [
   { href: '/playbook', label: 'Playbook' },
   { href: '/ladder', label: 'The Ladder', optional: true },
   { href: '/audit', label: 'Audit' },
+  { href: '/you', label: 'You', optional: true },
   { href: '/about', label: 'About', optional: true },
 ];
 const canonical = new URL(Astro.url.pathname, Astro.site);
+const nPractices = PRACTICES.filter((p) => p.inPlaybook).length;
 ---
 
 <!doctype html>
@@ -130,9 +134,10 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
             <p class="label" style="margin-bottom:0.9rem">Read</p>
             <ul>
               <li><a href="/topics">All topics</a></li>
-              <li><a href="/playbook">The Playbook &mdash; 47 practices</a></li>
+              <li><a href="/playbook">The Playbook &mdash; {nPractices} practices</a></li>
               <li><a href="/judging">The Judgment Checklist</a></li>
-              <li><a href="/reflect">Reflect &mdash; 54 questions</a></li>
+              <li><a href="/reflect">Reflect &mdash; {REFLECTION_TOTAL} questions</a></li>
+              <li><a href="/you">Where you stand</a></li>
               <li><a href="/ladder">The Delegation Ladder</a></li>
               <li><a href="/audit">Cognitive Autonomy Audit</a></li>
               <li><a href="/glossary">Glossary</a></li>

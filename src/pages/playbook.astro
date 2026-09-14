@@ -26,7 +26,7 @@ const usedTopics = topics.filter((t) => items.some((i) => i.topic === t.id));
 
 <Base
   title="The Playbook — Human in the AI Era"
-  description="Every practice from all eleven essays in one place: 47 concrete things to do, filterable by cadence and topic, with your progress kept in your browser."
+  description={`Every practice from all ${topics.length} essays in one place: ${items.length} concrete things to do, filterable by cadence and topic, with your progress kept in your browser.`}
   ogSlug="playbook"
 >
   <div class="wrap">

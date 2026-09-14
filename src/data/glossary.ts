@@ -25,6 +25,12 @@ export const GLOSSARY: Term[] = [
     def: 'Measure a society by what people are actually able to do and be, rather than by what it produces or what they own. The basis for treating agency, not output, as the indicator that matters.',
   },
   {
+    term: 'Agreeableness',
+    aka: 'Sycophancy',
+    topic: 'communication',
+    def: 'These systems are trained to be helpful and to be liked, and those objectives come apart exactly where you need them most: when you are wrong and want confirmation. Agreement you elicited is not evidence.',
+  },
+  {
     term: 'Comfortable irrelevance',
     topic: 'civilization',
     def: 'Material abundance combined with mass agency loss: nothing hurts, nothing depends on anyone, and no economic indicator can see the decline. The specifically novel failure mode — every previous one involved scarcity.',
@@ -33,6 +39,11 @@ export const GLOSSARY: Term[] = [
     term: 'Commission error',
     topic: 'judgment',
     def: 'Following a system’s recommendation against evidence you can see yourself. Persists even among people who know the tool is fallible, because fluency reads as confidence below the level of argument.',
+  },
+  {
+    term: 'Frame capture',
+    topic: 'communication',
+    def: 'An excellent answer to the wrong question, delivered with no signal that it was the wrong one. The characteristic failure of a system that answers what it was asked rather than what was meant.',
   },
   {
     term: 'Convivial tool',

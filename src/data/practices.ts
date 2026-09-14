@@ -519,6 +519,66 @@ export const PRACTICES: Practice[] = [
     "cadence": "meta",
     "rung": 0,
     "inPlaybook": false
+  },
+  {
+    "topic": "communication",
+    "kicker": "Working With Machines",
+    "n": 1,
+    "title": "Write the failure criterion into the ask",
+    "body": "State what a wrong answer would look like, in the request itself. It is the element people skip most and the one that does the most work — it converts a vague wish into something that can be checked.",
+    "cadence": "daily",
+    "rung": 2,
+    "inPlaybook": true
+  },
+  {
+    "topic": "communication",
+    "kicker": "Working With Machines",
+    "n": 2,
+    "title": "Show an example instead of an adjective",
+    "body": "“Punchy”, “rigorous”, “professional” carry almost no information. One paragraph of the register you actually want carries all of it.",
+    "cadence": "daily",
+    "rung": 2,
+    "inPlaybook": true
+  },
+  {
+    "topic": "communication",
+    "kicker": "Working With Machines",
+    "n": 3,
+    "title": "Say “don’t answer yet — ask me questions”",
+    "body": "The highest-value instruction available when you are still working something out, and the one no interface will ever suggest, because every interface is built to resolve rather than to prolong.",
+    "cadence": "daily",
+    "rung": 3,
+    "inPlaybook": true
+  },
+  {
+    "topic": "communication",
+    "kicker": "Working With Machines",
+    "n": 4,
+    "title": "Make disagreement the easy path",
+    "body": "“What is wrong with this?” beats “what do you think?”. Better still, present the work as someone else’s. Agreement you elicited is not evidence of anything.",
+    "cadence": "daily",
+    "rung": 4,
+    "inPlaybook": true
+  },
+  {
+    "topic": "communication",
+    "kicker": "Working With Machines",
+    "n": 5,
+    "title": "Generate alternatives before refining any of them",
+    "body": "Refinement cannot escape a bad frame. Three different attempts beat one attempt polished three times, and the first draft anchors everything after it.",
+    "cadence": "weekly",
+    "rung": 3,
+    "inPlaybook": true
+  },
+  {
+    "topic": "communication",
+    "kicker": "Working With Machines",
+    "n": 6,
+    "title": "Restate the brief, or start over",
+    "body": "Long threads decay toward a generic version of the task. Restating costs seconds; noticing the drift after you have shipped costs more.",
+    "cadence": "daily",
+    "rung": 2,
+    "inPlaybook": true
   }
 ];
 

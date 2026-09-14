@@ -5,7 +5,7 @@ cognitive labour are increasingly performed by machines.
 
 **Live:** <https://humanai.up.railway.app>
 
-Eleven essays, a delegation framework, and an interactive self-assessment. It is
+Twelve essays, a delegation framework, and an interactive self-assessment. It is
 not a news site and not futurism: it makes no capability forecast, and nothing
 in it depends on a particular timeline being right.
 
@@ -30,18 +30,20 @@ in it depends on a particular timeline being right.
 | 08 | Relationships | Frictionless intimacy is not intimacy — the cost *was* the signal |
 | 09 | Work & economy | Comparative advantage promises you a task, not a wage |
 | 10 | Civilization | Four adjustable levers: what we measure, distribute, decide and honour |
-| 11 | Steelman | Seven serious objections to everything above |
+| 11 | Working with machines | Prompting is a specification problem, not a syntax problem |
+| 12 | Steelman | Seven serious objections to everything above |
 
 ### Beyond the essays
 
 | Page | What it is |
 |---|---|
-| `/playbook` | All 47 practices from the essays in one filterable list — by cadence (in the moment / scheduled / review / standing / structural) and by topic. Tick off what you've adopted; kept in `localStorage`. |
-| `/reflect` | 54 questions turned on the reader, one set per essay, answered privately in `localStorage` with a copy-as-markdown export. Each essay also closes with its own set inline. |
+| `/playbook` | All 53 practices from the essays in one filterable list — by cadence (in the moment / scheduled / review / standing / structural) and by topic. Tick off what you've adopted; kept in `localStorage`. |
+| `/reflect` | 59 questions turned on the reader, one set per essay, answered privately in `localStorage` with a copy-as-markdown export. Each essay also closes with its own set inline. |
+| `/you` | Where you stand — essays read, practices adopted, reflections answered and your last audit, assembled from `localStorage` alone. |
 | `/judging` | The Judgment Checklist — 23 questions staged from framing to accountability, filtered by a reversible/silent 2×2 that sets how much scrutiny the decision warrants. |
 | `/ladder` | The Delegation Ladder — the five-rung rubric every essay applies to its subject, plus a three-question rule for choosing a rung. |
 | `/audit` | Cognitive Autonomy Audit: 15 behavioural questions across five dimensions, half reverse-scored. Retakes show per-dimension drift against your last run. |
-| `/glossary` | 25 concepts defined — verification gap, jagged frontier, moral crumple zone, latent deprivation, phronesis, conviviality. |
+| `/glossary` | 27 concepts defined — verification gap, jagged frontier, moral crumple zone, latent deprivation, phronesis, conviviality. |
 | `/rss.xml` | Feed of all essays. |
 
 Site-wide search is on `/` or `⌘K` — a ~90KB index built at compile time from

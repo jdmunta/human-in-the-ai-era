@@ -2,19 +2,28 @@
 import { getCollection } from 'astro:content';
 import Base from '../layouts/Base.astro';
 
+import { PRACTICES } from '../data/practices';
+import { GLOSSARY } from '../data/glossary';
+
 const topics = (await getCollection('topics')).sort(
   (a, b) => a.data.order - b.data.order
 );
+const nEssays = topics.length;
+const nPractices = PRACTICES.filter((p) => p.inPlaybook).length;
+const nTerms = GLOSSARY.length;
+const WORDS = ['zero','one','two','three','four','five','six','seven','eight','nine','ten','eleven','twelve','thirteen','fourteen'];
+const word = (n: number) => WORDS[n] ?? String(n);
+const Word = (n: number) => { const w = word(n); return w.charAt(0).toUpperCase() + w.slice(1); };
 ---
 
 <Base
   title="Human in the AI Era — thriving when cognition is outsourced"
-  description="A working argument about meaning, purpose, curiosity, judgment and responsibility when thinking is delegated to machines. Eleven essays, a delegation framework, and a self-assessment."
+  description="A working argument about meaning, purpose, curiosity, judgment and responsibility when thinking is delegated to machines. A dozen essays, a delegation framework, and a self-assessment."
 >
   <section class="hero">
     <div class="wrap">
       <p class="label rise" style="animation-delay:.05s">
-        A working argument &nbsp;·&nbsp; Eleven essays &nbsp;·&nbsp; Updated 2026
+        A working argument &nbsp;·&nbsp; {Word(nEssays)} essays &nbsp;·&nbsp; Updated 2026
       </p>
 
       <h1 class="hero__h rise" style="animation-delay:.14s">
@@ -37,7 +46,7 @@ const topics = (await getCollection('topics')).sort(
           keeps a page devoted to the strongest case against itself.
         </p>
         <p class="hero__cta">
-          <a class="link" href="#index">Read the eleven &darr;</a>
+          <a class="link" href="#index">Read the {word(nEssays)} &darr;</a>
           <span aria-hidden="true">&nbsp;&nbsp;/&nbsp;&nbsp;</span>
           <a class="link" href="/audit">Take the audit</a>
         </p>
@@ -76,7 +85,7 @@ const topics = (await getCollection('topics')).sort(
 
   <section id="index" class="index">
     <div class="wrap">
-      <div class="eyebrow"><span class="label">The Eleven</span></div>
+      <div class="eyebrow"><span class="label">The {Word(nEssays)}</span></div>
       <ol class="index__list">
         {
           topics.map((t, i) => (
@@ -101,9 +110,9 @@ const topics = (await getCollection('topics')).sort(
     <div class="wrap pitch__inner">
       <div>
         <span class="label">The Playbook</span>
-        <h2>Forty-seven things to actually do.</h2>
+        <h2>{Word(nPractices)} things to actually do.</h2>
         <p>
-          Every practice from all eleven essays, collected into one filterable
+          Every practice from all {word(nEssays)} essays, collected into one filterable
           list — sorted by whether it is something you do in the moment, book in
           a calendar, or have to change your circumstances for. Tick off what
           you have adopted; it stays in your browser.
@@ -143,7 +152,7 @@ const topics = (await getCollection('topics')).sort(
       </div>
       <div>
         <span class="label">Reference</span>
-        <h2>Twenty-five concepts, defined.</h2>
+        <h2>{Word(nTerms)} concepts, defined.</h2>
         <p>
           The verification gap, the jagged frontier, moral crumple zones,
           desirable difficulty, latent deprivation, phronesis. Plain-language
