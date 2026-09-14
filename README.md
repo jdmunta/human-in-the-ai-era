@@ -39,6 +39,7 @@ in it depends on a particular timeline being right.
 | Page | What it is |
 |---|---|
 | `/playbook` | All 58 practices from the essays in one filterable list — by cadence (in the moment / scheduled / review / standing / structural) and by topic. Tick off what you've adopted; kept in `localStorage`. |
+| `/journal` | A private, unassisted journal. One rotating question a day drawn from the reflection set, plus free writing; entries, words and streak kept in `localStorage`, exportable as markdown. Nothing on the page offers to write for you — deliberately. |
 | `/reflect` | 64 questions turned on the reader, one set per essay, answered privately in `localStorage` with a copy-as-markdown export. Each essay also closes with its own set inline. |
 | `/contrast` | Five diagrams setting human against machine: the two categories, the jagged frontier, error profiles, the verification gap, and where accountability can attach. Inline SVG, theme-aware, with text equivalents. |
 | `/map` | The argument's dependency structure — which claim is load-bearing for which, hand-authored in `src/data/map.ts` and rendered as inline SVG with a text equivalent below it. |

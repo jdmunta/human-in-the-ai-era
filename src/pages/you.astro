@@ -99,6 +99,16 @@ const DIMS = [
 
         <section class="card">
           <header>
+            <span class="label">Journal</span>
+            <span class="card__big" id="jr-count">–</span>
+          </header>
+          <p class="card__note" id="jr-note">
+            <a class="link" href="/journal">A question a day &rarr;</a>
+          </p>
+        </section>
+
+        <section class="card">
+          <header>
             <span class="label">Reflections</span>
             <span class="card__big" id="rf-count">–</span>
           </header>
@@ -114,9 +124,10 @@ const DIMS = [
       <div>
         <span class="label">Your data</span>
         <p>
-          Four keys in <code>localStorage</code>, nothing else: essays read, your
-          last audit scores, which practices you ticked, and your reflection
-          notes. Clearing site data in your browser removes all of it, or:
+          Five keys in <code>localStorage</code>, nothing else: essays read,
+          your last audit scores, which practices you ticked, your reflection
+          notes and your journal. Clearing site data in your browser removes all
+          of it, or:
         </p>
       </div>
       <button class="btn btn--ghost" id="wipe-all" type="button">Erase everything</button>
@@ -133,9 +144,10 @@ const DIMS = [
     var audit = get('audit-last-run', 'null');
     var pb = get('playbook-adopted', '[]');
     var rf = get('reflect-notes', '{}');
+    var jr = get('journal-entries', '[]');
 
     var anything =
-      Object.keys(read).length || audit || pb.length || Object.keys(rf).length;
+      Object.keys(read).length || audit || pb.length || Object.keys(rf).length || jr.length;
     document.getElementById('empty-note').hidden = !!anything;
 
     function pct(n, d) { return d ? Math.round((n / d) * 100) : 0; }
@@ -157,6 +169,21 @@ const DIMS = [
     var nRf = Object.keys(rf).filter(function (k) { return (rf[k] || '').trim(); }).length;
     document.getElementById('rf-count').textContent = nRf + ' / ' + REFLECTION_TOTAL;
     setBar(document.getElementById('rf-bar'), pct(nRf, REFLECTION_TOTAL));
+
+    // Journal
+    var jw = jr.reduce(function (n, e) {
+      return n + ((e.body || '').trim() ? e.body.trim().split(/\s+/).length : 0);
+    }, 0);
+    document.getElementById('jr-count').textContent =
+      jr.length + (jr.length === 1 ? ' entry' : ' entries');
+    if (jr.length) {
+      var last = Math.max.apply(null, jr.map(function (e) { return e.at; }));
+      var d = Math.max(0, Math.round((Date.now() - last) / 86400000));
+      document.getElementById('jr-note').innerHTML =
+        jw.toLocaleString() + ' words · last ' +
+        (d === 0 ? 'today' : d === 1 ? 'yesterday' : d + ' days ago') +
+        ' · <a class="link" href="/journal">open &rarr;</a>';
+    }
 
     // Audit
     if (audit && audit.scores) {

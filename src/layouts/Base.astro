@@ -21,6 +21,7 @@ const nav = [
   { href: '/playbook', label: 'Playbook' },
   { href: '/ladder', label: 'The Ladder', optional: true },
   { href: '/audit', label: 'Audit' },
+  { href: '/journal', label: 'Journal', optional: true },
   { href: '/you', label: 'You', optional: true },
   { href: '/about', label: 'About', optional: true },
 ];
@@ -140,6 +141,7 @@ const nPractices = PRACTICES.filter((p) => p.inPlaybook).length;
               <li><a href="/playbook">The Playbook &mdash; {nPractices} practices</a></li>
               <li><a href="/judging">The Judgment Checklist</a></li>
               <li><a href="/reflect">Reflect &mdash; {REFLECTION_TOTAL} questions</a></li>
+              <li><a href="/journal">The journal</a></li>
               <li><a href="/you">Where you stand</a></li>
               <li><a href="/ladder">The Delegation Ladder</a></li>
               <li><a href="/audit">Cognitive Autonomy Audit</a></li>

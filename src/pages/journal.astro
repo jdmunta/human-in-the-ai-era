@@ -1,0 +1,382 @@
+---
+import Base from '../layouts/Base.astro';
+import { REFLECTIONS } from '../data/reflections';
+import { getCollection } from 'astro:content';
+
+const topics = await getCollection('topics');
+const kicker = Object.fromEntries(topics.map((t) => [t.id, t.data.kicker]));
+const prompts = REFLECTIONS.map((r) => ({ q: r.q, topic: r.topic, kicker: kicker[r.topic] ?? r.topic }));
+---
+
+<Base
+  title="The journal — Human in the AI Era"
+  description="A private, unassisted journal. One rotating question a day drawn from the essays, or write freely. Everything stays in your browser."
+  ogSlug="journal"
+>
+  <div class="wrap">
+    <header class="jhead">
+      <p class="label">Private · unassisted · {prompts.length} prompts</p>
+      <h1>The journal.</h1>
+      <p class="jhead__sub">
+        The <a class="link" href="/reflect">reflect</a> page asks its questions
+        once. This one asks a different one every day and keeps what you wrote,
+        so you can find out later whether you still mean it.
+      </p>
+
+      <aside class="creed">
+        <span class="label">Why there is no help button here</span>
+        <p>
+          Nothing on this page will offer to draft, polish, expand or summarise
+          anything. That is not an omission. The
+          <a class="link" href="/topics/cognitive-fitness">argument on this site</a>
+          is that a first draft is where you discover what you actually think,
+          and that a generated one skips the discovery while leaving you
+          convinced it happened. A journal that writes itself is a record of
+          nobody.
+        </p>
+      </aside>
+    </header>
+
+    <!-- composer -->
+    <section class="compose">
+      <div class="compose__head">
+        <span class="label" id="today">Today</span>
+        <div class="compose__acts">
+          <button class="linkbtn" id="shuffle" type="button">Another question</button>
+          <button class="linkbtn" id="freeform" type="button">Write freely instead</button>
+        </div>
+      </div>
+
+      <p class="prompt" id="prompt">…</p>
+      <p class="prompt__src label" id="promptsrc"></p>
+
+      <textarea id="body" rows="7" placeholder="No one will read this but you." aria-label="Journal entry"></textarea>
+
+      <div class="compose__foot">
+        <span class="label" id="words">0 words</span>
+        <button class="btn" id="save" type="button" disabled>Save entry</button>
+        <span class="label saved" id="saved" hidden>Saved</span>
+      </div>
+    </section>
+
+    <!-- stats -->
+    <section class="stats" id="stats" hidden>
+      <div><span class="label">Entries</span><b id="s-entries">0</b></div>
+      <div><span class="label">Words</span><b id="s-words">0</b></div>
+      <div><span class="label">Streak</span><b id="s-streak">0</b></div>
+      <div><span class="label">Since</span><b id="s-since">—</b></div>
+    </section>
+
+    <!-- entries -->
+    <section class="entries">
+      <div class="entries__head">
+        <h2 class="label">Past entries</h2>
+        <div class="entries__acts">
+          <input id="filter" type="search" placeholder="Filter…" aria-label="Filter entries" />
+          <button class="linkbtn" id="export" type="button">Export as markdown</button>
+          <button class="linkbtn" id="wipe" type="button">Erase all</button>
+        </div>
+      </div>
+      <ol id="list"></ol>
+      <p class="empty" id="empty">Nothing yet. The first one is the hard one.</p>
+    </section>
+  </div>
+</Base>
+
+<script is:inline define:vars={{ prompts }}>
+  (function () {
+    var KEY = 'journal-entries';
+    var el = function (id) { return document.getElementById(id); };
+    var body = el('body'), list = el('list'), promptEl = el('prompt'), srcEl = el('promptsrc');
+    if (!body) return;
+
+    var entries = [];
+    try { entries = JSON.parse(localStorage.getItem(KEY) || '[]'); } catch (e) {}
+
+    // ---- prompt selection: same question for everyone on a given day ----
+    var DAY = 86400000;
+    function dayIndex(d) { return Math.floor(d / DAY); }
+    var offset = 0, freeform = false;
+    function currentPrompt() {
+      if (freeform) return null;
+      return prompts[(dayIndex(Date.now()) + offset) % prompts.length];
+    }
+    function paintPrompt() {
+      var p = currentPrompt();
+      if (!p) {
+        promptEl.textContent = 'Write about whatever is actually on your mind.';
+        promptEl.classList.add('is-free');
+        srcEl.textContent = '';
+      } else {
+        promptEl.textContent = p.q;
+        promptEl.classList.remove('is-free');
+        srcEl.textContent = p.kicker;
+      }
+    }
+
+    function fmt(ts) {
+      var d = new Date(ts);
+      return d.toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' });
+    }
+    function words(s) { return s.trim() ? s.trim().split(/\s+/).length : 0; }
+
+    // ---- stats ----
+    function streak() {
+      if (!entries.length) return 0;
+      var days = {};
+      entries.forEach(function (e) { days[dayIndex(e.at)] = true; });
+      var today = dayIndex(Date.now()), n = 0, d = today;
+      if (!days[d]) d -= 1;               // a streak survives until today ends
+      while (days[d]) { n++; d--; }
+      return n;
+    }
+    function paintStats() {
+      var st = el('stats');
+      st.hidden = !entries.length;
+      if (!entries.length) return;
+      el('s-entries').textContent = entries.length;
+      el('s-words').textContent = entries.reduce(function (n, e) { return n + words(e.body); }, 0).toLocaleString();
+      var s = streak();
+      el('s-streak').textContent = s + (s === 1 ? ' day' : ' days');
+      el('s-since').textContent = fmt(Math.min.apply(null, entries.map(function (e) { return e.at; })));
+    }
+
+    // ---- list ----
+    function esc(s) {
+      return s.replace(/[&<>"]/g, function (c) {
+        return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c];
+      });
+    }
+    function paintList() {
+      var q = el('filter').value.trim().toLowerCase();
+      var shown = entries
+        .slice()
+        .sort(function (a, b) { return b.at - a.at; })
+        .filter(function (e) {
+          return !q || e.body.toLowerCase().indexOf(q) > -1 ||
+                 (e.prompt || '').toLowerCase().indexOf(q) > -1;
+        });
+      el('empty').hidden = entries.length > 0 && shown.length > 0;
+      if (!entries.length) el('empty').textContent = 'Nothing yet. The first one is the hard one.';
+      else if (!shown.length) el('empty').textContent = 'No entry matches that.';
+
+      list.innerHTML = shown.map(function (e) {
+        return '<li class="entry" data-id="' + e.id + '">' +
+          '<div class="entry__meta">' +
+            '<span class="label">' + fmt(e.at) + '</span>' +
+            '<span class="label entry__w">' + words(e.body) + ' words</span>' +
+          '</div>' +
+          (e.prompt ? '<p class="entry__q">' + esc(e.prompt) + '</p>' : '<p class="entry__q is-free">Free writing</p>') +
+          '<p class="entry__b">' + esc(e.body) + '</p>' +
+          '<div class="entry__acts">' +
+            '<button class="linkbtn" data-act="edit">Edit</button>' +
+            '<button class="linkbtn" data-act="del">Delete</button>' +
+          '</div>' +
+        '</li>';
+      }).join('');
+    }
+
+    function persist() {
+      try { localStorage.setItem(KEY, JSON.stringify(entries)); } catch (e) {}
+      paintStats(); paintList();
+    }
+
+    // ---- composing ----
+    function onInput() {
+      var n = words(body.value);
+      el('words').textContent = n + (n === 1 ? ' word' : ' words');
+      el('save').disabled = n === 0;
+      el('saved').hidden = true;
+    }
+    body.addEventListener('input', onInput);
+
+    el('save').addEventListener('click', function () {
+      if (!words(body.value)) return;
+      var p = currentPrompt();
+      entries.push({
+        id: String(Date.now()) + Math.floor(Math.random() * 1000),
+        at: Date.now(),
+        prompt: p ? p.q : null,
+        body: body.value.trim(),
+      });
+      body.value = '';
+      onInput();
+      el('saved').hidden = false;
+      persist();
+    });
+
+    el('shuffle').addEventListener('click', function () { freeform = false; offset++; paintPrompt(); });
+    el('freeform').addEventListener('click', function () { freeform = !freeform; paintPrompt(); });
+    el('filter').addEventListener('input', paintList);
+
+    list.addEventListener('click', function (ev) {
+      var btn = ev.target.closest('[data-act]');
+      if (!btn) return;
+      var li = btn.closest('.entry');
+      var id = li.dataset.id;
+      var i = entries.findIndex(function (e) { return e.id === id; });
+      if (i < 0) return;
+      if (btn.dataset.act === 'del') {
+        entries.splice(i, 1);
+        persist();
+      } else {
+        // Pull it back into the composer rather than editing in place.
+        body.value = entries[i].body;
+        freeform = !entries[i].prompt;
+        if (entries[i].prompt) {
+          var idx = prompts.findIndex(function (p) { return p.q === entries[i].prompt; });
+          if (idx > -1) offset = idx - (dayIndex(Date.now()) % prompts.length);
+        }
+        entries.splice(i, 1);
+        paintPrompt(); onInput(); persist();
+        body.focus();
+        body.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    });
+
+    el('export').addEventListener('click', function (ev) {
+      if (!entries.length) return;
+      var md = '# Journal — Human in the AI Era\n\n' +
+        entries.slice().sort(function (a, b) { return a.at - b.at; }).map(function (e) {
+          return '## ' + fmt(e.at) + '\n\n' +
+            (e.prompt ? '> ' + e.prompt + '\n\n' : '') + e.body + '\n';
+        }).join('\n');
+      navigator.clipboard.writeText(md).then(function () {
+        var b = ev.target, old = b.textContent;
+        b.textContent = 'Copied';
+        setTimeout(function () { b.textContent = old; }, 1600);
+      });
+    });
+
+    el('wipe').addEventListener('click', function () {
+      entries = [];
+      persist();
+    });
+
+    el('today').textContent = new Date().toLocaleDateString(undefined,
+      { weekday: 'long', day: 'numeric', month: 'long' });
+    paintPrompt(); onInput(); paintStats(); paintList();
+  })();
+</script>
+
+<style>
+  .jhead { padding-block: clamp(3rem, 7vw, 5rem) 1.5rem; max-width: 46rem; }
+  .jhead h1 { font-size: var(--t-h1); margin-block: 1rem 1.2rem; }
+  .jhead__sub { color: var(--ink-soft); max-width: 54ch; }
+
+  .creed {
+    margin-top: 1.8rem;
+    border-left: 3px solid var(--machine);
+    background: var(--machine-wash);
+    padding: 1.2rem 1.3rem;
+  }
+  .creed .label { display: block; color: var(--machine); margin-bottom: 0.6rem; }
+  .creed p { color: var(--ink-soft); line-height: 1.6; max-width: 58ch; }
+
+  .compose {
+    border-top: 2px solid var(--ink);
+    padding-top: 1.2rem;
+    margin-bottom: 2.6rem;
+  }
+  .compose__head {
+    display: flex; justify-content: space-between; align-items: baseline;
+    gap: 1rem; flex-wrap: wrap; margin-bottom: 1.1rem;
+  }
+  .compose__acts { display: flex; gap: 1.2rem; }
+  .prompt {
+    font-family: var(--display);
+    font-size: clamp(1.2rem, 1.05rem + 0.7vw, 1.5rem);
+    font-weight: 430;
+    line-height: 1.35;
+    max-width: 46ch;
+    margin-bottom: 0.5rem;
+  }
+  .prompt.is-free { color: var(--ink-soft); font-style: italic; }
+  .prompt__src { display: block; color: var(--human); margin-bottom: 1.1rem; min-height: 1em; }
+
+  textarea {
+    width: 100%;
+    background: var(--paper-raised);
+    border: 1px solid var(--rule);
+    border-left: 2px solid var(--rule-strong);
+    color: var(--ink);
+    font-family: var(--body);
+    font-size: 1.05rem;
+    line-height: 1.65;
+    padding: 0.9rem 1rem;
+    resize: vertical;
+  }
+  textarea:focus { outline: none; border-left-color: var(--human); }
+  textarea::placeholder { color: var(--ink-faint); }
+
+  .compose__foot {
+    display: flex; align-items: center; gap: 1.2rem;
+    margin-top: 0.9rem; flex-wrap: wrap;
+  }
+  .btn {
+    font-family: var(--mono); font-size: var(--t-small);
+    letter-spacing: 0.1em; text-transform: uppercase;
+    background: var(--ink); color: var(--paper);
+    border: 1px solid var(--ink); padding: 0.7rem 1.4rem; cursor: pointer;
+    transition: background 0.25s var(--ease), border-color 0.25s var(--ease);
+  }
+  .btn:hover:not(:disabled) { background: var(--human); border-color: var(--human); color: #fff; }
+  .btn:disabled { opacity: 0.4; cursor: not-allowed; }
+  .saved { color: var(--human); }
+  /* Entry actions are injected via innerHTML and so carry no scoped attribute;
+     this rule has to be global to reach them. */
+  :global(.linkbtn) {
+    background: none; border: 0; padding: 0;
+    font-family: var(--mono); font-size: var(--t-micro);
+    letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--ink-faint); cursor: pointer;
+    text-decoration: underline; text-underline-offset: 3px;
+  }
+  :global(.linkbtn:hover) { color: var(--human); }
+
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(8rem, 100%), 1fr));
+    gap: 1px;
+    background: var(--rule);
+    border: 1px solid var(--rule);
+    margin-bottom: 3rem;
+  }
+  .stats > div { background: var(--paper); padding: 1rem 1.1rem; }
+  .stats .label { display: block; margin-bottom: 0.4rem; }
+  .stats b {
+    font-family: var(--display); font-size: 1.3rem; font-weight: 560;
+    font-variant-numeric: lining-nums;
+  }
+
+  .entries { padding-bottom: 5rem; }
+  .entries__head {
+    display: flex; justify-content: space-between; align-items: center;
+    gap: 1rem; flex-wrap: wrap;
+    border-top: 2px solid var(--ink); padding-top: 1.1rem; margin-bottom: 1rem;
+  }
+  .entries__head h2 { font-weight: 500; }
+  .entries__acts { display: flex; gap: 1.2rem; align-items: center; flex-wrap: wrap; }
+  #filter {
+    background: transparent; border: 0; border-bottom: 1px solid var(--rule-strong);
+    font-family: var(--mono); font-size: var(--t-micro); letter-spacing: 0.08em;
+    color: var(--ink); padding: 0.3rem 0; width: 8rem;
+  }
+  #filter:focus { outline: none; border-bottom-color: var(--human); }
+
+  #list { list-style: none; margin: 0; padding: 0; }
+  :global(.entry) { padding: 1.3rem 0; border-bottom: 1px solid var(--rule); }
+  :global(.entry__meta) { display: flex; gap: 1.2rem; margin-bottom: 0.6rem; }
+  :global(.entry__w) { color: var(--ink-faint); }
+  :global(.entry__q) {
+    font-family: var(--display); font-size: 1.03rem; font-weight: 540;
+    line-height: 1.35; margin-bottom: 0.5rem; max-width: 52ch;
+  }
+  :global(.entry__q.is-free) { font-weight: 400; font-style: italic; color: var(--ink-faint); }
+  :global(.entry__b) {
+    color: var(--ink-soft); line-height: 1.6; max-width: 64ch;
+    white-space: pre-wrap;
+  }
+  :global(.entry__acts) { display: flex; gap: 1.2rem; margin-top: 0.7rem; }
+  .empty { color: var(--ink-faint); padding: 1.6rem 0; font-family: var(--mono); font-size: var(--t-small); }
+</style>
