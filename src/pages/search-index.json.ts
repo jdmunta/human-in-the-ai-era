@@ -19,6 +19,29 @@ function toText(mdx: string): string {
     .join(' · ');
 }
 
+/** github-slugger-compatible enough for the ids Astro emits on h2s. */
+function slugify(t: string) {
+  return t
+    .toLowerCase()
+    .replace(/[^\p{L}\p{N}\s-]/gu, '')
+    .trim()
+    .replace(/\s+/g, '-');
+}
+
+/** Split an essay body at its h2s, keeping each section's prose with its heading. */
+function sectionsOf(mdx: string) {
+  const parts = mdx.split(/^##\s+/m).slice(1);
+  return parts.map((chunk) => {
+    const nl = chunk.indexOf('\n');
+    const heading = chunk.slice(0, nl < 0 ? undefined : nl).trim();
+    return {
+      heading,
+      slug: slugify(heading),
+      text: toText(chunk.slice(nl < 0 ? 0 : nl)),
+    };
+  });
+}
+
 export async function GET() {
   const topics = (await getCollection('topics')).sort(
     (a, b) => a.data.order - b.data.order
@@ -32,7 +55,9 @@ export async function GET() {
     summary: t.data.summary,
     reading: t.data.reading,
     headings: (t.body ?? '').match(/^##\s+(.+)$/gm)?.map((h) => h.replace(/^##\s+/, '')) ?? [],
-    text: toText(t.body ?? ''),
+    // Section-level entries so a hit can land on the right heading, not the page top.
+    sections: sectionsOf(t.body ?? ''),
+    intro: toText((t.body ?? '').split(/^##\s+/m)[0] ?? ''),
   }));
 
   // Non-essay pages worth finding too.

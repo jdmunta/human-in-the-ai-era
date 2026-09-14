@@ -29,10 +29,10 @@ const RUNGS = [
           <span class="rung__n">{String(r.n)}</span>
           <span class="rung__bar" aria-hidden="true" />
           <div class="rung__body">
-            <h4 class="rung__name">
+            <span class="rung__name">
               {r.name}
               <span class="rung__who">{r.who}</span>
-            </h4>
+            </span>
             <p class="rung__gloss">{r.gloss}</p>
             {notes[r.n] && <p class="rung__note">{notes[r.n]}</p>}
           </div>
@@ -75,6 +75,7 @@ const RUNGS = [
     transition: opacity 0.3s var(--ease);
   }
   .rung__name {
+    display: flex;
     font-family: var(--display);
     font-size: 1.1rem;
     font-weight: 560;

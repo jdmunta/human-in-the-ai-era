@@ -25,9 +25,10 @@ const topics = (await getCollection('topics')).sort(
       </p>
     </header>
 
+    <h2 class="sectionhead label">Where to start</h2>
     <Paths />
 
-    <div class="eyebrow" style="margin-top:3.5rem"><span class="label">All thirteen, in order</span></div>
+    <h2 class="sectionhead label" style="margin-top:3.5rem">All thirteen, in order</h2>
     <ol class="list">
       {
         topics.map((t) => (
@@ -57,6 +58,14 @@ const topics = (await getCollection('topics')).sort(
   }
   .phead__sub { color: var(--ink-soft); max-width: 52ch; }
 
+  .sectionhead {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    font-weight: 500;
+    margin-bottom: 1.4rem;
+  }
+  .sectionhead::after { content: ''; flex: 1; height: 1px; background: var(--rule); }
   .list { list-style: none; margin: 0 0 5rem; padding: 0; }
   .row { border-bottom: 1px solid var(--rule); }
   .row:first-child { border-top: 1px solid var(--rule); }

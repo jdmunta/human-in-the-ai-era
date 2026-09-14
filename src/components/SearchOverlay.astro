@@ -108,10 +108,11 @@
       var hits = [];
 
       (data.docs || []).forEach(function (d) {
+        var body = d.intro + ' ' + d.sections.map(function (x) { return x.heading + ' ' + x.text; }).join(' ');
         var score = 0, hay = {
           title: d.title.toLowerCase(), kicker: d.kicker.toLowerCase(),
           summary: d.summary.toLowerCase(), heads: d.headings.join(' ').toLowerCase(),
-          text: d.text.toLowerCase()
+          text: body.toLowerCase()
         };
         toks.forEach(function (t) {
           if (hay.title.indexOf(t) > -1) score += 8;
@@ -129,7 +130,21 @@
           var pm = hay.text.split(q).length - 1;
           score += Math.min(pm, 5) * 6;
         }
-        if (score > 0) hits.push({ score: score, kind: 'essay', d: d });
+        if (score > 0) {
+          // Which section matches best? A hit should land on the argument, not the top.
+          var best = null;
+          d.sections.forEach(function (sec) {
+            var sh = (sec.heading + ' ' + sec.text).toLowerCase();
+            var sc = 0;
+            toks.forEach(function (t) {
+              if (sec.heading.toLowerCase().indexOf(t) > -1) sc += 5;
+              sc += Math.min(sh.split(t).length - 1, 4);
+            });
+            if (toks.length > 1 && sh.indexOf(q) > -1) sc += 10;
+            if (sc > 0 && (!best || sc > best.sc)) best = { sc: sc, sec: sec };
+          });
+          hits.push({ score: score, kind: 'essay', d: d, sec: best ? best.sec : null });
+        }
       });
 
       (data.pages || []).forEach(function (p) {
@@ -148,13 +163,17 @@
 
       out.innerHTML = hits.map(function (h, i) {
         var href = h.kind === 'essay' ? '/topics/' + h.d.slug + '/' : h.d.path;
+        if (h.sec) href += '#' + h.sec.slug;
         var meta = h.kind === 'essay'
           ? h.d.kicker + ' · ' + h.d.reading
           : h.d.kicker;
-        var body = h.kind === 'essay' ? snippet(h.d.text, toks) : h.d.summary;
+        var body = h.kind === 'essay'
+          ? snippet(h.sec ? h.sec.text : h.d.intro, toks)
+          : h.d.summary;
         return '<a class="hit" href="' + href + '" data-i="' + i + '">' +
           '<span class="label hit__k">' + esc(meta) + '</span>' +
           '<span class="hit__t">' + mark(h.d.title, toks) + '</span>' +
+          (h.sec ? '<span class="hit__sec">§ ' + mark(h.sec.heading, toks) + '</span>' : '') +
           '<span class="hit__s">' + mark(body, toks) + '</span>' +
         '</a>';
       }).join('');
@@ -291,6 +310,14 @@
     font-weight: 540;
     margin-bottom: 0.3rem;
     letter-spacing: -0.008em;
+  }
+  :global(.hit__sec) {
+    display: block;
+    font-family: var(--mono);
+    font-size: var(--t-micro);
+    letter-spacing: 0.04em;
+    color: var(--human);
+    margin-bottom: 0.35rem;
   }
   :global(.hit__s) {
     display: block;

@@ -50,9 +50,10 @@ in it depends on a particular timeline being right.
 | `/glossary` | 28 concepts defined — verification gap, jagged frontier, moral crumple zone, latent deprivation, phronesis, conviviality. |
 | `/rss.xml` | Feed of all essays. |
 
-Site-wide search is on `/` or `⌘K` — a ~90KB index built at compile time from
-the MDX, fetched lazily on first open, with phrase-match ranking. No search
-service, no runtime dependency.
+Site-wide search is on `/` or `⌘K` — a ~110KB index built at compile time from
+the MDX, fetched lazily on first open, with phrase-match ranking. Results are
+section-targeted: a hit deep-links to the `h2` that actually matched rather
+than the top of the page. No search service, no runtime dependency.
 
 `/topics` opens with **reading paths** — curated routes through the essays
 ("if you have twenty minutes", "if you are choosing a degree", "if you lead
