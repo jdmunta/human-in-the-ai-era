@@ -1,49 +1,7 @@
 ---
 import Base from '../layouts/Base.astro';
 
-const SOURCES = [
-  { g: 'Automation & judgment', items: [
-    'Bainbridge, L. (1983). “Ironies of Automation.” <em>Automatica</em> 19(6).',
-    'BEA France (2012). <em>Final Report on the accident to Airbus A330-203, flight AF447</em>.',
-    'Parasuraman, R. & Riley, V. (1997). “Humans and Automation: Use, Misuse, Disuse, Abuse.” <em>Human Factors</em> 39(2).',
-    'Skitka, L., Mosier, K. & Burdick, M. (1999). “Does automation bias decision-making?” <em>IJHCS</em> 51.',
-    'Dell’Acqua, F. et al. (2023). “Navigating the Jagged Technological Frontier.” Harvard Business School WP 24-013.',
-  ]},
-  { g: 'Responsibility', items: [
-    'Matthias, A. (2004). “The responsibility gap.” <em>Ethics and Information Technology</em> 6(3).',
-    'Elish, M. C. (2019). “Moral Crumple Zones.” <em>Engaging Science, Technology, and Society</em> 5.',
-  ]},
-  { g: 'Meaning & purpose', items: [
-    'Jahoda, M., Lazarsfeld, P. & Zeisel, H. (1933). <em>Marienthal: The Sociography of an Unemployed Community</em>.',
-    'Frankl, V. (1946). <em>Man’s Search for Meaning</em>.',
-    'Weber, M. (1905). <em>The Protestant Ethic and the Spirit of Capitalism</em>.',
-    'Keynes, J. M. (1930). “Economic Possibilities for our Grandchildren.”',
-    'Deci, E. & Ryan, R. — self-determination theory (autonomy, competence, relatedness).',
-  ]},
-  { g: 'Curiosity & learning', items: [
-    'Loewenstein, G. (1994). “The Psychology of Curiosity.” <em>Psychological Bulletin</em> 116(1).',
-    'Bjork, R. A. & Bjork, E. L. — desirable difficulties; spacing, interleaving, retrieval practice.',
-    'Roediger, H. & Karpicke, J. (2006). “Test-Enhanced Learning.” <em>Psychological Science</em> 17(3).',
-    'Bloom, B. (1984). “The 2 Sigma Problem.” <em>Educational Researcher</em> 13(6). <span class="caveat">Magnitude widely disputed; direction is not.</span>',
-    'Caplan, B. (2018). <em>The Case Against Education</em>.',
-  ]},
-  { g: 'Cognition & offloading', items: [
-    'Clark, A. & Chalmers, D. (1998). “The Extended Mind.” <em>Analysis</em> 58(1).',
-    'Sparrow, B., Liu, J. & Wegner, D. (2011). “Google Effects on Memory.” <em>Science</em> 333.',
-    'Risko, E. & Gilbert, S. (2016). “Cognitive Offloading.” <em>Trends in Cognitive Sciences</em> 20(9).',
-    'Plato, <em>Phaedrus</em> (the complaint against writing); Aristotle, <em>Nicomachean Ethics</em> (phronesis).',
-  ]},
-  { g: 'Work & economy', items: [
-    'Autor, D. (2015). “Why Are There Still So Many Jobs?” <em>Journal of Economic Perspectives</em> 29(3).',
-    'Acemoglu, D. & Restrepo, P. — the task framework; displacement vs. reinstatement effects.',
-    'Bessen, J. (2015). <em>Learning by Doing</em> — the ATM and bank teller case.',
-  ]},
-  { g: 'Civilization', items: [
-    'Sen, A. (1999). <em>Development as Freedom</em>; Nussbaum, M. (2011). <em>Creating Capabilities</em>.',
-    'Illich, I. (1973). <em>Tools for Conviviality</em>.',
-    'Kuznets, S. (1934). US Congress national income report — the original warning about GDP as a welfare measure.',
-  ]},
-];
+import { SOURCES, SOURCE_GROUPS } from '../data/sources';
 ---
 
 <Base
@@ -61,7 +19,7 @@ const SOURCES = [
       <p>
         A working argument about how human beings live well when thinking,
         reasoning and cognitive labour are increasingly performed by machines.
-        Twelve essays, a delegation framework, and a self-assessment. It is not
+        Thirteen essays, a delegation framework, and a self-assessment. It is not
         a news site and it is not futurism — it does not forecast capability, and
         nothing in it depends on a particular timeline being right.
       </p>
@@ -118,12 +76,15 @@ const SOURCES = [
       </p>
 
       {
-        SOURCES.map((s) => (
+        SOURCE_GROUPS.map((g) => (
           <section class="srcgroup">
-            <p class="label">{s.g}</p>
+            <p class="label">{g}</p>
             <ul>
-              {s.items.map((i) => (
-                <li set:html={i} />
+              {SOURCES.filter((s) => s.group === g).map((s) => (
+                <li>
+                  <span set:html={s.cite} />
+                  {s.caveat && <span class="caveat">{s.caveat}</span>}
+                </li>
               ))}
             </ul>
           </section>

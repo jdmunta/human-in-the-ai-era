@@ -579,6 +579,56 @@ export const PRACTICES: Practice[] = [
     "cadence": "daily",
     "rung": 2,
     "inPlaybook": true
+  },
+  {
+    "topic": "titles",
+    "kicker": "Titles & Pay",
+    "n": 1,
+    "title": "Ask what your title actually authorises",
+    "body": "Not what it sounds like — what you can decide alone, what you can refuse, and what your signature binds. Most people cannot answer this about their own role, which is itself the finding.",
+    "cadence": "periodic",
+    "rung": 5,
+    "inPlaybook": true
+  },
+  {
+    "topic": "titles",
+    "kicker": "Titles & Pay",
+    "n": 2,
+    "title": "Separate your pay-for-time from your pay-for-exposure",
+    "body": "Which part of your compensation is for hours present, and which is for risk carried, decisions owned or relationships held? The first is the shrinking half.",
+    "cadence": "periodic",
+    "rung": 5,
+    "inPlaybook": true
+  },
+  {
+    "topic": "titles",
+    "kicker": "Titles & Pay",
+    "n": 3,
+    "title": "Move toward roles where refusal is part of the job",
+    "body": "The authority to stop something is the part of senior work that machines cannot absorb. If nothing you do involves a defensible no, you are positioned on the throughput ladder.",
+    "cadence": "structural",
+    "rung": 5,
+    "inPlaybook": true
+  },
+  {
+    "topic": "titles",
+    "kicker": "Titles & Pay",
+    "n": 4,
+    "title": "If you set titles, make them track liability",
+    "body": "Give the name, the decision rights and the answerability to the same person. Splitting them is how you manufacture crumple zones without meaning to.",
+    "cadence": "structural",
+    "rung": 2,
+    "inPlaybook": true
+  },
+  {
+    "topic": "titles",
+    "kicker": "Titles & Pay",
+    "n": 5,
+    "title": "Rebuild the five latents outside the job",
+    "body": "Structure, contact, collective purpose, status, being depended upon. You may not need a job; you do need these, and no employer is going to supply them for much longer by default.",
+    "cadence": "standing",
+    "rung": 5,
+    "inPlaybook": true
   }
 ];
 

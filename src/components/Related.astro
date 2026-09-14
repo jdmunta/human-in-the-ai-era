@@ -1,0 +1,116 @@
+---
+import { getCollection } from 'astro:content';
+import { GLOSSARY } from '../data/glossary';
+
+interface Props { topic: string; body: string }
+const { topic, body } = Astro.props;
+
+const all = await getCollection('topics');
+
+/** Which glossary concepts a given essay develops or mentions. */
+function conceptsOf(slug: string, text: string) {
+  const hay = text.toLowerCase();
+  return new Set(
+    GLOSSARY.filter((t) => {
+      if (t.topic === slug) return true;
+      return [t.term, t.aka].filter(Boolean).some((n) => hay.includes((n as string).toLowerCase()));
+    }).map((t) => t.term)
+  );
+}
+
+const mine = conceptsOf(topic, body);
+
+/** Essays this one links to — a deliberate signal, stronger than vocabulary overlap. */
+const linksOut = new Set(
+  [...body.matchAll(/\/topics\/([a-z-]+)/g)].map((m) => m[1]).filter((x) => x !== topic)
+);
+
+const scored = all
+  .filter((e) => e.id !== topic)
+  .map((e) => {
+    const theirs = conceptsOf(e.id, e.body ?? '');
+    const shared = [...mine].filter((c) => theirs.has(c));
+    const linksBack = new RegExp(`/topics/${topic}\\b`).test(e.body ?? '');
+    const score = shared.length * 2 + (linksOut.has(e.id) ? 4 : 0) + (linksBack ? 3 : 0);
+    let reason: string;
+    if (shared.length) {
+      reason =
+        'Shares ' +
+        shared.slice(0, 2).map((c) => c.toLowerCase()).join(' and ') +
+        (shared.length > 2 ? `, and ${shared.length - 2} more` : '') + '.';
+    } else if (linksOut.has(e.id)) {
+      reason = 'Cited by this essay.';
+    } else {
+      reason = 'Cites this essay.';
+    }
+    return { entry: e, score, reason };
+  })
+  .filter((r) => r.score > 0)
+  .sort((a, b) => b.score - a.score || a.entry.data.order - b.entry.data.order)
+  .slice(0, 3);
+---
+
+{
+  scored.length > 0 && (
+    <aside class="related">
+      <span class="label">Nearest arguments</span>
+      <ul>
+        {scored.map((r) => (
+          <li>
+            <a href={`/topics/${r.entry.id}`}>
+              <span class="related__k label">{r.entry.data.kicker}</span>
+              <span class="related__t">{r.entry.data.title}</span>
+              <span class="related__s">{r.reason}</span>
+            </a>
+          </li>
+        ))}
+      </ul>
+    </aside>
+  )
+}
+
+<style>
+  .related {
+    grid-column: full;
+    margin-top: 3rem;
+    border-top: 2px solid var(--ink);
+    padding-top: 1.2rem;
+  }
+  .related > .label { display: block; margin-bottom: 1rem; color: var(--ink); }
+  ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(15rem, 100%), 1fr));
+    gap: 1px;
+    background: var(--rule);
+    border: 1px solid var(--rule);
+  }
+  li { background: var(--paper); }
+  a {
+    display: block;
+    padding: 1.1rem 1.1rem 1.2rem;
+    text-decoration: none;
+    height: 100%;
+    transition: background 0.25s var(--ease);
+  }
+  a:hover { background: var(--paper-raised); }
+  .related__k { display: block; margin-bottom: 0.45rem; }
+  .related__t {
+    display: block;
+    font-family: var(--display);
+    font-size: 1.08rem;
+    font-weight: 550;
+    line-height: 1.25;
+    margin-bottom: 0.5rem;
+    transition: color 0.25s var(--ease);
+  }
+  a:hover .related__t { color: var(--human); }
+  .related__s {
+    display: block;
+    font-size: 0.87rem;
+    line-height: 1.45;
+    color: var(--ink-faint);
+  }
+</style>

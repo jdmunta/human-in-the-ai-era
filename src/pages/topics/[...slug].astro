@@ -4,6 +4,8 @@ import Base from '../../layouts/Base.astro';
 import Contents from '../../components/Contents.astro';
 import Concepts from '../../components/Concepts.astro';
 import ReadTracker from '../../components/ReadTracker.astro';
+import Sources from '../../components/Sources.astro';
+import Related from '../../components/Related.astro';
 
 export async function getStaticPaths() {
   const topics = (await getCollection('topics')).sort(
@@ -61,6 +63,10 @@ const n = String(entry.data.order).padStart(2, '0');
         <Content />
 
         <Concepts body={entry.body ?? ''} topic={entry.id} />
+
+        <Sources topic={entry.id} />
+
+        <Related topic={entry.id} body={entry.body ?? ''} />
 
         <nav class="pagenav" aria-label="Adjacent topics">
           {

@@ -1,0 +1,162 @@
+---
+import Base from '../layouts/Base.astro';
+import { getCollection, render } from 'astro:content';
+
+const topics = (await getCollection('topics')).sort((a, b) => a.data.order - b.data.order);
+const rendered = await Promise.all(
+  topics.map(async (t) => ({ data: t.data, id: t.id, Content: (await render(t)).Content }))
+);
+const totalMin = topics.reduce((n, t) => n + (parseInt(t.data.reading, 10) || 0), 0);
+const wordCount = topics.reduce(
+  (n, t) => n + (t.body ?? '').split(/\s+/).filter(Boolean).length,
+  0
+);
+const words = `about ${(Math.round(wordCount / 1000) * 1000).toLocaleString('en')} words`;
+---
+
+<Base
+  title="The whole argument — Human in the AI Era"
+  description={`All ${topics.length} essays on a single page, in order — for reading offline, printing, or saving as a PDF.`}
+  ogSlug="read"
+>
+  <div class="wrap">
+    <header class="whead">
+      <p class="label">Single page · {topics.length} essays · ~{totalMin} min</p>
+      <h1>The whole argument, in order.</h1>
+      <p class="whead__sub">
+        Every essay on one page, {words}. Built for reading offline, printing,
+        or saving as a PDF — the print stylesheet drops the navigation, unfloats
+        the sidenotes into the body and avoids breaking inside tables and
+        callouts.
+      </p>
+      <p class="whead__act">
+        <button class="btn" id="printbtn" type="button">Print or save as PDF</button>
+        <a class="link" href="/topics">Read them separately &rarr;</a>
+      </p>
+    </header>
+
+    <nav class="wtoc" aria-label="Contents">
+      <span class="label">Contents</span>
+      <ol>
+        {
+          rendered.map((t) => (
+            <li>
+              <a href={`#${t.id}`}>
+                <span class="wtoc__n">{String(t.data.order).padStart(2, '0')}</span>
+                <span class="wtoc__t">{t.data.title}</span>
+                <span class="wtoc__m label">{t.data.reading}</span>
+              </a>
+            </li>
+          ))
+        }
+      </ol>
+    </nav>
+
+    {
+      rendered.map((t) => (
+        <article class="wessay" id={t.id}>
+          <header class="wessay__head">
+            <p class="wessay__crumb">
+              <span class="label">{String(t.data.order).padStart(2, '0')}</span>
+              <span class="label wessay__k">{t.data.kicker}</span>
+              <span class="label">{t.data.reading}</span>
+            </p>
+            <h2>{t.data.title}</h2>
+            <p class="wessay__tension">{t.data.tension}</p>
+          </header>
+          <div class="prose">
+            <t.Content />
+          </div>
+          <p class="wessay__back">
+            <a class="link" href="#top">Back to contents &uarr;</a>
+            <a class="link" href={`/topics/${t.id}`}>Open on its own page &rarr;</a>
+          </p>
+        </article>
+      ))
+    }
+  </div>
+</Base>
+
+<script is:inline>
+  document.getElementById('printbtn').addEventListener('click', function () { window.print(); });
+</script>
+
+<style>
+  .whead { padding-block: clamp(3rem, 7vw, 5rem) 2rem; max-width: 46rem; }
+  .whead h1 { font-size: var(--t-h1); margin-block: 1rem 1.2rem; }
+  .whead__sub { color: var(--ink-soft); max-width: 56ch; }
+  .whead__act {
+    display: flex;
+    align-items: center;
+    gap: 1.6rem;
+    flex-wrap: wrap;
+    margin-top: 1.8rem;
+  }
+  .btn {
+    font-family: var(--mono); font-size: var(--t-small);
+    letter-spacing: 0.1em; text-transform: uppercase;
+    background: var(--ink); color: var(--paper);
+    border: 1px solid var(--ink); padding: 0.8rem 1.5rem; cursor: pointer;
+    transition: background 0.25s var(--ease), border-color 0.25s var(--ease);
+  }
+  .btn:hover { background: var(--human); border-color: var(--human); color: #fff; }
+
+  .wtoc { border-top: 2px solid var(--ink); padding-top: 1.2rem; margin-bottom: 3.5rem; }
+  .wtoc > .label { display: block; margin-bottom: 0.9rem; }
+  .wtoc ol { list-style: none; margin: 0; padding: 0; }
+  .wtoc li { border-bottom: 1px solid var(--rule); }
+  .wtoc a {
+    display: grid;
+    grid-template-columns: 2.4rem 1fr auto;
+    gap: 0.7rem;
+    align-items: baseline;
+    padding: 0.6rem 0;
+    text-decoration: none;
+    transition: padding-left 0.2s var(--ease);
+  }
+  .wtoc a:hover { padding-left: 0.4rem; }
+  .wtoc a:hover .wtoc__t { color: var(--human); }
+  .wtoc__n { font-family: var(--mono); font-size: var(--t-micro); color: var(--ink-faint); }
+  .wtoc__t { font-size: 1rem; }
+  .wtoc__m { white-space: nowrap; }
+
+  .wessay { margin-bottom: 4.5rem; scroll-margin-top: 5rem; }
+  .wessay__head {
+    border-top: 2px solid var(--ink);
+    padding-top: 1.4rem;
+    margin-bottom: 2.2rem;
+  }
+  .wessay__crumb { display: flex; gap: 1.1rem; flex-wrap: wrap; margin-bottom: 1rem; }
+  .wessay__k { color: var(--human); }
+  .wessay h2 {
+    font-family: var(--display);
+    font-size: clamp(1.9rem, 1.4rem + 2vw, 3rem);
+    font-weight: 430;
+    letter-spacing: -0.028em;
+    max-width: 20ch;
+  }
+  .wessay__tension {
+    margin-top: 1rem;
+    max-width: 58ch;
+    color: var(--ink-soft);
+    font-style: italic;
+    line-height: 1.5;
+  }
+  .wessay__back {
+    display: flex;
+    gap: 1.6rem;
+    flex-wrap: wrap;
+    margin-top: 2rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--rule);
+    font-family: var(--mono);
+    font-size: var(--t-small);
+  }
+
+  @media print {
+    .whead__act, .wessay__back, .wtoc a::after { display: none !important; }
+    .wessay { page-break-before: always; margin-bottom: 2rem; }
+    .wessay:first-of-type { page-break-before: avoid; }
+    .wessay__head { border-top: 1px solid #000; }
+  }
+</style>

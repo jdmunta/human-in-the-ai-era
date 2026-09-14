@@ -87,6 +87,13 @@ const RAW: Record<string, string[]> = {
     'What have you accepted recently because it was agreeable rather than because it was right?',
     'How much of what you call a tool problem is actually an undecided question of your own?',
   ],
+  titles: [
+    'What does your title let you refuse?',
+    'Which part of your pay is for hours present, and which is for risk carried?',
+    'If your role were described purely by the decisions you own, how senior would it read?',
+    'Who in your organisation is answerable for the systems you rely on — by name?',
+    'If titles vanished tomorrow, what would status get allocated by instead, where you work?',
+  ],
   steelman: [
     'Which objection did you find most comfortable — and what does that preference tell you?',
     'What would actually change your mind about the argument on this site?',

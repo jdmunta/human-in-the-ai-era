@@ -121,6 +121,11 @@ export const GLOSSARY: Term[] = [
     def: 'The human operator in a highly automated system absorbs the moral and legal force of a failure they had no real capacity to prevent — shielding the system, its designers and its deployers from scrutiny.',
   },
   {
+    term: 'Positional good',
+    topic: 'titles',
+    def: 'Something whose value comes from where it ranks you rather than from what it is. Status is positional, which is why abolishing one hierarchy produces a different one rather than none.',
+  },
+  {
     term: 'Phronesis',
     aka: 'Practical wisdom',
     topic: 'judgment',

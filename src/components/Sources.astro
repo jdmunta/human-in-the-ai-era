@@ -1,0 +1,52 @@
+---
+import { sourcesFor } from '../data/sources';
+interface Props { topic: string }
+const { topic } = Astro.props;
+const items = sourcesFor(topic);
+---
+
+{
+  items.length > 0 && (
+    <aside class="sources">
+      <span class="label">What this essay leans on</span>
+      <ul>
+        {items.map((s) => (
+          <li>
+            <span set:html={s.cite} />
+            {s.caveat && <span class="sources__caveat">{s.caveat}</span>}
+          </li>
+        ))}
+      </ul>
+      <p class="sources__all">
+        <a class="link" href="/about#sources">All sources &rarr;</a>
+      </p>
+    </aside>
+  )
+}
+
+<style>
+  .sources {
+    grid-column: main;
+    margin-top: 2.6rem;
+    padding-top: 1.2rem;
+    border-top: 1px solid var(--rule);
+  }
+  .sources > .label { display: block; margin-bottom: 0.9rem; }
+  ul { list-style: none; margin: 0; padding: 0; }
+  li {
+    font-size: 0.9rem;
+    line-height: 1.55;
+    color: var(--ink-soft);
+    padding: 0.5rem 0;
+    border-bottom: 1px solid var(--rule);
+  }
+  li:first-child { border-top: 1px solid var(--rule); }
+  .sources__caveat {
+    display: block;
+    font-family: var(--mono);
+    font-size: var(--t-micro);
+    color: var(--machine);
+    margin-top: 0.25rem;
+  }
+  .sources__all { margin-top: 0.9rem; font-family: var(--mono); font-size: var(--t-small); }
+</style>
