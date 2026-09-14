@@ -1,0 +1,320 @@
+---
+import Base from '../layouts/Base.astro';
+import { STAGES, SCRUTINY, TOTAL, countAt } from '../data/judging';
+
+const counts = { 1: countAt(1), 2: countAt(2), 3: countAt(3) };
+---
+
+<Base
+  title="The Judgment Checklist — Human in the AI Era"
+  description="Twenty-three questions to ask when you are judging something — staged from framing to accountability, and scaled to whether the decision is reversible and whether a mistake would announce itself."
+  ogSlug="judging"
+>
+  <div class="wrap">
+    <header class="jhead">
+      <p class="label">The instrument · {TOTAL} questions</p>
+      <h1>What to ask when you are the one judging.</h1>
+      <p class="jhead__sub">
+        The <a class="link" href="/topics/judgment">judgment essay</a> argues that
+        this is the capability worth defending. It does not tell you how to
+        exercise it. These are the questions — staged, because most of them stop
+        working once you have read the answer.
+      </p>
+    </header>
+
+    <section class="calib">
+      <div class="eyebrow"><span class="label">First, size the decision</span></div>
+      <p class="calib__intro">
+        Scrutiny should not scale with how important a decision <em>feels</em>. It
+        should scale with two properties: whether you can undo it, and whether a
+        mistake would tell you it had happened. Silent, irreversible errors are
+        the expensive quadrant — and the one people habitually under-check,
+        because nothing is pressing them to.
+      </p>
+
+      <div class="matrix" role="group" aria-label="Decision profile">
+        <div class="matrix__axis matrix__axis--y"><span>Reversible</span><span>Irreversible</span></div>
+        <div class="matrix__grid">
+          {
+            SCRUTINY.map((s) => (
+              <button
+                class:list={['cell', `lvl-${s.level}`]}
+                type="button"
+                data-level={s.level}
+                data-rev={String(s.rev)}
+                data-visible={String(s.visible)}
+              >
+                <span class="label cell__lvl">{s.name}</span>
+                <span class="cell__q">
+                  {s.rev ? 'Reversible' : 'Irreversible'} ·{' '}
+                  {s.visible ? 'error is obvious' : 'error is silent'}
+                </span>
+                <span class="cell__n">{counts[s.level]} questions</span>
+              </button>
+            ))
+          }
+        </div>
+        <div class="matrix__axis matrix__axis--x"><span>Error is obvious</span><span>Error is silent</span></div>
+      </div>
+
+      <p class="calib__out" id="calibout" aria-live="polite">
+        <span class="label">Showing all {TOTAL}</span>
+        Pick a quadrant to trim the list to what that decision actually warrants.
+      </p>
+    </section>
+
+    <div class="stages" id="stages">
+      {
+        STAGES.map((st, i) => (
+          <section class="stage" data-stage={st.id}>
+            <header>
+              <span class="stage__n label">{String(i + 1).padStart(2, '0')}</span>
+              <div>
+                <h2>{st.name}</h2>
+                <p class="stage__when">{st.when}</p>
+              </div>
+            </header>
+            <ol>
+              {st.questions.map((q) => (
+                <li class="q" data-level={q.level}>
+                  <p class="q__q">{q.q}</p>
+                  <p class="q__why">{q.why}</p>
+                  {q.link && (
+                    <p class="q__link">
+                      <a class="link" href={q.link.href}>{q.link.label} &rarr;</a>
+                    </p>
+                  )}
+                  <span class="q__lvl" title={`Applies at ${['','light','moderate','maximum'][q.level]} scrutiny and above`}>
+                    {'●'.repeat(4 - q.level)}
+                  </span>
+                </li>
+              ))}
+            </ol>
+          </section>
+        ))
+      }
+    </div>
+
+    <aside class="coda">
+      <span class="label">The one that does the most work</span>
+      <p>
+        If you adopt none of the others, adopt the second question in stage one.
+        Writing your own answer before you read the machine’s is the only
+        intervention here that neutralises the dominant failure mode rather than
+        merely watching for it — and it costs about ninety seconds.
+      </p>
+    </aside>
+  </div>
+</Base>
+
+<script is:inline>
+  (function () {
+    var out = document.getElementById('calibout');
+    var cells = [].slice.call(document.querySelectorAll('.cell'));
+    var qs = [].slice.call(document.querySelectorAll('.q'));
+    var stages = [].slice.call(document.querySelectorAll('.stage'));
+    var active = null;
+
+    var GLOSS = {};
+    cells.forEach(function (c) {
+      GLOSS[c.dataset.level + c.dataset.rev + c.dataset.visible] =
+        c.querySelector('.cell__q').textContent;
+    });
+
+    function apply(level, cell) {
+      var shown = 0;
+      qs.forEach(function (q) {
+        var on = !level || parseInt(q.dataset.level, 10) <= level;
+        q.hidden = !on;
+        if (on) shown++;
+      });
+      // hide a stage whose questions are all filtered out
+      stages.forEach(function (s) {
+        var any = [].slice.call(s.querySelectorAll('.q')).some(function (q) { return !q.hidden; });
+        s.hidden = !any;
+      });
+      cells.forEach(function (c) { c.classList.toggle('is-on', c === cell); });
+
+      if (!level) {
+        out.innerHTML = '<span class="label">Showing all ' + qs.length + '</span>' +
+          'Pick a quadrant to trim the list to what that decision actually warrants.';
+      } else {
+        var name = cell.querySelector('.cell__lvl').textContent.trim();
+        var desc = cell.querySelector('.cell__q').textContent.replace(/\s+/g, ' ').trim();
+        out.innerHTML = '<span class="label">' + name + ' · ' + shown + ' questions</span>' +
+          desc.charAt(0).toUpperCase() + desc.slice(1) + '. ' +
+          '<button class="linkbtn" type="button" id="allq">Show all ' + qs.length + '</button>';
+        document.getElementById('allq').addEventListener('click', function () {
+          active = null; apply(0, null);
+        });
+      }
+    }
+
+    cells.forEach(function (c) {
+      c.addEventListener('click', function () {
+        var lvl = parseInt(c.dataset.level, 10);
+        if (active === c) { active = null; apply(0, null); }
+        else { active = c; apply(lvl, c); }
+      });
+    });
+  })();
+</script>
+
+<style>
+  .jhead { padding-block: clamp(3rem, 7vw, 5rem) 2rem; max-width: 46rem; }
+  .jhead h1 { font-size: var(--t-h1); margin-block: 1rem 1.2rem; max-width: 17ch; }
+  .jhead__sub { color: var(--ink-soft); max-width: 54ch; }
+
+  .calib { padding-bottom: 2.5rem; }
+  .calib__intro { color: var(--ink-soft); max-width: 60ch; margin-bottom: 2rem; }
+  .calib__intro em { color: var(--ink); }
+
+  .matrix {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    grid-template-areas: 'ay grid' '.  ax';
+    gap: 0.6rem;
+    max-width: 46rem;
+  }
+  .matrix__grid {
+    grid-area: grid;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1px;
+    background: var(--rule);
+    border: 1px solid var(--rule);
+  }
+  .matrix__axis {
+    display: flex;
+    justify-content: space-around;
+    font-family: var(--mono);
+    font-size: var(--t-micro);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+  }
+  .matrix__axis--y {
+    grid-area: ay;
+    flex-direction: column;
+    justify-content: space-around;
+    writing-mode: vertical-rl;
+    transform: rotate(180deg);
+    text-align: center;
+  }
+  .matrix__axis--x { grid-area: ax; }
+
+  .cell {
+    background: var(--paper);
+    border: 0;
+    text-align: left;
+    padding: 1.1rem 1rem;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    transition: background 0.2s var(--ease);
+    font-family: inherit;
+  }
+  .cell:hover { background: var(--paper-raised); }
+  .cell.is-on { background: var(--ink); }
+  .cell.is-on .cell__q, .cell.is-on .cell__n { color: var(--paper); }
+  .cell.is-on .cell__lvl { color: var(--paper); }
+  .cell__lvl { color: var(--human); }
+  .lvl-3 .cell__lvl { color: var(--human); }
+  .lvl-1 .cell__lvl { color: var(--machine); }
+  .cell__q { font-size: 0.95rem; color: var(--ink); line-height: 1.4; }
+  .cell__n {
+    font-family: var(--mono);
+    font-size: var(--t-micro);
+    color: var(--ink-faint);
+  }
+
+  .calib__out {
+    margin-top: 1.6rem;
+    padding-top: 1.1rem;
+    border-top: 1px solid var(--rule);
+    color: var(--ink-soft);
+    max-width: 60ch;
+    font-size: 0.96rem;
+  }
+  :global(.calib__out .label) { display: block; margin-bottom: 0.4rem; color: var(--human); }
+  :global(.linkbtn) {
+    background: none; border: 0; padding: 0;
+    font-family: var(--mono); font-size: var(--t-micro);
+    letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--ink-faint); cursor: pointer;
+    text-decoration: underline; text-underline-offset: 3px;
+  }
+  :global(.linkbtn:hover) { color: var(--human); }
+
+  .stage { margin-bottom: 3rem; }
+  .stage[hidden] { display: none; }
+  .stage header {
+    display: grid;
+    grid-template-columns: 2.6rem 1fr;
+    gap: 0.8rem;
+    align-items: baseline;
+    border-top: 2px solid var(--ink);
+    padding-top: 1.1rem;
+    margin-bottom: 0.4rem;
+  }
+  .stage h2 {
+    font-family: var(--display);
+    font-size: var(--t-h3);
+    font-weight: 600;
+  }
+  .stage__when { color: var(--ink-faint); font-size: 0.92rem; margin-top: 0.25rem; }
+  .stage ol { list-style: none; margin: 0; padding: 0; }
+
+  .q {
+    position: relative;
+    padding: 1.2rem 3rem 1.2rem 3.4rem;
+    border-bottom: 1px solid var(--rule);
+  }
+  .q[hidden] { display: none; }
+  .q::before {
+    content: '';
+    position: absolute;
+    left: 1.05rem; top: 1.72rem;
+    width: 0.5rem; height: 0.5rem;
+    border: 1.5px solid var(--human);
+    border-radius: 50%;
+  }
+  .q__q {
+    font-family: var(--display);
+    font-size: 1.13rem;
+    font-weight: 560;
+    line-height: 1.32;
+    letter-spacing: -0.008em;
+    margin-bottom: 0.45rem;
+    max-width: 52ch;
+  }
+  .q__why { color: var(--ink-soft); font-size: 0.96rem; line-height: 1.55; max-width: 64ch; }
+  .q__link { margin-top: 0.5rem; font-family: var(--mono); font-size: var(--t-small); }
+  .q__lvl {
+    position: absolute;
+    right: 0; top: 1.5rem;
+    font-size: 0.5rem;
+    letter-spacing: 0.18em;
+    color: var(--rule-strong);
+  }
+
+  .coda {
+    border-left: 3px solid var(--human);
+    background: var(--human-wash);
+    padding: 1.5rem 1.6rem;
+    margin-bottom: 5rem;
+    max-width: 60ch;
+  }
+  .coda .label { display: block; color: var(--human); margin-bottom: 0.7rem; }
+  .coda p { line-height: 1.55; }
+
+  @media (max-width: 640px) {
+    /* Collapsed to one column, the axis labels no longer describe anything. */
+    .matrix { grid-template-columns: 1fr; grid-template-areas: 'grid'; }
+    .matrix__axis { display: none; }
+    .matrix__grid { grid-template-columns: 1fr; }
+    .q { padding-right: 0; }
+    .q__lvl { display: none; }
+  }
+</style>

@@ -39,6 +39,8 @@ export async function GET() {
   const pages = [
     { slug: 'ladder', title: 'The Delegation Ladder', kicker: 'Framework',
       summary: 'Five rungs from cede to reserve, and how to choose one.', path: '/ladder' },
+    { slug: 'judging', title: 'The Judgment Checklist', kicker: 'Tool',
+      summary: 'Twenty-three questions to ask when judging: framing, evidence, calibration, second-order effects and accountability.', path: '/judging' },
     { slug: 'playbook', title: 'The Playbook', kicker: 'Tool',
       summary: 'Every practice from all eleven essays, filterable.', path: '/playbook' },
     { slug: 'audit', title: 'Cognitive Autonomy Audit', kicker: 'Tool',
