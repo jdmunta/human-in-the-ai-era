@@ -4,7 +4,7 @@ import mdx from '@astrojs/mdx';
 import sitemap from '@astrojs/sitemap';
 
 export default defineConfig({
-  site: process.env.PUBLIC_SITE_URL || 'https://web-production-d8544.up.railway.app',
+  site: process.env.PUBLIC_SITE_URL || 'https://humanai.up.railway.app',
   output: 'static',
   integrations: [mdx(), sitemap()],
   markdown: {

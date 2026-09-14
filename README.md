@@ -3,7 +3,7 @@
 A working argument about how people live well when thinking, reasoning and
 cognitive labour are increasingly performed by machines.
 
-**Live:** <https://web-production-d8544.up.railway.app>
+**Live:** <https://humanai.up.railway.app>
 
 Eleven essays, a delegation framework, and an interactive self-assessment. It is
 not a news site and not futurism: it makes no capability forecast, and nothing
@@ -117,7 +117,7 @@ and start commands and points the healthcheck at `/healthz`.
 
 The most valuable contribution is **a better objection**. If you can break an
 argument here, open an issue — surviving objections go on the
-[steelman page](https://web-production-d8544.up.railway.app/topics/steelman/)
+[steelman page](https://humanai.up.railway.app/topics/steelman/)
 with attribution. Corrections to sources are equally welcome; every claim the essays
 lean on is listed at `/about#sources`.
 
