@@ -32,9 +32,19 @@ in it depends on a particular timeline being right.
 | 10 | Civilization | Four adjustable levers: what we measure, distribute, decide and honour |
 | 11 | Steelman | Seven serious objections to everything above |
 
-Plus **the Delegation Ladder** (`/ladder`) — the five-rung rubric every essay
-uses — and the **Cognitive Autonomy Audit** (`/audit`), a fifteen-question
-self-assessment that runs entirely in the browser and transmits nothing.
+### Beyond the essays
+
+| Page | What it is |
+|---|---|
+| `/playbook` | All 47 practices from the essays in one filterable list — by cadence (in the moment / scheduled / review / standing / structural) and by topic. Tick off what you've adopted; kept in `localStorage`. |
+| `/ladder` | The Delegation Ladder — the five-rung rubric every essay applies to its subject, plus a three-question rule for choosing a rung. |
+| `/audit` | Cognitive Autonomy Audit: 15 behavioural questions across five dimensions, half reverse-scored. Retakes show per-dimension drift against your last run. |
+| `/glossary` | 25 concepts defined — verification gap, jagged frontier, moral crumple zone, latent deprivation, phronesis, conviviality. |
+| `/rss.xml` | Feed of all essays. |
+
+Site-wide search is on `/` or `⌘K` — a ~90KB index built at compile time from
+the MDX, fetched lazily on first open, with phrase-match ranking. No search
+service, no runtime dependency.
 
 ## How the essays argue
 
@@ -87,9 +97,16 @@ reading: 9 min
 ```
 
 Available prose components (import from `../../components/`): `Lede`, `Claim`,
-`Counter`, `Sidenote`, `Practices` + `Practice`, `Table`, and `Ladder`.
-Routing, prev/next navigation and the contents listing all derive from `order`,
-so nothing else needs updating.
+`Counter`, `Sidenote`, `Table`, and `Ladder`. Routing, prev/next navigation,
+the per-essay contents block, the search index and the RSS feed all derive from
+frontmatter, so nothing else needs updating.
+
+**Practices** are the exception: they live in `src/data/practices.ts`, not in
+the MDX, because `/playbook` renders them too. An essay pulls its own with
+`<Practices topic="your-slug" />`. Each entry carries a `cadence` and a ladder
+`rung`, which is what the playbook filters on.
+
+**Glossary** terms live in `src/data/glossary.ts`.
 
 ## Deployment
 

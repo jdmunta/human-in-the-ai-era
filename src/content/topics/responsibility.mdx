@@ -12,7 +12,6 @@ import Claim from '../../components/Claim.astro';
 import Counter from '../../components/Counter.astro';
 import Sidenote from '../../components/Sidenote.astro';
 import Practices from '../../components/Practices.astro';
-import Practice from '../../components/Practice.astro';
 import Ladder from '../../components/Ladder.astro';
 import Table from '../../components/Table.astro';
 
@@ -161,25 +160,4 @@ does not change your answerability at all* — and the mismatch is the danger.
   }}
 />
 
-<Practices label="Practices">
-  <Practice n="1" title="Run the three-question test before you accept a review role">
-    Information, time, standing. Ask about all three before the deployment, not
-    after the incident. Nobody will volunteer the answers.
-  </Practice>
-  <Practice n="2" title="Distinguish 'reviewed' from 'approved' in writing">
-    If you did not have the capacity to review, record that you approved on the
-    basis of the system's output and note what you could not check. This is
-    unpopular and it is the single most protective habit available to a person in
-    the slot.
-  </Practice>
-  <Practice n="3" title="Keep the subject in the sentence">
-    Never write "the model decided." Write "I accepted the model's
-    recommendation." The grammar is not cosmetic; it is where responsibility
-    either persists or dissolves.
-  </Practice>
-  <Practice n="4" title="Ask who signs, and whether they can actually refuse">
-    For any AI system you deploy, name the accountable person and then verify
-    their refusal has teeth. If refusing is career-ending or throughput-breaking,
-    you do not have oversight — and you should say so before you need to.
-  </Practice>
-</Practices>
+<Practices topic="responsibility" />

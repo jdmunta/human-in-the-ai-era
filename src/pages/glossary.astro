@@ -1,0 +1,134 @@
+---
+import Base from '../layouts/Base.astro';
+import { GLOSSARY_SORTED } from '../data/glossary';
+import { getCollection } from 'astro:content';
+
+const topics = await getCollection('topics');
+const kicker = Object.fromEntries(topics.map((t) => [t.id, t.data.kicker]));
+const letters = [...new Set(GLOSSARY_SORTED.map((t) => t.term[0].toUpperCase()))];
+const anchor = (s: string) => s.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+---
+
+<Base
+  title="Glossary — Human in the AI Era"
+  description="The concepts the essays rely on, defined: the verification gap, the jagged frontier, moral crumple zones, desirable difficulty, latent deprivation, phronesis and more."
+>
+  <div class="wrap">
+    <header class="ghead">
+      <p class="label">Reference · {GLOSSARY_SORTED.length} terms</p>
+      <h1>The concepts, defined.</h1>
+      <p class="ghead__sub">
+        The essays lean on a fair amount of named machinery — some of it borrowed
+        from human-factors research, learning science and economics, some of it
+        this site’s own. Everything is defined here in plain language, with
+        where it comes from and where it gets used.
+      </p>
+      <nav class="jump" aria-label="Jump to letter">
+        {letters.map((l) => <a href={`#letter-${l}`}>{l}</a>)}
+      </nav>
+    </header>
+
+    <dl class="terms">
+      {
+        GLOSSARY_SORTED.map((t, i) => {
+          const L = t.term[0].toUpperCase();
+          const isFirst = GLOSSARY_SORTED.findIndex((x) => x.term[0].toUpperCase() === L) === i;
+          return (
+            <div class="term" id={anchor(t.term)}>
+              {isFirst && <span class="term__letter" id={`letter-${L}`} aria-hidden="true">{L}</span>}
+              <dt>
+                {t.term}
+                {t.aka && <span class="term__aka">also: {t.aka}</span>}
+              </dt>
+              <dd>
+                <p>{t.def}</p>
+                <p class="term__meta">
+                  {t.origin && <span class="term__origin">{t.origin}</span>}
+                  <a class="link" href={`/topics/${t.topic}`}>{kicker[t.topic] ?? t.topic} &rarr;</a>
+                </p>
+              </dd>
+            </div>
+          );
+        })
+      }
+    </dl>
+  </div>
+</Base>
+
+<style>
+  .ghead { padding-block: clamp(3rem, 7vw, 5rem) 1.5rem; max-width: 46rem; }
+  .ghead h1 { font-size: var(--t-h1); margin-block: 1rem 1.2rem; }
+  .ghead__sub { color: var(--ink-soft); max-width: 54ch; }
+  .jump {
+    display: flex;
+    gap: 0.3rem;
+    flex-wrap: wrap;
+    margin-top: 2rem;
+    padding-top: 1.2rem;
+    border-top: 1px solid var(--rule);
+  }
+  .jump a {
+    font-family: var(--mono);
+    font-size: var(--t-micro);
+    text-decoration: none;
+    color: var(--ink-soft);
+    border: 1px solid var(--rule-strong);
+    width: 1.9rem;
+    height: 1.9rem;
+    display: grid;
+    place-items: center;
+    transition: all 0.2s var(--ease);
+  }
+  .jump a:hover { border-color: var(--human); color: var(--human); }
+
+  .terms { margin: 2rem 0 5rem; max-width: 62rem; }
+  .term {
+    display: grid;
+    grid-template-columns: 2.4rem minmax(0, 17rem) minmax(0, 1fr);
+    gap: 0 1.4rem;
+    padding: 1.5rem 0;
+    border-bottom: 1px solid var(--rule);
+    scroll-margin-top: 5rem;
+  }
+  .term:first-child { border-top: 1px solid var(--rule); }
+  .term__letter {
+    font-family: var(--display);
+    font-size: 1.5rem;
+    color: var(--human);
+    line-height: 1;
+    scroll-margin-top: 5rem;
+  }
+  dt {
+    font-family: var(--display);
+    font-size: 1.14rem;
+    font-weight: 570;
+    grid-column: 2;
+    letter-spacing: -0.008em;
+  }
+  .term__aka {
+    display: block;
+    font-family: var(--mono);
+    font-size: var(--t-micro);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin-top: 0.35rem;
+    font-weight: 400;
+  }
+  dd { grid-column: 3; margin: 0; }
+  dd p { color: var(--ink-soft); line-height: 1.58; }
+  .term__meta {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-top: 0.6rem;
+    font-family: var(--mono);
+    font-size: var(--t-small);
+  }
+  .term__origin { color: var(--ink-faint); }
+  @media (max-width: 780px) {
+    .term { grid-template-columns: 1.8rem 1fr; }
+    dt { grid-column: 2; margin-bottom: 0.5rem; }
+    dd { grid-column: 2; }
+  }
+</style>

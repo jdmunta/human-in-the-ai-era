@@ -1,0 +1,291 @@
+---
+---
+<div class="ovl" id="searchovl" hidden>
+  <div class="ovl__scrim" data-close></div>
+  <div class="ovl__panel" role="dialog" aria-modal="true" aria-label="Search the site">
+    <div class="ovl__field">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true">
+        <circle cx="11" cy="11" r="7" /><path d="m20 20-3.5-3.5" />
+      </svg>
+      <input
+        id="searchinput"
+        type="search"
+        placeholder="Search the essays…"
+        autocomplete="off"
+        spellcheck="false"
+        aria-controls="searchresults"
+      />
+      <button class="ovl__esc" type="button" data-close aria-label="Close search"><kbd>esc</kbd></button>
+    </div>
+    <div class="ovl__results" id="searchresults">
+      <p class="ovl__hint">
+        Try <button class="seed" type="button">Marienthal</button>
+        <button class="seed" type="button">jagged frontier</button>
+        <button class="seed" type="button">verification gap</button>
+        <button class="seed" type="button">university</button>
+      </p>
+    </div>
+  </div>
+</div>
+
+<script is:inline>
+  (function () {
+    var ovl = document.getElementById('searchovl');
+    var input = document.getElementById('searchinput');
+    var out = document.getElementById('searchresults');
+    var openBtn = document.getElementById('searchopen');
+    if (!ovl) return;
+
+    var data = null, loading = null, sel = -1, rows = [];
+
+    function load() {
+      if (data) return Promise.resolve(data);
+      if (!loading) {
+        loading = fetch('/search-index.json')
+          .then(function (r) { return r.json(); })
+          .then(function (j) { data = j; return j; })
+          .catch(function () { return { docs: [], pages: [] }; });
+      }
+      return loading;
+    }
+
+    function open() {
+      ovl.hidden = false;
+      document.body.style.overflow = 'hidden';
+      load().then(function () { if (input.value) run(); });
+      setTimeout(function () { input.focus(); input.select(); }, 20);
+    }
+    function close() {
+      ovl.hidden = true;
+      document.body.style.overflow = '';
+      sel = -1;
+    }
+
+    function esc(s) {
+      return s.replace(/[&<>"]/g, function (c) {
+        return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c];
+      });
+    }
+    function mark(text, toks) {
+      var html = esc(text);
+      toks.forEach(function (t) {
+        if (t.length < 2) return;
+        html = html.replace(
+          new RegExp('(' + t.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ')', 'ig'),
+          '<mark>$1</mark>'
+        );
+      });
+      return html;
+    }
+    function snippet(text, toks) {
+      var low = text.toLowerCase(), at = -1;
+      for (var i = 0; i < toks.length && at < 0; i++) at = low.indexOf(toks[i]);
+      if (at < 0) return text.slice(0, 150) + '…';
+      var start = Math.max(0, at - 60);
+      var cut = text.slice(start, start + 190);
+      return (start > 0 ? '…' : '') + cut + '…';
+    }
+
+    function run() {
+      var q = input.value.trim().toLowerCase();
+      if (!q) {
+        out.innerHTML =
+          '<p class="ovl__hint">Try ' +
+          ['Marienthal', 'jagged frontier', 'verification gap', 'university']
+            .map(function (s) { return '<button class="seed" type="button">' + s + '</button>'; })
+            .join(' ') + '</p>';
+        rows = []; sel = -1; return;
+      }
+      var toks = q.split(/\s+/).filter(Boolean);
+      var hits = [];
+
+      (data.docs || []).forEach(function (d) {
+        var score = 0, hay = {
+          title: d.title.toLowerCase(), kicker: d.kicker.toLowerCase(),
+          summary: d.summary.toLowerCase(), heads: d.headings.join(' ').toLowerCase(),
+          text: d.text.toLowerCase()
+        };
+        toks.forEach(function (t) {
+          if (hay.title.indexOf(t) > -1) score += 8;
+          if (hay.kicker.indexOf(t) > -1) score += 6;
+          if (hay.heads.indexOf(t) > -1) score += 4;
+          if (hay.summary.indexOf(t) > -1) score += 3;
+          var m = hay.text.split(t).length - 1;
+          score += Math.min(m, 6);
+        });
+        // Exact-phrase matches beat scattered token hits on multi-word queries.
+        if (toks.length > 1) {
+          if (hay.title.indexOf(q) > -1) score += 25;
+          if (hay.heads.indexOf(q) > -1) score += 18;
+          if (hay.summary.indexOf(q) > -1) score += 12;
+          var pm = hay.text.split(q).length - 1;
+          score += Math.min(pm, 5) * 6;
+        }
+        if (score > 0) hits.push({ score: score, kind: 'essay', d: d });
+      });
+
+      (data.pages || []).forEach(function (p) {
+        var score = 0, hay = (p.title + ' ' + p.kicker + ' ' + p.summary).toLowerCase();
+        toks.forEach(function (t) { if (hay.indexOf(t) > -1) score += 6; });
+        if (score > 0) hits.push({ score: score, kind: 'page', d: p });
+      });
+
+      hits.sort(function (a, b) { return b.score - a.score; });
+      hits = hits.slice(0, 8);
+
+      if (!hits.length) {
+        out.innerHTML = '<p class="ovl__hint">No matches for “' + esc(input.value) + '”.</p>';
+        rows = []; sel = -1; return;
+      }
+
+      out.innerHTML = hits.map(function (h, i) {
+        var href = h.kind === 'essay' ? '/topics/' + h.d.slug + '/' : h.d.path;
+        var meta = h.kind === 'essay'
+          ? h.d.kicker + ' · ' + h.d.reading
+          : h.d.kicker;
+        var body = h.kind === 'essay' ? snippet(h.d.text, toks) : h.d.summary;
+        return '<a class="hit" href="' + href + '" data-i="' + i + '">' +
+          '<span class="label hit__k">' + esc(meta) + '</span>' +
+          '<span class="hit__t">' + mark(h.d.title, toks) + '</span>' +
+          '<span class="hit__s">' + mark(body, toks) + '</span>' +
+        '</a>';
+      }).join('');
+      rows = [].slice.call(out.querySelectorAll('.hit'));
+      sel = 0; paint();
+    }
+
+    function paint() {
+      rows.forEach(function (r, i) { r.classList.toggle('is-sel', i === sel); });
+      if (rows[sel]) rows[sel].scrollIntoView({ block: 'nearest' });
+    }
+
+    openBtn.addEventListener('click', open);
+    ovl.addEventListener('click', function (e) { if (e.target.closest('[data-close]')) close(); });
+    out.addEventListener('click', function (e) {
+      var s = e.target.closest('.seed');
+      if (s) { input.value = s.textContent; run(); input.focus(); }
+    });
+    input.addEventListener('input', run);
+
+    document.addEventListener('keydown', function (e) {
+      var typing = /^(INPUT|TEXTAREA|SELECT)$/.test(document.activeElement.tagName);
+      if (!ovl.hidden) {
+        if (e.key === 'Escape') { e.preventDefault(); close(); }
+        else if (e.key === 'ArrowDown') { e.preventDefault(); sel = Math.min(sel + 1, rows.length - 1); paint(); }
+        else if (e.key === 'ArrowUp') { e.preventDefault(); sel = Math.max(sel - 1, 0); paint(); }
+        else if (e.key === 'Enter' && rows[sel]) { e.preventDefault(); rows[sel].click(); }
+        return;
+      }
+      if ((e.key === '/' && !typing) || ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k')) {
+        e.preventDefault(); open();
+      }
+    });
+  })();
+</script>
+
+<style>
+  /* Mounted at the end of <body>, never inside the masthead: the header's
+     backdrop-filter would become the containing block for position:fixed,
+     and its nav rules would inherit into the results. */
+  .ovl kbd {
+    font-family: var(--mono);
+    font-size: 0.62rem;
+    border: 1px solid var(--rule-strong);
+    padding: 0.05rem 0.28rem;
+    color: var(--ink-faint);
+    line-height: 1.5;
+  }
+
+  .ovl { position: fixed; inset: 0; z-index: 200; }
+  .ovl__scrim {
+    position: absolute; inset: 0;
+    background: color-mix(in srgb, var(--paper-sunk) 78%, transparent);
+    backdrop-filter: blur(3px);
+  }
+  .ovl__panel {
+    position: relative;
+    max-width: 40rem;
+    margin: clamp(2rem, 9vh, 6rem) auto 0;
+    background: var(--paper-raised);
+    border: 1px solid var(--rule-strong);
+    box-shadow: 0 24px 60px -18px rgba(0, 0, 0, 0.45);
+    max-height: min(70vh, 40rem);
+    display: flex;
+    flex-direction: column;
+    width: calc(100% - 2rem);
+  }
+  .ovl__field {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    padding: 0.9rem 1rem;
+    border-bottom: 1px solid var(--rule);
+    color: var(--ink-faint);
+    flex: none;
+  }
+  .ovl__field input {
+    flex: 1;
+    background: none;
+    border: 0;
+    outline: none;
+    font-family: var(--body);
+    font-size: 1.08rem;
+    color: var(--ink);
+  }
+  .ovl__field input::placeholder { color: var(--ink-faint); }
+  .ovl__field input::-webkit-search-cancel-button { display: none; }
+  .ovl__esc { background: none; border: 0; cursor: pointer; padding: 0; }
+
+  .ovl__results { overflow-y: auto; }
+  /* Results and hints are re-rendered via innerHTML, so they never carry
+     Astro's scoped data attribute — these rules must be global. */
+  :global(.ovl__hint) {
+    padding: 1.1rem 1rem 1.3rem;
+    color: var(--ink-faint);
+    font-family: var(--mono);
+    font-size: var(--t-small);
+    line-height: 2.1;
+  }
+  :global(.seed) {
+    font-family: var(--mono);
+    font-size: var(--t-micro);
+    background: none;
+    border: 1px solid var(--rule-strong);
+    color: var(--ink-soft);
+    padding: 0.22rem 0.5rem;
+    cursor: pointer;
+    transition: all 0.2s var(--ease);
+  }
+  :global(.seed:hover) { border-color: var(--human); color: var(--human); }
+
+  :global(.hit) {
+    display: block;
+    padding: 0.9rem 1rem;
+    border-bottom: 1px solid var(--rule);
+    text-decoration: none;
+    transition: background 0.15s var(--ease);
+  }
+  :global(.hit:last-child) { border-bottom: 0; }
+  :global(.hit.is-sel), :global(.hit:hover) { background: var(--paper-sunk); }
+  :global(.hit.is-sel) { box-shadow: inset 2px 0 0 var(--human); }
+  :global(.hit__k) { display: block; margin-bottom: 0.3rem; }
+  :global(.hit__t) {
+    display: block;
+    font-family: var(--display);
+    font-size: 1.08rem;
+    font-weight: 540;
+    margin-bottom: 0.3rem;
+    letter-spacing: -0.008em;
+  }
+  :global(.hit__s) {
+    display: block;
+    font-size: 0.9rem;
+    line-height: 1.5;
+    color: var(--ink-soft);
+  }
+  :global(.hit mark) {
+    background: color-mix(in srgb, var(--human) 26%, transparent);
+    color: inherit;
+    padding: 0 0.1em;
+  }
+</style>

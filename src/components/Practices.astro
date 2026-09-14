@@ -1,8 +1,25 @@
 ---
-interface Props { label?: string }
-const { label = 'Practices' } = Astro.props;
+import { practicesFor, PRACTICE_LABELS } from '../data/practices';
+
+interface Props {
+  /** Topic slug — practices are pulled from src/data/practices.ts. */
+  topic: string;
+  label?: string;
+}
+const { topic, label } = Astro.props;
+const items = practicesFor(topic);
+const heading = label ?? PRACTICE_LABELS[topic] ?? 'Practices';
 ---
+
 <section class="practices">
-  <span class="label">{label}</span>
-  <slot />
+  <span class="label">{heading}</span>
+  {
+    items.map((p) => (
+      <div class="practice" id={`practice-${p.topic}-${p.n}`}>
+        <span class="practice__n">{String(p.n).padStart(2, '0')}</span>
+        <span class="practice__t">{p.title}</span>
+        <div class="practice__d" set:html={p.body} />
+      </div>
+    ))
+  }
 </section>

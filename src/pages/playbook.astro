@@ -1,0 +1,346 @@
+---
+import Base from '../layouts/Base.astro';
+import { PRACTICES } from '../data/practices';
+import { getCollection } from 'astro:content';
+
+const topics = (await getCollection('topics')).sort((a, b) => a.data.order - b.data.order);
+const order = Object.fromEntries(topics.map((t) => [t.id, t.data.order]));
+
+const items = PRACTICES.filter((p) => p.inPlaybook).sort(
+  (a, b) => (order[a.topic] ?? 99) - (order[b.topic] ?? 99) || a.n - b.n
+);
+
+const CADENCES = [
+  { key: 'daily',      name: 'In the moment', gloss: 'A rule you apply as the situation arises.' },
+  { key: 'weekly',     name: 'Scheduled',     gloss: 'A recurring block you defend in the calendar.' },
+  { key: 'periodic',   name: 'Review',        gloss: 'An audit you run every few months.' },
+  { key: 'standing',   name: 'Standing',      gloss: 'A commitment you set up once and maintain.' },
+  { key: 'structural', name: 'Structural',    gloss: 'Requires changing something beyond yourself.' },
+];
+
+const counts = Object.fromEntries(
+  CADENCES.map((c) => [c.key, items.filter((i) => i.cadence === c.key).length])
+);
+const usedTopics = topics.filter((t) => items.some((i) => i.topic === t.id));
+---
+
+<Base
+  title="The Playbook — Human in the AI Era"
+  description="Every practice from all eleven essays in one place: 47 concrete things to do, filterable by cadence and topic, with your progress kept in your browser."
+>
+  <div class="wrap">
+    <header class="phead">
+      <p class="label">The Playbook · {items.length} practices</p>
+      <h1>Everything the essays actually ask you to do.</h1>
+      <p class="phead__sub">
+        Each essay ends in practices. Collected here they become a working
+        list rather than a reading experience. Filter by <em>cadence</em> — what
+        you do in the moment versus what needs a calendar or a change of
+        circumstances — and tick off what you have adopted. Progress is stored
+        in your browser and never leaves it.
+      </p>
+    </header>
+
+    <div class="bar">
+      <div class="bar__group">
+        <span class="label bar__lab">Cadence</span>
+        <div class="chips" id="cadence-chips">
+          <button class="chip is-on" data-cadence="all" type="button">
+            All <span class="chip__n">{items.length}</span>
+          </button>
+          {
+            CADENCES.map((c) => (
+              <button class="chip" data-cadence={c.key} type="button" title={c.gloss}>
+                {c.name} <span class="chip__n">{counts[c.key]}</span>
+              </button>
+            ))
+          }
+        </div>
+      </div>
+
+      <div class="bar__group">
+        <span class="label bar__lab">Topic</span>
+        <div class="chips" id="topic-chips">
+          <button class="chip is-on" data-topic="all" type="button">All</button>
+          {
+            usedTopics.map((t) => (
+              <button class="chip" data-topic={t.id} type="button">
+                {t.data.kicker}
+              </button>
+            ))
+          }
+        </div>
+      </div>
+
+      <div class="bar__meta">
+        <p class="label" id="shown">{items.length} shown</p>
+        <p class="label" id="done">0 adopted</p>
+        <button class="linkbtn" id="clear" type="button">Reset ticks</button>
+      </div>
+    </div>
+
+    <ol class="plist" id="plist">
+      {
+        items.map((p) => (
+          <li
+            class="pitem"
+            data-cadence={p.cadence}
+            data-topic={p.topic}
+            data-id={`${p.topic}-${p.n}`}
+          >
+            <label class="pitem__tick">
+              <input type="checkbox" data-id={`${p.topic}-${p.n}`} />
+              <span class="tickbox" aria-hidden="true" />
+              <span class="sr">Mark “{p.title}” adopted</span>
+            </label>
+
+            <div class="pitem__body">
+              <div class="pitem__head">
+                <h2>{p.title}</h2>
+                <span class="tags">
+                  <span class={`tag tag--${p.cadence}`}>
+                    {CADENCES.find((c) => c.key === p.cadence)?.name}
+                  </span>
+                  <span class="tag tag--rung" title="Delegation Ladder rung this enacts">
+                    Rung {p.rung}
+                  </span>
+                </span>
+              </div>
+              <p class="pitem__d" set:html={p.body} />
+              <p class="pitem__src">
+                <a class="link" href={`/topics/${p.topic}#practice-${p.topic}-${p.n}`}>
+                  {p.kicker} · practice {String(p.n).padStart(2, '0')} &rarr;
+                </a>
+              </p>
+            </div>
+          </li>
+        ))
+      }
+    </ol>
+
+    <p class="empty" id="empty" hidden>
+      No practices match both filters. <button class="linkbtn" id="reset-filters" type="button">Clear filters</button>
+    </p>
+  </div>
+</Base>
+
+<script is:inline>
+  (function () {
+    var KEY = 'playbook-adopted';
+    var list = document.getElementById('plist');
+    if (!list) return;
+    var items = [].slice.call(list.querySelectorAll('.pitem'));
+    var shown = document.getElementById('shown');
+    var doneEl = document.getElementById('done');
+    var empty = document.getElementById('empty');
+    var filters = { cadence: 'all', topic: 'all' };
+
+    function load() {
+      try { return JSON.parse(localStorage.getItem(KEY) || '[]'); } catch (e) { return []; }
+    }
+    function save(a) {
+      try { localStorage.setItem(KEY, JSON.stringify(a)); } catch (e) {}
+    }
+
+    var adopted = load();
+
+    function paintTicks() {
+      items.forEach(function (li) {
+        var on = adopted.indexOf(li.dataset.id) !== -1;
+        li.classList.toggle('is-done', on);
+        li.querySelector('input').checked = on;
+      });
+      doneEl.textContent = adopted.length + ' adopted';
+    }
+
+    function apply() {
+      var n = 0;
+      items.forEach(function (li) {
+        var ok =
+          (filters.cadence === 'all' || li.dataset.cadence === filters.cadence) &&
+          (filters.topic === 'all' || li.dataset.topic === filters.topic);
+        li.hidden = !ok;
+        if (ok) n++;
+      });
+      shown.textContent = n + (n === 1 ? ' shown' : ' shown');
+      empty.hidden = n !== 0;
+    }
+
+    function wire(containerId, key) {
+      var box = document.getElementById(containerId);
+      box.addEventListener('click', function (e) {
+        var btn = e.target.closest('.chip');
+        if (!btn) return;
+        filters[key] = btn.dataset[key];
+        [].forEach.call(box.querySelectorAll('.chip'), function (c) {
+          c.classList.toggle('is-on', c === btn);
+        });
+        apply();
+      });
+    }
+    wire('cadence-chips', 'cadence');
+    wire('topic-chips', 'topic');
+
+    list.addEventListener('change', function (e) {
+      var cb = e.target;
+      if (cb.type !== 'checkbox') return;
+      var id = cb.dataset.id;
+      var i = adopted.indexOf(id);
+      if (cb.checked && i === -1) adopted.push(id);
+      if (!cb.checked && i !== -1) adopted.splice(i, 1);
+      save(adopted);
+      paintTicks();
+    });
+
+    document.getElementById('clear').addEventListener('click', function () {
+      adopted = [];
+      save(adopted);
+      paintTicks();
+    });
+    document.getElementById('reset-filters').addEventListener('click', function () {
+      filters = { cadence: 'all', topic: 'all' };
+      [].forEach.call(document.querySelectorAll('.chip'), function (c) {
+        c.classList.toggle('is-on', c.dataset.cadence === 'all' || c.dataset.topic === 'all');
+      });
+      apply();
+    });
+
+    paintTicks();
+    apply();
+  })();
+</script>
+
+<style>
+  .phead { padding-block: clamp(3rem, 7vw, 5rem) 2rem; max-width: 46rem; }
+  .phead h1 { font-size: var(--t-h1); margin-block: 1rem 1.2rem; max-width: 18ch; }
+  .phead__sub { color: var(--ink-soft); max-width: 56ch; }
+  .phead__sub em { color: var(--ink); }
+
+  .bar {
+    border-top: 2px solid var(--ink);
+    border-bottom: 1px solid var(--rule);
+    padding-block: 1.4rem;
+    display: grid;
+    gap: 1.1rem;
+    position: sticky;
+    top: 3.6rem;
+    background: color-mix(in srgb, var(--paper) 94%, transparent);
+    backdrop-filter: blur(10px);
+    z-index: 20;
+  }
+  .bar__group { display: flex; gap: 0.9rem; align-items: baseline; flex-wrap: wrap; }
+  .bar__lab { flex: none; width: 4.5rem; padding-top: 0.35rem; }
+  .chips { display: flex; gap: 0.4rem; flex-wrap: wrap; }
+  .chip {
+    font-family: var(--mono);
+    font-size: var(--t-micro);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    background: transparent;
+    color: var(--ink-soft);
+    border: 1px solid var(--rule-strong);
+    padding: 0.4rem 0.7rem;
+    cursor: pointer;
+    transition: all 0.2s var(--ease);
+    display: inline-flex;
+    gap: 0.4rem;
+    align-items: center;
+  }
+  .chip:hover { border-color: var(--human); color: var(--human); }
+  .chip.is-on { background: var(--ink); border-color: var(--ink); color: var(--paper); }
+  .chip__n { opacity: 0.55; font-variant-numeric: lining-nums; }
+  .bar__meta {
+    display: flex;
+    gap: 1.4rem;
+    align-items: baseline;
+    flex-wrap: wrap;
+    padding-top: 0.2rem;
+  }
+  #done { color: var(--human); }
+  .linkbtn {
+    background: none;
+    border: 0;
+    padding: 0;
+    font-family: var(--mono);
+    font-size: var(--t-micro);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    cursor: pointer;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+  .linkbtn:hover { color: var(--human); }
+
+  .plist { list-style: none; margin: 0 0 5rem; padding: 0; }
+  .pitem {
+    display: grid;
+    grid-template-columns: 2.2rem 1fr;
+    gap: 0 0.9rem;
+    padding: 1.5rem 0;
+    border-bottom: 1px solid var(--rule);
+    transition: opacity 0.25s var(--ease);
+  }
+  .pitem[hidden] { display: none; }
+  .pitem.is-done { opacity: 0.52; }
+  .pitem.is-done h2 { text-decoration: line-through; text-decoration-thickness: 1px; }
+
+  .pitem__tick { cursor: pointer; padding-top: 0.15rem; }
+  .pitem__tick input { position: absolute; opacity: 0; width: 0; height: 0; }
+  .tickbox {
+    display: block;
+    width: 1.15rem; height: 1.15rem;
+    border: 1.5px solid var(--rule-strong);
+    transition: all 0.2s var(--ease);
+  }
+  .pitem__tick:hover .tickbox { border-color: var(--human); }
+  .pitem__tick input:checked + .tickbox {
+    background: var(--human);
+    border-color: var(--human);
+    box-shadow: inset 0 0 0 3px var(--paper);
+  }
+  .pitem__tick input:focus-visible + .tickbox { outline: 2px solid var(--human); outline-offset: 3px; }
+
+  .pitem__head {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    align-items: baseline;
+    flex-wrap: wrap;
+    margin-bottom: 0.45rem;
+  }
+  .pitem h2 {
+    font-family: var(--display);
+    font-size: 1.16rem;
+    font-weight: 570;
+    letter-spacing: -0.008em;
+  }
+  .tags { display: flex; gap: 0.4rem; flex: none; }
+  .tag {
+    font-family: var(--mono);
+    font-size: 0.6rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 0.22rem 0.5rem;
+    border: 1px solid var(--rule-strong);
+    color: var(--ink-faint);
+    white-space: nowrap;
+  }
+  .tag--daily      { color: var(--human); border-color: var(--human); }
+  .tag--weekly     { color: var(--human); border-color: color-mix(in srgb, var(--human) 55%, transparent); }
+  .tag--structural { color: var(--machine); border-color: var(--machine); }
+  .tag--rung { color: var(--ink-faint); }
+  .pitem__d { color: var(--ink-soft); line-height: 1.58; max-width: 66ch; }
+  .pitem__src { margin-top: 0.55rem; font-family: var(--mono); font-size: var(--t-small); }
+
+  .empty { padding-block: 3rem 6rem; color: var(--ink-soft); }
+  .sr {
+    position: absolute; width: 1px; height: 1px;
+    padding: 0; margin: -1px; overflow: hidden;
+    clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+  }
+  @media (max-width: 700px) {
+    .bar { position: static; }
+    .bar__lab { width: auto; }
+  }
+</style>

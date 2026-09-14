@@ -113,7 +113,8 @@ const DIMENSIONS = [
         exposure, and it is usually not the one you would have guessed.
       </p>
       <p class="ahead__privacy label">
-        Runs entirely in your browser. Nothing is transmitted, stored or logged.
+        Runs entirely in your browser. Nothing is transmitted or logged. Your
+        last result is kept locally so a retake can show you what drifted.
       </p>
     </header>
 
@@ -160,6 +161,7 @@ const DIMENSIONS = [
     <section id="results" hidden aria-live="polite">
       <div class="eyebrow"><span class="label">Your profile</span></div>
       <p class="rsum" id="rsum"></p>
+      <div id="rdrift"></div>
       <div id="rbars"></div>
       <div class="submit">
         <button type="button" class="btn btn--ghost" id="again">Start over</button>
@@ -257,6 +259,55 @@ const DIMENSIONS = [
           );
         })
         .join('');
+
+      // Compare against the previous run, if there is one, then store this one.
+      var KEY = 'audit-last-run';
+      var prev = null;
+      try { prev = JSON.parse(localStorage.getItem(KEY) || 'null'); } catch (e) {}
+
+      var drift = document.getElementById('rdrift');
+      if (prev && prev.scores) {
+        var days = Math.max(0, Math.round((Date.now() - prev.at) / 86400000));
+        var when = days === 0 ? 'earlier today' : days === 1 ? 'yesterday' : days + ' days ago';
+        var moves = scored
+          .map(function (s) {
+            var was = prev.scores[s.d.key];
+            if (typeof was !== 'number') return null;
+            return { name: s.d.name, delta: s.total - was, now: s.total, was: was };
+          })
+          .filter(Boolean);
+        var changed = moves.filter(function (m) { return m.delta !== 0; });
+
+        drift.innerHTML =
+          '<div class="drift">' +
+          '<span class="label">Since your last run · ' + when + '</span>' +
+          (changed.length
+            ? '<ul class="drift__list">' +
+              changed
+                .sort(function (a, b) { return a.delta - b.delta; })
+                .map(function (m) {
+                  var dir = m.delta > 0 ? 'up' : 'down';
+                  var sign = m.delta > 0 ? '+' : '';
+                  return '<li class="drift__i is-' + dir + '"><span>' + m.name + '</span>' +
+                    '<span class="drift__d">' + m.was + ' &rarr; ' + m.now +
+                    ' (' + sign + m.delta + ')</span></li>';
+                })
+                .join('') +
+              '</ul>'
+            : '<p class="drift__same">No dimension moved. Stability is a result too — the question is whether it was maintained or merely undisturbed.</p>') +
+          '</div>';
+      } else {
+        drift.innerHTML =
+          '<p class="drift__first"><span class="label">Baseline saved.</span> ' +
+          'Come back in a few months and retake it — the useful signal is which dimension drifts, ' +
+          'and drift is exactly the thing this site argues you will not notice happening.</p>';
+      }
+
+      try {
+        var store = { at: Date.now(), scores: {} };
+        scored.forEach(function (s) { store.scores[s.d.key] = s.total; });
+        localStorage.setItem(KEY, JSON.stringify(store));
+      } catch (e) {}
 
       results.hidden = false;
       form.hidden = true;
@@ -389,6 +440,39 @@ const DIMENSIONS = [
   }
   /* Result rows are injected via innerHTML after build, so they never carry
      Astro's scoped data attribute. These rules must be global to reach them. */
+  /* Drift block is injected via innerHTML, so these must be global too. */
+  :global(.drift) {
+    border: 1px solid var(--rule-strong);
+    border-left: 3px solid var(--human);
+    padding: 1.1rem 1.2rem;
+    margin-bottom: 2.4rem;
+  }
+  :global(.drift .label) { display: block; margin-bottom: 0.8rem; color: var(--human); }
+  :global(.drift__list) { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.5rem; }
+  :global(.drift__i) {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    font-size: 0.96rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--rule);
+  }
+  :global(.drift__i:last-child) { border-bottom: 0; padding-bottom: 0; }
+  :global(.drift__d) { font-family: var(--mono); font-size: var(--t-small); }
+  :global(.drift__i.is-up .drift__d) { color: var(--machine); }
+  :global(.drift__i.is-down .drift__d) { color: var(--human); }
+  :global(.drift__same) { color: var(--ink-soft); font-size: 0.96rem; line-height: 1.55; }
+  :global(.drift__first) {
+    border-top: 1px solid var(--rule);
+    padding-top: 1rem;
+    margin-bottom: 2.4rem;
+    color: var(--ink-soft);
+    font-size: 0.96rem;
+    line-height: 1.6;
+    max-width: 60ch;
+  }
+  :global(.drift__first .label) { color: var(--ink); display: inline; }
+
   :global(.rbar) {
     padding: 1.6rem 0;
     border-bottom: 1px solid var(--rule);

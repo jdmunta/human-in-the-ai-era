@@ -560,3 +560,45 @@ th:last-child, td:last-child { padding-right: 0; }
   to   { opacity: 1; transform: none; }
 }
 .rise { animation: rise 0.75s var(--ease) both; }
+
+/* ---------- 8. Print ---------- */
+@media print {
+  :root {
+    --paper: #fff; --paper-raised: #fff; --paper-sunk: #fff;
+    --ink: #000; --ink-soft: #333; --ink-faint: #666;
+    --rule: #ccc; --rule-strong: #999;
+    --human: #000; --machine: #444;
+  }
+  body::before,
+  .masthead,
+  .progress,
+  .pagenav,
+  .colophon,
+  .searchbtn,
+  .ovl,
+  .themetoggle,
+  .toc { display: none !important; }
+
+  body { font-size: 11pt; line-height: 1.5; }
+  .wrap { max-width: none; padding: 0; }
+  .prose { display: block; }
+  .prose > * { max-width: none; }
+
+  /* Sidenotes become footnote-style blocks rather than a floating rail. */
+  .sidenote {
+    border-left: 2px solid #999;
+    font-size: 9.5pt;
+    page-break-inside: avoid;
+  }
+  .claim, .counter, .practice, .rung, blockquote, table, figure {
+    page-break-inside: avoid;
+  }
+  h1, h2, h3 { page-break-after: avoid; }
+  .prose a, a.link {
+    background: none;
+    text-decoration: underline;
+  }
+  /* Expose link targets in print. */
+  .prose a[href^="/"]::after { content: " (" attr(href) ")"; font-size: 8.5pt; color: #666; }
+  .thead { border-bottom: 1px solid #000; }
+}

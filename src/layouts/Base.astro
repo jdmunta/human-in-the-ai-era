@@ -1,5 +1,7 @@
 ---
 import '../styles/global.css';
+import SearchButton from '../components/SearchButton.astro';
+import SearchOverlay from '../components/SearchOverlay.astro';
 
 interface Props {
   title: string;
@@ -10,6 +12,7 @@ const { title, description, progress = false } = Astro.props;
 const path = Astro.url.pathname.replace(/\/$/, '') || '/';
 const nav = [
   { href: '/topics', label: 'Topics' },
+  { href: '/playbook', label: 'Playbook' },
   { href: '/ladder', label: 'The Ladder', optional: true },
   { href: '/audit', label: 'Audit' },
   { href: '/about', label: 'About', optional: true },
@@ -31,6 +34,7 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
     <meta property="og:url" content={canonical} />
     <meta name="twitter:card" content="summary_large_image" />
     <link rel="sitemap" href="/sitemap-index.xml" />
+    <link rel="alternate" type="application/rss+xml" title="Human in the AI Era" href="/rss.xml" />
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -78,6 +82,7 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
                 </a>
               ))
             }
+            <SearchButton />
             <button
               class="themetoggle"
               id="themetoggle"
@@ -111,8 +116,10 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
             <p class="label" style="margin-bottom:0.9rem">Read</p>
             <ul>
               <li><a href="/topics">All topics</a></li>
+              <li><a href="/playbook">The Playbook &mdash; 47 practices</a></li>
               <li><a href="/ladder">The Delegation Ladder</a></li>
               <li><a href="/audit">Cognitive Autonomy Audit</a></li>
+              <li><a href="/glossary">Glossary</a></li>
               <li><a href="/topics/steelman">The case against this site</a></li>
             </ul>
           </div>
@@ -126,6 +133,7 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
               </li>
               <li><a href="/about">About &amp; method</a></li>
               <li><a href="/about#sources">Sources</a></li>
+              <li><a href="/rss.xml">RSS feed</a></li>
             </ul>
           </div>
           <div>
@@ -138,6 +146,8 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
         </div>
       </footer>
     </div>
+
+    <SearchOverlay />
 
     <script is:inline>
       (function () {

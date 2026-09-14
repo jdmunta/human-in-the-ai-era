@@ -1,0 +1,80 @@
+---
+interface Heading { depth: number; slug: string; text: string }
+interface Props { headings: Heading[] }
+const { headings } = Astro.props;
+// Only top-level sections; h3s make the list noisy on long essays.
+const sections = headings.filter((h) => h.depth === 2);
+---
+
+{
+  sections.length > 2 && (
+    <details class="toc" open>
+      <summary>
+        <span class="label">Contents</span>
+        <span class="label toc__count">{sections.length} sections</span>
+      </summary>
+      <ol>
+        {sections.map((h, i) => (
+          <li>
+            <a href={`#${h.slug}`}>
+              <span class="toc__n">{String(i + 1).padStart(2, '0')}</span>
+              <span>{h.text}</span>
+            </a>
+          </li>
+        ))}
+      </ol>
+    </details>
+  )
+}
+
+<style>
+  .toc {
+    grid-column: main;
+    border-top: 1px solid var(--rule);
+    border-bottom: 1px solid var(--rule);
+    margin-bottom: 2.6rem;
+  }
+  summary {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.9rem 0;
+    cursor: pointer;
+    list-style: none;
+  }
+  summary::-webkit-details-marker { display: none; }
+  summary::after {
+    content: '';
+    width: 0.5rem; height: 0.5rem;
+    border-right: 1.5px solid var(--ink-faint);
+    border-bottom: 1.5px solid var(--ink-faint);
+    transform: rotate(45deg) translate(-2px, -2px);
+    transition: transform 0.25s var(--ease);
+    flex: none;
+  }
+  .toc[open] summary::after { transform: rotate(-135deg) translate(-2px, -2px); }
+  summary:hover .label { color: var(--human); }
+  .toc__count { margin-left: auto; margin-right: 0.6rem; }
+  ol { list-style: none; margin: 0; padding: 0 0 0.9rem; }
+  li { border-top: 1px solid var(--rule); }
+  li:first-child { border-top: 0; }
+  a {
+    display: grid;
+    grid-template-columns: 2.2rem 1fr;
+    gap: 0.5rem;
+    padding: 0.55rem 0;
+    text-decoration: none;
+    color: var(--ink-soft);
+    transition: color 0.2s var(--ease), padding-left 0.2s var(--ease);
+    font-size: 0.97rem;
+  }
+  a:hover { color: var(--human); padding-left: 0.4rem; }
+  .toc__n {
+    font-family: var(--mono);
+    font-size: var(--t-micro);
+    color: var(--ink-faint);
+    padding-top: 0.28em;
+  }
+  a:hover .toc__n { color: var(--human); }
+</style>
