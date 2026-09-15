@@ -9,7 +9,9 @@
     "build": "astro build",
     "preview": "astro preview",
     "start": "node server.js",
-    "changelog": "node scripts/changelog.mjs"
+    "changelog": "node scripts/changelog.mjs",
+    "lint:frontmatter": "node scripts/lint-frontmatter.mjs",
+    "prebuild": "node scripts/lint-frontmatter.mjs"
   },
   "dependencies": {
     "@astrojs/mdx": "^4.2.4",

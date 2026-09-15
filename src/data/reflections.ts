@@ -94,6 +94,13 @@ const RAW: Record<string, string[]> = {
     'Who in your organisation is answerable for the systems you rely on — by name?',
     'If titles vanished tomorrow, what would status get allocated by instead, where you work?',
   ],
+  override: [
+    'Of the six mechanisms, which one is actually operating where you work?',
+    'Name a decision at your organisation that is made automatically and should not be.',
+    'When did anyone last overturn a system you rely on? If never, what does that tell you?',
+    'Which of your worries about AI are about harm, and which are about not being consulted?',
+    'Is there a decision you defer to a machine that meets all four defer conditions — or only feels like it does?',
+  ],
   steelman: [
     'Which objection did you find most comfortable — and what does that preference tell you?',
     'What would actually change your mind about the argument on this site?',

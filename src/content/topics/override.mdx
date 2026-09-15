@@ -1,0 +1,212 @@
+---
+order: 13
+title: Six Ways a Decision Gets Taken From You
+kicker: Control & Harm
+tension: 'The question “will AI override human decisions?” is really six different questions with six different answers — and the countermeasure that works for one is useless against the others.'
+summary: The override worry is legitimate and usually stated too vaguely to act on. Unbundling it into six mechanisms, what actually works against each, what does not work at all, and the uncomfortable fact that human override is sometimes the harm.
+reading: 13 min
+---
+
+import Lede from '../../components/Lede.astro';
+import Claim from '../../components/Claim.astro';
+import Counter from '../../components/Counter.astro';
+import Sidenote from '../../components/Sidenote.astro';
+import Practices from '../../components/Practices.astro';
+import Reflect from '../../components/Reflect.astro';
+import Ladder from '../../components/Ladder.astro';
+import Table from '../../components/Table.astro';
+
+<Lede>
+The worry is that a machine will make a decision that harms someone, and that
+no human will have been able to stop it. This is a reasonable thing to be
+afraid of and a difficult thing to act on, because the sentence hides at least
+six different situations. They have different mechanisms, different warning
+signs and different fixes — and a countermeasure aimed at the wrong one provides
+the feeling of safety without any of it.
+</Lede>
+
+## The six
+
+<Table>
+<thead>
+<tr><th>Mechanism</th><th>What actually happened</th><th>What works against it</th></tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>1. By design</strong></td>
+<td>Nobody was in the loop, because someone removed them — automated claim denial, moderation at scale, algorithmic pricing.</td>
+<td>Reserved categories. Decide in advance what is never decided automatically, and write it where it can be pointed at.</td>
+</tr>
+<tr>
+<td><strong>2. By deference</strong></td>
+<td>A human had authority and used it to agree. Commission error wearing a signature.</td>
+<td>Form your position <em>before</em> exposure. The only countermeasure that touches this one.</td>
+</tr>
+<tr>
+<td><strong>3. By speed</strong></td>
+<td>The loop existed but was slower than the decision. Review was structurally impossible.</td>
+<td>Circuit breakers and mandatory delay. Make the system wait rather than making the human faster.</td>
+</tr>
+<tr>
+<td><strong>4. By framing</strong></td>
+<td>You chose freely among options the machine generated. The choice was real; the menu was not yours.</td>
+<td>Generate candidates independently first, then compare menus.</td>
+</tr>
+<tr>
+<td><strong>5. By dependence</strong></td>
+<td>You had the authority to overrule and no longer the capability. Formal control, hollow.</td>
+<td>Scheduled unaided practice. Nothing else restores a capability you stopped having.</td>
+</tr>
+<tr>
+<td><strong>6. By aggregation</strong></td>
+<td>No single decision was wrong. A million of them constituted a policy nobody chose or voted for.</td>
+<td>Audit the distribution, not the instance. Most oversight looks at cases and cannot see this at all.</td>
+</tr>
+</tbody>
+</Table>
+
+Notice that only the second is about an individual failing, and only the fifth
+is about skill. Four of the six are properties of how a system was *built and
+deployed* — which means most of the override problem is a governance question
+that has been quietly reassigned to whoever happens to be holding the mouse.
+
+<Claim label="The claim">
+Almost every real override happens through mechanisms one, three and six —
+authority removed at design time, loops too slow to function, and aggregate
+effects nobody inspects. Almost every proposed safeguard addresses mechanism
+two. That mismatch is why "we have human oversight" so often turns out, after
+something goes wrong, to have been true and irrelevant at the same time.
+</Claim>
+
+## Meaningful control has three parts, and checkbox oversight has none of them
+
+The most useful idea from the safety literature comes out of the autonomous
+weapons debate, where the stakes forced people to be precise. **Meaningful human
+control** is not a person being present. It requires that a human can *track*
+what the system is doing — understand enough to know when it is going wrong —
+and that outcomes can be *traced* to a person who could have acted otherwise.
+
+<Sidenote>
+Santoni de Sio and van den Hoven, "Meaningful Human Control over Autonomous
+Systems" (2018). The tracking/tracing pair maps almost exactly onto the
+three-question test on the <a href="/topics/responsibility">responsibility</a>
+page: information and time give you tracking, standing gives you tracing.
+</Sidenote>
+
+This is worth holding onto because it is falsifiable. Point at any deployment
+and ask whether a specific person can track it and whether outcomes trace to
+them. Most arrangements that describe themselves as having human oversight fail
+both, and the failure is visible in advance rather than only after an incident.
+
+## Three things that do not work
+
+Naming these matters as much as naming the fixes, because each is widely
+believed and each absorbs effort that would otherwise go somewhere useful.
+
+- **Human oversight as a requirement.** Mandating that a person review
+  consequential decisions produces a person who clicks. The requirement is
+  satisfiable without being met, and satisfying it is cheaper than meeting it.
+  Any rule written this way will be complied with in the worst available manner.
+- **Explainability.** A post-hoc explanation of why a system produced an output
+  can be fluent, plausible and unrelated to the actual cause. Worse, a good
+  explanation increases confidence whether or not the decision was right — it
+  can make override *less* likely rather than more.
+- **The off switch.** The ability to shut a system down is not the same as the
+  ability to shut it down *given what now depends on it*. By the time a system is
+  load-bearing, turning it off is itself the harmful act. The off-switch problem
+  is organisational, not technical, and it arrives long before anyone thinks to
+  test the switch.
+
+## Where the line goes
+
+The practical question is not "how much AI" but "which decisions are reserved."
+Four properties make a decision a poor candidate for automation, and they
+compound:
+
+- **Irreversible.** No feedback loop can correct what cannot be undone.
+- **Allocates rights or liberty.** Bail, benefits, immigration, employment,
+  medical rationing. These are contested value judgments dressed as
+  classification problems.
+- **About a person, not a population.** Systems are optimised on aggregates and
+  applied to individuals. The individual has no recourse to the average.
+- **Silent when wrong.** If an error announces itself, the loop repairs it. If
+  it does not, error accumulates as policy. This is the axis the
+  <a href="/judging">judgment checklist</a> is built on.
+
+A decision with three or four of these belongs in the reserved category —
+decided by a person who can be named, with the machine advising rather than
+disposing. A decision with none of them is usually fine to automate and often
+better automated.
+
+<Counter label="The strongest objection">
+"You are arguing for human control as though human control were safe. In a
+great many domains the automated system is measurably better — and the override
+is the error. People reject algorithms after seeing them err once, while
+tolerating human colleagues who err constantly, and that asymmetry kills
+patients, denies good loans and keeps bad drivers on the road. A framework that
+makes override easier and more frequent will, on the evidence, cause net harm in
+exactly the fields where the stakes are highest."
+</Counter>
+
+This is correct and it is the reason the page is a taxonomy rather than a
+campaign. Algorithm aversion is well documented: people abandon a statistical
+aid after watching it fail once, even having seen it outperform the human
+alternative. Reflexive override is a real and lethal failure mode, and "keep a
+human in charge" is not a safety property.
+
+What survives the objection is narrower and, I think, still load-bearing. The
+case for deferring to a system rests on conditions that can be checked:
+**the objective is agreed, the outcome is measurable, the system was validated on
+a population that includes this case, and errors surface.** Where all four hold,
+defer — and the human's job is to monitor the aggregate rather than second-guess
+the instance. Where any fails — contested objectives, unmeasurable outcomes,
+out-of-distribution cases, silent errors — the system is advising on a question
+it cannot actually answer, and its fluency is not evidence. Most of the harm
+people fear lives in that second set, and most of the deployment enthusiasm
+lives in treating it like the first.
+
+## What to do, at three altitudes
+
+**As the person in the loop.** Run the
+[three-question test](/topics/responsibility) before accepting the role at all:
+information, time, standing. If any answer is no, say so in writing before
+anything goes wrong rather than after. Record your own position before you see
+the output. Distinguish, explicitly, between approving and reviewing.
+
+**As someone who deploys.** Write the reserved list first and put it where it
+can be cited. Build the delay in rather than asking humans to keep up. Give
+override teeth: measure how often it is used, and treat a rate of zero as a
+fault indicator rather than a success metric. Audit the distribution of
+outcomes, not a sample of cases — mechanism six is invisible to case review by
+construction. Stage deployments so that reversibility is preserved while you
+still know least.
+
+**As a citizen.** The contestability right is the one to push for: any
+consequential automated decision about a person must come with a route to human
+review that has the power to overturn it. Not an explanation — an overturning.
+Demand incident reporting, because a field that cannot see its own failures
+cannot improve, and the aviation comparison the
+[judgment](/topics/judgment) page leans on works only because crashes are
+investigated in public.
+
+<Claim label="The short version">
+Do not ask whether there is a human in the loop. Ask which of the six
+mechanisms applies, whether a specific named person can track and trace this
+decision, and whether the decision belongs in the reserved category at all. If
+the answer to the last is yes and the answer to the middle is no, the
+arrangement is unsafe no matter how many people are nominally involved.
+</Claim>
+
+<Ladder
+  highlight={[1, 2, 5]}
+  caption="The override question is the ladder read from the outside: not what you chose, but what was chosen for you."
+  notes={{
+    1: 'Mechanism one lives here. Ceding is legitimate — but it should be a decision someone made and can be asked about, not a default nobody set.',
+    2: 'Mechanisms two and three. The rung that looks safest and hides the most, because the signature and the understanding come apart.',
+    5: 'The reserved category. Decisions kept with a person because of what they are, not because the machine cannot attempt them.',
+  }}
+/>
+
+<Practices topic="override" />
+
+<Reflect topic="override" />

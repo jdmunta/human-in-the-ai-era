@@ -5,7 +5,7 @@ cognitive labour are increasingly performed by machines.
 
 **Live:** <https://humanai.up.railway.app>
 
-Thirteen essays, a delegation framework, and an interactive self-assessment. It is
+Fourteen essays, a delegation framework, and an interactive self-assessment. It is
 not a news site and not futurism: it makes no capability forecast, and nothing
 in it depends on a particular timeline being right.
 
@@ -32,15 +32,16 @@ in it depends on a particular timeline being right.
 | 10 | Civilization | Four adjustable levers: what we measure, distribute, decide and honour |
 | 11 | Working with machines | Prompting is a specification problem, not a syntax problem |
 | 12 | Titles & pay | A job bundles five things; automation attacks one. What titles actually encode |
-| 13 | Steelman | Seven serious objections to everything above |
+| 13 | Control & harm | Six distinct ways a decision gets taken from you, and what works against each |
+| 14 | Steelman | Seven serious objections to everything above |
 
 ### Beyond the essays
 
 | Page | What it is |
 |---|---|
-| `/playbook` | All 58 practices from the essays in one filterable list — by cadence (in the moment / scheduled / review / standing / structural) and by topic. Tick off what you've adopted; kept in `localStorage`. |
+| `/playbook` | All 64 practices from the essays in one filterable list — by cadence (in the moment / scheduled / review / standing / structural) and by topic. Tick off what you've adopted; kept in `localStorage`. |
 | `/journal` | A private, unassisted journal. One rotating question a day drawn from the reflection set, plus free writing; entries, words and streak kept in `localStorage`, exportable as markdown. Nothing on the page offers to write for you — deliberately. |
-| `/reflect` | 64 questions turned on the reader, one set per essay, answered privately in `localStorage` with a copy-as-markdown export. Each essay also closes with its own set inline. |
+| `/reflect` | 69 questions turned on the reader, one set per essay, answered privately in `localStorage` with a copy-as-markdown export. Each essay also closes with its own set inline. |
 | `/contrast` | Five diagrams setting human against machine: the two categories, the jagged frontier, error profiles, the verification gap, and where accountability can attach. Inline SVG, theme-aware, with text equivalents. |
 | `/changelog` | Revision history generated from `git log` by `npm run changelog`, showing when each essay was written, last revised, and how many times. Run locally and committed — the deploy host may clone shallowly. |
 | `/map` | The argument's dependency structure — which claim is load-bearing for which, hand-authored in `src/data/map.ts` and rendered as inline SVG with a text equivalent below it. |
@@ -49,7 +50,7 @@ in it depends on a particular timeline being right.
 | `/judging` | The Judgment Checklist — 23 questions staged from framing to accountability, filtered by a reversible/silent 2×2 that sets how much scrutiny the decision warrants. |
 | `/ladder` | The Delegation Ladder — the five-rung rubric every essay applies to its subject, plus a three-question rule for choosing a rung. |
 | `/audit` | Cognitive Autonomy Audit: 15 behavioural questions across five dimensions, half reverse-scored. Retakes show per-dimension drift against your last run. |
-| `/glossary` | 28 concepts defined — verification gap, jagged frontier, moral crumple zone, latent deprivation, phronesis, conviviality. |
+| `/glossary` | 30 concepts defined — verification gap, jagged frontier, moral crumple zone, latent deprivation, phronesis, conviviality. |
 | `/rss.xml` | Feed of all essays. |
 
 Site-wide search is on `/` or `⌘K` — a ~110KB index built at compile time from

@@ -629,6 +629,66 @@ export const PRACTICES: Practice[] = [
     "cadence": "standing",
     "rung": 5,
     "inPlaybook": true
+  },
+  {
+    "topic": "override",
+    "kicker": "Control & Harm",
+    "n": 1,
+    "title": "Name which of the six you are worried about",
+    "body": "“AI might override us” is not actionable. By design, by deference, by speed, by framing, by dependence, by aggregation — each has a different fix, and the wrong one buys only the feeling of safety.",
+    "cadence": "periodic",
+    "rung": 2,
+    "inPlaybook": true
+  },
+  {
+    "topic": "override",
+    "kicker": "Control & Harm",
+    "n": 2,
+    "title": "Write the reserved list before the first deployment",
+    "body": "Which decisions are never made automatically here. Written in advance and somewhere citable, because afterwards it is a negotiation and beforehand it is a rule.",
+    "cadence": "structural",
+    "rung": 5,
+    "inPlaybook": true
+  },
+  {
+    "topic": "override",
+    "kicker": "Control & Harm",
+    "n": 3,
+    "title": "Build the delay in rather than asking people to keep up",
+    "body": "If review is slower than the decision, no amount of diligence closes the gap. Circuit breakers and mandatory waits make the system wait — the only thing that actually works on speed.",
+    "cadence": "structural",
+    "rung": 2,
+    "inPlaybook": true
+  },
+  {
+    "topic": "override",
+    "kicker": "Control & Harm",
+    "n": 4,
+    "title": "Treat a zero override rate as a fault",
+    "body": "If nobody has ever overturned the system, either it is perfect or the override is decorative. Measure the rate; a flat zero is a reading, not a reassurance.",
+    "cadence": "periodic",
+    "rung": 2,
+    "inPlaybook": true
+  },
+  {
+    "topic": "override",
+    "kicker": "Control & Harm",
+    "n": 5,
+    "title": "Audit the distribution, not a sample of cases",
+    "body": "Aggregation harm is invisible to case review by construction: every decision defensible, the pattern indefensible. Look at who the outcomes fall on, not whether each one was reasonable.",
+    "cadence": "periodic",
+    "rung": 4,
+    "inPlaybook": true
+  },
+  {
+    "topic": "override",
+    "kicker": "Control & Harm",
+    "n": 6,
+    "title": "Check the four defer conditions before deferring",
+    "body": "Agreed objective, measurable outcome, validated on a population including this case, errors that surface. All four and deferring is right. Any missing and the system is advising on a question it cannot answer.",
+    "cadence": "daily",
+    "rung": 2,
+    "inPlaybook": true
   }
 ];
 

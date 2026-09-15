@@ -72,6 +72,16 @@ export const SOURCES: Source[] = [
   { group: 'Work & economy', topics: ['work'],
     cite: 'Bessen, J. (2015). <em>Learning by Doing</em> — the ATM and bank teller case.' },
 
+  // Control & harm
+  { group: 'Control & harm', topics: ['override'],
+    cite: 'Santoni de Sio, F. &amp; van den Hoven, J. (2018). “Meaningful Human Control over Autonomous Systems.” <em>Frontiers in Robotics and AI</em> 5.' },
+  { group: 'Control & harm', topics: ['override'],
+    cite: 'Dietvorst, B., Simmons, J. &amp; Massey, C. (2015). “Algorithm Aversion.” <em>Journal of Experimental Psychology: General</em> 144(1).' },
+  { group: 'Control & harm', topics: ['override', 'responsibility'],
+    cite: 'Reason, J. (1990). <em>Human Error</em> — defence in depth and the Swiss cheese model of accident causation.' },
+  { group: 'Control & harm', topics: ['override'],
+    cite: 'EU AI Act, Article 14 (human oversight) — and the standing critique that a review requirement is satisfiable without being met.' },
+
   // Titles & pay
   { group: 'Titles & pay', topics: ['titles'],
     cite: 'Hirsch, F. (1976). <em>Social Limits to Growth</em> — positional goods, and why growth cannot satisfy demand for rank.' },

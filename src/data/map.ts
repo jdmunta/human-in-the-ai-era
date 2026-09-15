@@ -38,6 +38,7 @@ export const NODES: MapNode[] = [
   { slug: 'responsibility',    label: 'Responsibility',   n: 5,  x: 560, y: 250, track: 'mechanism' },
   { slug: 'work',              label: 'Work',             n: 9,  x: 560, y: 160, track: 'mechanism' },
   { slug: 'titles',            label: 'Titles & pay',     n: 12, x: 790, y: 250, track: 'collective' },
+  { slug: 'override',          label: 'Control & harm',   n: 13, x: 790, y: 108, track: 'collective' },
   // human track
   { slug: 'relationships',     label: 'Relationships',    n: 8,  x: 90,  y: 430, track: 'human' },
   { slug: 'meaning',           label: 'Meaning',          n: 1,  x: 330, y: 430, track: 'human' },
@@ -56,6 +57,7 @@ export const EDGES: MapEdge[] = [
   { from: 'judgment',          to: 'responsibility', label: 'verification gap' },
   { from: 'judgment',          to: 'work',          label: 'what stays scarce' },
   { from: 'responsibility',    to: 'titles',        label: 'who signs' },
+  { from: 'judgment',          to: 'override',      label: 'silent error' },
   { from: 'work',              to: 'titles',        label: 'pay for exposure' },
   { from: 'education',         to: 'work',          label: 'what to learn' },
   { from: 'relationships',     to: 'meaning',       label: 'being needed' },

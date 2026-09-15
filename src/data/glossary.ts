@@ -115,6 +115,18 @@ export const GLOSSARY: Term[] = [
     def: 'Beyond money, paid work supplies time structure, social contact, collective purpose, status and regular activity. Take the job away and the wage is the most replaceable of the losses — which is why a cash transfer alone is an incomplete answer.',
   },
   {
+    term: 'Meaningful human control',
+    topic: 'override',
+    origin: 'Santoni de Sio & van den Hoven (2018)',
+    def: 'Control worth the name requires two things: a human who can track what the system is doing well enough to know when it is going wrong, and outcomes that trace to a person who could have acted otherwise. Presence is not control.',
+  },
+  {
+    term: 'Algorithm aversion',
+    topic: 'override',
+    origin: 'Dietvorst, Simmons & Massey (2015)',
+    def: 'People abandon a statistical aid after seeing it err once, while tolerating human colleagues who err constantly. The reason reflexive override is itself a lethal failure mode, and why "keep a human in charge" is not a safety property.',
+  },
+  {
     term: 'Moral crumple zone',
     topic: 'responsibility',
     origin: 'Madeleine Clare Elish (2019)',
