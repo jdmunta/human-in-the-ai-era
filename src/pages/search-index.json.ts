@@ -64,6 +64,8 @@ export async function GET() {
   const pages = [
     { slug: 'ladder', title: 'The Delegation Ladder', kicker: 'Framework',
       summary: 'Five rungs from cede to reserve, and how to choose one.', path: '/ladder' },
+    { slug: 'changelog', title: 'Changelog', kicker: 'Reference',
+      summary: 'What has changed and when, generated from the repository commit history.', path: '/changelog' },
     { slug: 'journal', title: 'The journal', kicker: 'Tool',
       summary: 'A private, unassisted journal. A rotating question a day drawn from the essays, kept in your browser.', path: '/journal' },
     { slug: 'contrast', title: 'Human and machine, side by side', kicker: 'Diagrams',

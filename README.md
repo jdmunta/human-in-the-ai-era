@@ -42,6 +42,7 @@ in it depends on a particular timeline being right.
 | `/journal` | A private, unassisted journal. One rotating question a day drawn from the reflection set, plus free writing; entries, words and streak kept in `localStorage`, exportable as markdown. Nothing on the page offers to write for you — deliberately. |
 | `/reflect` | 64 questions turned on the reader, one set per essay, answered privately in `localStorage` with a copy-as-markdown export. Each essay also closes with its own set inline. |
 | `/contrast` | Five diagrams setting human against machine: the two categories, the jagged frontier, error profiles, the verification gap, and where accountability can attach. Inline SVG, theme-aware, with text equivalents. |
+| `/changelog` | Revision history generated from `git log` by `npm run changelog`, showing when each essay was written, last revised, and how many times. Run locally and committed — the deploy host may clone shallowly. |
 | `/map` | The argument's dependency structure — which claim is load-bearing for which, hand-authored in `src/data/map.ts` and rendered as inline SVG with a text equivalent below it. |
 | `/read` | Every essay on one page, for reading offline, printing or saving as a PDF. |
 | `/you` | Where you stand — essays read, practices adopted, reflections answered, journal activity and your last audit, assembled from `localStorage` alone. Backup downloads all five keys as JSON; restore validates the file's format before asking to confirm. |

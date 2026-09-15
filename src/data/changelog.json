@@ -1,0 +1,320 @@
+{
+  "generatedAt": "2026-09-15",
+  "entries": [
+    {
+      "hash": "2fb8e76",
+      "date": "2026-09-14",
+      "subject": "Add backup and restore on /you, and fix erase leaving the journal behind",
+      "essays": [],
+      "pages": [
+        "you"
+      ],
+      "files": 2
+    },
+    {
+      "hash": "0a4397d",
+      "date": "2026-09-14",
+      "subject": "Add /journal — a private, deliberately unassisted writing habit",
+      "essays": [],
+      "pages": [
+        "journal",
+        "reflect",
+        "you"
+      ],
+      "files": 7
+    },
+    {
+      "hash": "c1a0dfe",
+      "date": "2026-09-13",
+      "subject": "Fix WCAG AA contrast and heading hierarchy; deep-link search to sections",
+      "essays": [],
+      "pages": [
+        "topics/index"
+      ],
+      "files": 7
+    },
+    {
+      "hash": "4fdeb95",
+      "date": "2026-09-13",
+      "subject": "Add /contrast — five diagrams on where humans and machines differ",
+      "essays": [
+        "judgment",
+        "responsibility"
+      ],
+      "pages": [
+        "contrast",
+        "index"
+      ],
+      "files": 9
+    },
+    {
+      "hash": "70318f3",
+      "date": "2026-09-13",
+      "subject": "Add the argument map, self-host fonts, trap focus in the search dialog",
+      "essays": [],
+      "pages": [
+        "map",
+        "topics/index"
+      ],
+      "files": 17
+    },
+    {
+      "hash": "e364a9c",
+      "date": "2026-09-13",
+      "subject": "Add essay on titles and pay, per-essay sources, related essays, and /read",
+      "essays": [
+        "steelman",
+        "titles"
+      ],
+      "pages": [
+        "404",
+        "about",
+        "index",
+        "ladder",
+        "read",
+        "topics/[...slug]",
+        "topics/index"
+      ],
+      "files": 20
+    },
+    {
+      "hash": "1b83310",
+      "date": "2026-09-13",
+      "subject": "Add a twelfth essay on working with these systems, plus /you and read tracking",
+      "essays": [
+        "communication",
+        "steelman"
+      ],
+      "pages": [
+        "404",
+        "about",
+        "glossary",
+        "index",
+        "ladder",
+        "playbook",
+        "reflect",
+        "topics/[...slug]",
+        "topics/index",
+        "you"
+      ],
+      "files": 21
+    },
+    {
+      "hash": "dc333af",
+      "date": "2026-09-13",
+      "subject": "Add reflection questions to every essay, plus a private page to answer them",
+      "essays": [
+        "civilization",
+        "cognitive-fitness",
+        "curiosity",
+        "education",
+        "judgment",
+        "meaning",
+        "purpose",
+        "relationships",
+        "responsibility",
+        "steelman",
+        "work"
+      ],
+      "pages": [
+        "reflect"
+      ],
+      "files": 18
+    },
+    {
+      "hash": "34f45e9",
+      "date": "2026-09-13",
+      "subject": "Add the Judgment Checklist — the questions to ask when judging",
+      "essays": [
+        "judgment"
+      ],
+      "pages": [
+        "index",
+        "judging",
+        "ladder"
+      ],
+      "files": 9
+    },
+    {
+      "hash": "0168fa1",
+      "date": "2026-09-13",
+      "subject": "Add share cards, reading paths, concept links, anchors and structured data",
+      "essays": [],
+      "pages": [
+        "audit",
+        "glossary",
+        "index",
+        "ladder",
+        "playbook",
+        "topics/[...slug]",
+        "topics/index"
+      ],
+      "files": 22
+    },
+    {
+      "hash": "7b24e35",
+      "date": "2026-09-13",
+      "subject": "Point canonical URLs at humanai.up.railway.app",
+      "essays": [],
+      "pages": [],
+      "files": 2
+    },
+    {
+      "hash": "89a48c1",
+      "date": "2026-09-13",
+      "subject": "Add Playbook, search, glossary, contents, RSS, print styles and audit drift",
+      "essays": [
+        "civilization",
+        "cognitive-fitness",
+        "curiosity",
+        "education",
+        "judgment",
+        "meaning",
+        "purpose",
+        "relationships",
+        "responsibility",
+        "steelman",
+        "work"
+      ],
+      "pages": [
+        "audit",
+        "glossary",
+        "index",
+        "playbook",
+        "topics/[...slug]"
+      ],
+      "files": 31
+    },
+    {
+      "hash": "ddd0ba9",
+      "date": "2026-09-13",
+      "subject": "Fix invalid paragraph nesting in Lede, Claim and Counter",
+      "essays": [
+        "civilization",
+        "cognitive-fitness",
+        "curiosity",
+        "education",
+        "judgment",
+        "meaning",
+        "purpose",
+        "relationships",
+        "responsibility",
+        "steelman",
+        "work"
+      ],
+      "pages": [],
+      "files": 13
+    },
+    {
+      "hash": "6d2d9f4",
+      "date": "2026-09-13",
+      "subject": "Add live Railway URL to README",
+      "essays": [],
+      "pages": [],
+      "files": 1
+    },
+    {
+      "hash": "da9ea1e",
+      "date": "2026-09-13",
+      "subject": "Move Astro build toolchain into dependencies",
+      "essays": [],
+      "pages": [],
+      "files": 2
+    },
+    {
+      "hash": "5783e8d",
+      "date": "2026-09-13",
+      "subject": "Human in the AI Era: eleven essays, delegation framework, autonomy audit",
+      "essays": [
+        "civilization",
+        "cognitive-fitness",
+        "curiosity",
+        "education",
+        "judgment",
+        "meaning",
+        "purpose",
+        "relationships",
+        "responsibility",
+        "steelman",
+        "work"
+      ],
+      "pages": [
+        "404",
+        "about",
+        "audit",
+        "index",
+        "ladder",
+        "topics/[...slug]",
+        "topics/index"
+      ],
+      "files": 39
+    }
+  ],
+  "essayHistory": {
+    "civilization": {
+      "added": "2026-09-13",
+      "updated": "2026-09-13",
+      "revisions": 4
+    },
+    "cognitive-fitness": {
+      "added": "2026-09-13",
+      "updated": "2026-09-13",
+      "revisions": 4
+    },
+    "curiosity": {
+      "added": "2026-09-13",
+      "updated": "2026-09-13",
+      "revisions": 4
+    },
+    "education": {
+      "added": "2026-09-13",
+      "updated": "2026-09-13",
+      "revisions": 4
+    },
+    "judgment": {
+      "added": "2026-09-13",
+      "updated": "2026-09-13",
+      "revisions": 6
+    },
+    "meaning": {
+      "added": "2026-09-13",
+      "updated": "2026-09-13",
+      "revisions": 4
+    },
+    "purpose": {
+      "added": "2026-09-13",
+      "updated": "2026-09-13",
+      "revisions": 4
+    },
+    "relationships": {
+      "added": "2026-09-13",
+      "updated": "2026-09-13",
+      "revisions": 4
+    },
+    "responsibility": {
+      "added": "2026-09-13",
+      "updated": "2026-09-13",
+      "revisions": 5
+    },
+    "steelman": {
+      "added": "2026-09-13",
+      "updated": "2026-09-13",
+      "revisions": 6
+    },
+    "work": {
+      "added": "2026-09-13",
+      "updated": "2026-09-13",
+      "revisions": 4
+    },
+    "communication": {
+      "added": "2026-09-13",
+      "updated": "2026-09-13",
+      "revisions": 1
+    },
+    "titles": {
+      "added": "2026-09-13",
+      "updated": "2026-09-13",
+      "revisions": 1
+    }
+  }
+}

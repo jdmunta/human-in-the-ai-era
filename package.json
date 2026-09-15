@@ -8,7 +8,8 @@
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "start": "node server.js"
+    "start": "node server.js",
+    "changelog": "node scripts/changelog.mjs"
   },
   "dependencies": {
     "@astrojs/mdx": "^4.2.4",

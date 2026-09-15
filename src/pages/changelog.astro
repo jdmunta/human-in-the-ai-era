@@ -1,0 +1,167 @@
+---
+import Base from '../layouts/Base.astro';
+import log from '../data/changelog.json';
+import { getCollection } from 'astro:content';
+
+const topics = (await getCollection('topics')).sort((a, b) => a.data.order - b.data.order);
+const meta = Object.fromEntries(topics.map((t) => [t.id, t.data]));
+const { entries, essayHistory, generatedAt } = log as any;
+
+const fmt = (d: string) =>
+  new Date(d + 'T00:00:00Z').toLocaleDateString('en-GB', {
+    day: 'numeric', month: 'short', year: 'numeric', timeZone: 'UTC',
+  });
+
+// group commits by day
+const byDay: Record<string, typeof entries> = {};
+for (const e of entries) (byDay[e.date] ??= []).push(e);
+const days = Object.keys(byDay).sort().reverse();
+---
+
+<Base
+  title="Changelog — Human in the AI Era"
+  description="What has actually changed here and when, generated from the repository's commit history rather than asserted."
+  ogSlug="changelog"
+>
+  <div class="wrap">
+    <header class="chead">
+      <p class="label">Revision history</p>
+      <h1>What has actually changed.</h1>
+      <p class="chead__sub">
+        The <a class="link" href="/about">about page</a> calls this a working
+        argument, which is easy to say and worth being able to check. This page
+        is generated from the repository's commit history, so it records what
+        was really done rather than what was claimed —
+        <a class="link" href="https://github.com/jdmunta/human-in-the-ai-era/commits/main" rel="noopener">every
+        entry is a commit you can read</a>.
+      </p>
+      <p class="chead__meta label">
+        {entries.length} commits · {topics.length} essays · generated {fmt(generatedAt)}
+      </p>
+    </header>
+
+    <section class="essays">
+      <h2 class="sectionhead label">Per essay</h2>
+      <div class="tablewrap">
+        <table>
+          <thead>
+            <tr><th>Essay</th><th>First written</th><th>Last revised</th><th>Revisions</th></tr>
+          </thead>
+          <tbody>
+            {
+              topics.map((t) => {
+                const h = essayHistory[t.id];
+                return (
+                  <tr>
+                    <td>
+                      <a class="link" href={`/topics/${t.id}`}>{meta[t.id].kicker}</a>
+                    </td>
+                    <td class="num">{h ? fmt(h.added) : '—'}</td>
+                    <td class="num">{h ? fmt(h.updated) : '—'}</td>
+                    <td class="num">{h ? h.revisions : '—'}</td>
+                  </tr>
+                );
+              })
+            }
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="log">
+      <h2 class="sectionhead label">Commit by commit</h2>
+      {
+        days.map((day) => (
+          <div class="day">
+            <p class="day__d label">{fmt(day)}</p>
+            <ol>
+              {
+                byDay[day].map((e: any) => (
+                  <li class="c">
+                    <p class="c__s">{e.subject}</p>
+                    <p class="c__m">
+                      <a class="c__h" href={`https://github.com/jdmunta/human-in-the-ai-era/commit/${e.hash}`} rel="noopener">{e.hash}</a>
+                      <span>{e.files} {e.files === 1 ? 'file' : 'files'}</span>
+                      {e.essays.length > 0 && (
+                        <span class="c__tags">
+                          {e.essays.map((slug: string) => (
+                            <a class="tag" href={`/topics/${slug}`}>{meta[slug]?.kicker ?? slug}</a>
+                          ))}
+                        </span>
+                      )}
+                    </p>
+                  </li>
+                ))
+              }
+            </ol>
+          </div>
+        ))
+      }
+    </section>
+
+    <p class="cfoot">
+      Regenerated with <code>npm run changelog</code>, which reads
+      <code>git log</code> and writes <code>src/data/changelog.json</code>. It
+      runs locally rather than at build time because the deploy host may clone
+      shallowly, and a history page that silently empties itself would be worse
+      than none.
+    </p>
+  </div>
+</Base>
+
+<style>
+  .chead { padding-block: clamp(3rem, 7vw, 5rem) 2rem; max-width: 46rem; }
+  .chead h1 { font-size: var(--t-h1); margin-block: 1rem 1.2rem; }
+  .chead__sub { color: var(--ink-soft); max-width: 56ch; }
+  .chead__meta {
+    margin-top: 1.3rem; padding-top: 1rem;
+    border-top: 1px solid var(--rule);
+  }
+
+  .sectionhead {
+    display: flex; align-items: center; gap: 0.85rem;
+    font-weight: 500; margin-bottom: 1.2rem;
+  }
+  .sectionhead::after { content: ''; flex: 1; height: 1px; background: var(--rule); }
+
+  .essays { margin-bottom: 3.5rem; }
+  .tablewrap { overflow-x: auto; }
+  .num { font-family: var(--mono); font-size: 0.86rem; white-space: nowrap; }
+
+  .log { padding-bottom: 2rem; }
+  .day { display: grid; grid-template-columns: 9rem 1fr; gap: 1.2rem; align-items: start; }
+  .day__d { padding-top: 1.1rem; position: sticky; top: 5rem; }
+  .day ol { list-style: none; margin: 0; padding: 0; }
+  .c { padding: 1.05rem 0; border-bottom: 1px solid var(--rule); }
+  .c__s { font-size: 1rem; line-height: 1.45; max-width: 62ch; }
+  .c__m {
+    display: flex; gap: 0.9rem; align-items: center; flex-wrap: wrap;
+    margin-top: 0.5rem;
+    font-family: var(--mono); font-size: var(--t-micro);
+    letter-spacing: 0.06em; color: var(--ink-faint);
+  }
+  .c__h { color: var(--human); text-decoration: none; }
+  .c__h:hover { text-decoration: underline; }
+  .c__tags { display: flex; gap: 0.35rem; flex-wrap: wrap; }
+  .tag {
+    text-transform: uppercase; letter-spacing: 0.08em;
+    border: 1px solid var(--rule-strong); padding: 0.15rem 0.4rem;
+    text-decoration: none; color: var(--ink-soft);
+    transition: all 0.2s var(--ease);
+  }
+  .tag:hover { border-color: var(--human); color: var(--human); }
+
+  .cfoot {
+    border-top: 1px solid var(--rule); padding-block: 1.4rem 5rem;
+    color: var(--ink-faint); font-size: 0.92rem; line-height: 1.6; max-width: 58ch;
+  }
+  .cfoot code {
+    font-family: var(--mono); font-size: 0.86em;
+    background: var(--paper-sunk); padding: 0.1em 0.3em;
+  }
+
+  @media (max-width: 700px) {
+    .day { grid-template-columns: 1fr; gap: 0; }
+    .day__d { position: static; padding-top: 1.4rem; }
+  }
+</style>
