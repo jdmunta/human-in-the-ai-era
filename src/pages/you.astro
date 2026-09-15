@@ -30,9 +30,10 @@ const DIMS = [
       <h1>Where you stand.</h1>
       <p class="yhead__sub">
         This page is assembled entirely from your own browser. There is no
-        account and no server — if you opened the site somewhere else, that
-        version of you is a different person as far as this page is concerned.
-        That is a limitation, and it is the correct trade.
+        account and no server, so a second browser is a second person as far as
+        this page is concerned. That is the correct trade, and the cost of it is
+        real — which is why everything here can be downloaded as a file and
+        restored somewhere else.
       </p>
       <p class="yhead__none label" id="empty-note" hidden>
         Nothing stored yet. Read an essay, take the audit, or answer a question.
@@ -120,18 +121,32 @@ const DIMS = [
       </div>
     </div>
 
-    <aside class="wipe">
-      <div>
-        <span class="label">Your data</span>
-        <p>
-          Five keys in <code>localStorage</code>, nothing else: essays read,
-          your last audit scores, which practices you ticked, your reflection
-          notes and your journal. Clearing site data in your browser removes all
-          of it, or:
-        </p>
+    <section class="data">
+      <span class="label">Your data</span>
+      <p class="data__intro">
+        Five keys in <code>localStorage</code>, nothing else: essays read, your
+        last audit scores, which practices you ticked, your reflection notes and
+        your journal.
+      </p>
+
+      <div class="data__acts">
+        <button class="btn" id="backup" type="button">Download backup</button>
+        <label class="btn btn--ghost" for="restore">Restore from backup</label>
+        <input id="restore" type="file" accept="application/json,.json" hidden />
+        <button class="btn btn--ghost" id="wipe-all" type="button">Erase everything</button>
       </div>
-      <button class="btn btn--ghost" id="wipe-all" type="button">Erase everything</button>
-    </aside>
+
+      <p class="data__msg" id="data-msg" hidden></p>
+
+      <details class="data__what">
+        <summary><span class="label">What is in the file</span></summary>
+        <ul id="data-manifest"></ul>
+        <p class="data__note">
+          Plain JSON, readable in any text editor. Restoring replaces what is in
+          this browser, and asks you to confirm first.
+        </p>
+      </details>
+    </section>
   </div>
 </Base>
 
@@ -210,8 +225,99 @@ const DIMS = [
       }
     }
 
+    var KEYS = ['essays-read', 'audit-last-run', 'playbook-adopted', 'reflect-notes', 'journal-entries'];
+    var LABELS = {
+      'essays-read': 'essays read',
+      'audit-last-run': 'last audit',
+      'playbook-adopted': 'practices adopted',
+      'reflect-notes': 'reflection notes',
+      'journal-entries': 'journal entries',
+    };
+
+    function msg(text, bad) {
+      var m = document.getElementById('data-msg');
+      m.hidden = false;
+      m.textContent = text;
+      m.classList.toggle('is-bad', !!bad);
+    }
+    function countOf(val) {
+      if (val == null) return 0;
+      if (Array.isArray(val)) return val.length;
+      if (typeof val === 'object') return Object.keys(val).length;
+      return 1;
+    }
+
+    (function manifest() {
+      document.getElementById('data-manifest').innerHTML = KEYS.map(function (k) {
+        var raw = null;
+        try { raw = JSON.parse(localStorage.getItem(k) || 'null'); } catch (e) {}
+        var n = countOf(raw);
+        return '<li><span>' + LABELS[k] + '</span><b>' + (n || '—') + '</b></li>';
+      }).join('');
+    })();
+
+    document.getElementById('backup').addEventListener('click', function () {
+      var payload = {
+        format: 'human-in-the-ai-era/backup', version: 1,
+        exportedAt: new Date().toISOString(), data: {},
+      };
+      var any = false;
+      KEYS.forEach(function (k) {
+        var raw = localStorage.getItem(k);
+        if (raw != null) { try { payload.data[k] = JSON.parse(raw); any = true; } catch (e) {} }
+      });
+      if (!any) { msg('Nothing stored yet — there is nothing to back up.', true); return; }
+
+      var blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+      var url = URL.createObjectURL(blob);
+      var a = document.createElement('a');
+      a.href = url;
+      a.download = 'human-in-the-ai-era-' + new Date().toISOString().slice(0, 10) + '.json';
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      setTimeout(function () { URL.revokeObjectURL(url); }, 1000);
+      msg('Backup downloaded.');
+    });
+
+    document.getElementById('restore').addEventListener('change', function (ev) {
+      var file = ev.target.files && ev.target.files[0];
+      if (!file) return;
+      var reader = new FileReader();
+      reader.onload = function () {
+        var parsed;
+        try { parsed = JSON.parse(String(reader.result)); }
+        catch (e) { msg('That file is not valid JSON.', true); ev.target.value = ''; return; }
+
+        if (!parsed || parsed.format !== 'human-in-the-ai-era/backup' || !parsed.data) {
+          msg('That does not look like a backup from this site.', true);
+          ev.target.value = '';
+          return;
+        }
+        var incoming = KEYS.filter(function (k) { return parsed.data[k] != null; });
+        if (!incoming.length) {
+          msg('That backup contains nothing this site recognises.', true);
+          ev.target.value = '';
+          return;
+        }
+        var summary = incoming.map(function (k) {
+          return countOf(parsed.data[k]) + ' ' + LABELS[k];
+        }).join(', ');
+        if (!window.confirm('Restore ' + summary + '?\n\nThis replaces what is currently in this browser.')) {
+          ev.target.value = '';
+          return;
+        }
+        incoming.forEach(function (k) {
+          try { localStorage.setItem(k, JSON.stringify(parsed.data[k])); } catch (e) {}
+        });
+        location.reload();
+      };
+      reader.readAsText(file);
+    });
+
     document.getElementById('wipe-all').addEventListener('click', function () {
-      ['essays-read', 'audit-last-run', 'playbook-adopted', 'reflect-notes'].forEach(function (k) {
+      if (!window.confirm('Erase everything this browser has stored for this site?\n\nThis cannot be undone. Download a backup first if you want to keep it.')) return;
+      KEYS.forEach(function (k) {
         try { localStorage.removeItem(k); } catch (e) {}
       });
       location.reload();
@@ -293,18 +399,36 @@ const DIMS = [
   .dim__head { display: flex; justify-content: space-between; margin-bottom: 0.35rem; }
   .dim__score { color: var(--ink-faint); }
 
-  .wipe {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 1.6rem;
-    flex-wrap: wrap;
-    border-top: 1px solid var(--rule);
-    padding-block: 1.6rem;
+  .data {
+    border-top: 2px solid var(--ink);
+    padding-top: 1.3rem;
     margin-bottom: 5rem;
   }
-  .wipe .label { display: block; margin-bottom: 0.6rem; }
-  .wipe p { color: var(--ink-soft); font-size: 0.94rem; max-width: 52ch; line-height: 1.55; }
+  .data > .label { display: block; margin-bottom: 0.7rem; }
+  .data__intro { color: var(--ink-soft); font-size: 0.95rem; max-width: 58ch; line-height: 1.6; }
+  .data__intro code {
+    font-family: var(--mono); font-size: 0.86em;
+    background: var(--paper-sunk); padding: 0.1em 0.3em;
+  }
+  .data__acts { display: flex; gap: 0.8rem; flex-wrap: wrap; margin-top: 1.3rem; }
+  label.btn { display: inline-flex; align-items: center; }
+  .data__msg {
+    margin-top: 1rem; font-family: var(--mono); font-size: var(--t-small);
+    color: var(--machine);
+  }
+  .data__msg.is-bad { color: var(--human); }
+  .data__what { margin-top: 1.4rem; border-top: 1px solid var(--rule); }
+  .data__what summary { padding: 0.8rem 0; cursor: pointer; list-style: none; }
+  .data__what summary::-webkit-details-marker { display: none; }
+  .data__what summary:hover .label { color: var(--human); }
+  .data__what ul { list-style: none; margin: 0 0 1rem; padding: 0; max-width: 26rem; }
+  :global(.data__what li) {
+    display: flex; justify-content: space-between;
+    padding: 0.45rem 0; border-bottom: 1px solid var(--rule);
+    font-size: 0.93rem; color: var(--ink-soft);
+  }
+  :global(.data__what li b) { font-family: var(--mono); font-size: 0.85rem; color: var(--ink); }
+  .data__note { color: var(--ink-faint); font-size: 0.9rem; line-height: 1.55; max-width: 52ch; }
   .btn {
     font-family: var(--mono); font-size: var(--t-small);
     letter-spacing: 0.1em; text-transform: uppercase;

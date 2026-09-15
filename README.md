@@ -44,7 +44,7 @@ in it depends on a particular timeline being right.
 | `/contrast` | Five diagrams setting human against machine: the two categories, the jagged frontier, error profiles, the verification gap, and where accountability can attach. Inline SVG, theme-aware, with text equivalents. |
 | `/map` | The argument's dependency structure — which claim is load-bearing for which, hand-authored in `src/data/map.ts` and rendered as inline SVG with a text equivalent below it. |
 | `/read` | Every essay on one page, for reading offline, printing or saving as a PDF. |
-| `/you` | Where you stand — essays read, practices adopted, reflections answered and your last audit, assembled from `localStorage` alone. |
+| `/you` | Where you stand — essays read, practices adopted, reflections answered, journal activity and your last audit, assembled from `localStorage` alone. Backup downloads all five keys as JSON; restore validates the file's format before asking to confirm. |
 | `/judging` | The Judgment Checklist — 23 questions staged from framing to accountability, filtered by a reversible/silent 2×2 that sets how much scrutiny the decision warrants. |
 | `/ladder` | The Delegation Ladder — the five-rung rubric every essay applies to its subject, plus a three-question rule for choosing a rung. |
 | `/audit` | Cognitive Autonomy Audit: 15 behavioural questions across five dimensions, half reverse-scored. Retakes show per-dimension drift against your last run. |
